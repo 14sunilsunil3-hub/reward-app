@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reward App</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f4f7fe; padding: 20px; margin: 0; }
+    .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); max-width: 400px; margin: 20px auto; }
+    h2 { color: #333; margin-top: 0; }
+    input { width: 100%; padding: 10px; margin: 8px 0; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
+    button { width: 100%; padding: 10px; background: #4F46E5; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; margin-top: 8px; }
+    button:hover { background: #4338CA; }
+    .status { margin-top: 10px; font-size: 14px; word-break: break-word; }
+  </style>
+</head>
+<body>
+
+  <!-- Signup Form -->
+  <div class="card">
+    <h2>1. Create Account (Signup)</h2>
+    <input type="text" id="signupUsername" placeholder="Username">
+    <input type="email" id="signupEmail" placeholder="Email">
+    <input type="password" id="signupPassword" placeholder="Password">
+    <button onclick="signup()">Signup</button>
+    <div id="signupStatus" class="status"></div>
+  </div>
+
+  <!-- Login Form -->
+  <div class="card">
+    <h2>2. User Login</h2>
+    <input type="email" id="loginEmail" placeholder="Email">
+    <input type="password" id="loginPassword" placeholder="Password">
+    <button onclick="login()">Login</button>
+    <div id="loginStatus" class="status"></div>
+  </div>
+
+  <!-- Reward Points Form -->
+  <div class="card">
+    <h2>3. Reward Points</h2>
+    <input type="text" id="userId" placeholder="User ID (Login ke baad milega)">
+    <input type="number" id="pointsAmount" placeholder="Points (e.g. 10 ya -5)">
+    <button onclick="updatePoints()">Update Points</button>
+    <div id="pointsStatus" class="status"></div>
+  </div>
+
+  <script>
+    const API_URL = 'https://reward-app-1-OgjO.onrender.com';
+
+    async function signup() {
+      const username = document.getElementById('signupUsername').value;
+      const email = document.getElementById('signupEmail').value;
+      const password = document.getElementById('signupPassword').value;
+
+      const res = await fetch(`${API_URL}/api/signup`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, email, password })
+      });
+      const data = await res.json();
+      document.getElementById('signupStatus').innerText = JSON.stringify(data);
+    }
+
+    async function login() {
+      const email = document.getElementById('loginEmail').value;
+      const password = document.getElementById('loginPassword').value;
+
+      const res = await fetch(`${API_URL}/api/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+      const data = await res.json();
+      if(data.success) {
+        document.getElementById('userId').value = data.user._id;
+        document.getElementById('loginStatus').innerText = "Login Successful! User ID Auto-filled below.";
+      } else {
+        document.getElementById('loginStatus').innerText = data.message;
+      }
+    }
+
+    async function updatePoints() {
+      const userId = document.getElementById('userId').value;
+      const pointsToAdd = parseInt(document.getElementById('pointsAmount').value);
+
+      const res = await fetch(`${API_URL}/api/update-points`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId, pointsToAdd })
+      });
+      const data = await res.json();
+      document.getElementById('pointsStatus').innerText = JSON.stringify(data);
+    }
+  </script>
+</body>
+</html>
