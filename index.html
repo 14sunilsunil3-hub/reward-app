@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reward App</title>
+    <title>Zone Reward - Earn Daily Points & Rewards</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
@@ -33,7 +33,7 @@
         
         /* Profile UI */
         .profile-header { display: flex; align-items: center; gap: 15px; background: #f8fafc; padding: 15px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 20px; }
-        .avatar-container { position: relative; width: 70px; height: 70px; border-radius: 50%; overflow: hidden; border: 2px solid #4f46e5; cursor: pointer; }
+        .avatar-container { position: relative; width: 70px; height: 70px; border-radius: 50%; overflow: hidden; border: 2px solid #4f46e5; cursor: pointer; flex-shrink: 0; }
         .avatar-container img { width: 100%; height: 100%; object-fit: cover; }
         .user-meta { flex: 1; }
         .uid-badge { font-size: 11px; background: #e0e7ff; color: #3730a3; padding: 2px 6px; border-radius: 4px; display: inline-block; margin-bottom: 4px; font-weight: bold; }
@@ -57,7 +57,7 @@
     
     <!-- AUTH SCREEN -->
     <div id="auth-screen" class="screen active">
-        <h2 style="text-align:center; margin-bottom: 20px; color:#4f46e5;">Welcome to Reward App</h2>
+        <h2 style="text-align:center; margin-bottom: 20px; color:#4f46e5;">Welcome to Zone Reward</h2>
         <div class="input-group">
             <label>Mobile Number</label>
             <input type="text" id="auth-phone" placeholder="Enter 10-digit mobile number">
@@ -308,7 +308,6 @@
         const otp = document.getElementById('auth-otp').value;
         const password = document.getElementById('auth-password').value;
 
-        // Try register first, if already exists try login
         let res = await fetch('/api/register', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -317,7 +316,6 @@
         let data = await res.json();
 
         if (!res.ok) {
-            // Try regular login if already registered
             res = await fetch('/api/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -359,11 +357,10 @@
         el.classList.add('active');
     }
 
-    // Share / Refer functionality via Web Share API
     async function shareApp() {
         const shareData = {
-            title: 'Reward App',
-            text: 'Join this amazing reward app and earn points daily!',
+            title: 'Zone Reward',
+            text: 'Join Zone Reward and earn points daily!',
             url: window.location.href
         };
         if (navigator.share) {
@@ -402,7 +399,6 @@
         }
     }
 
-    // Spin Wheel Animation & Request
     async function spinWheel() {
         const wheel = document.getElementById('spin-wheel-element');
         const randomDeg = Math.floor(Math.random() * 3600) + 720;
