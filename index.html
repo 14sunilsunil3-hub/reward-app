@@ -45,6 +45,9 @@
         .input-group label { display: block; font-size: 13px; margin-bottom: 5px; color: #555; font-weight: 600; }
         .input-group input, .input-group select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; }
         
+        /* Error Input Highlight Class */
+        .input-error { border: 2px solid #ef4444 !important; background-color: #fef2f2 !important; }
+
         /* Password Field with Eye Toggle Container */
         .password-container { position: relative; }
         .password-container input { padding-right: 40px; }
@@ -75,21 +78,19 @@
         .wheel-coin-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 45px; height: 45px; background: #fff; border-radius: 50%; display: flex; justify-content: center; align-items: center; z-index: 15; box-shadow: 0 0 10px rgba(0,0,0,0.2); border: 2px solid #eab308; }
         .wheel { width: 280px; height: 280px; border-radius: 50%; border: 8px solid #4f46e5; position: relative; transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99); background: conic-gradient(#7c3aed 0deg 60deg, #f59e0b 60deg 120deg, #ec4899 120deg 180deg, #ef4444 180deg 240deg, #3b82f6 240deg 300deg, #10b981 300deg 360deg); }
         
-        /* Flipped Pointer / Teer pointing downwards */
-        .wheel-pointer { width: 0; height: 0; border-left: 12px solid transparent; border-right: 12px solid transparent; border-bottom: 25px solid #111; position: absolute; top: -12px; left: 50%; transform: translateX(-50%); z-index: 20; }
+        /* Triangle Pointer with sharp tip pointing directly towards the wheel */
+        .wheel-pointer { width: 0; height: 0; border-left: 12px solid transparent; border-right: 12px solid transparent; border-top: 25px solid #111; position: absolute; top: -15px; left: 50%; transform: translateX(-50%); z-index: 20; }
         
-        /* Slices text layout inside the wheel (Forced to White Color) */
+        /* Slices text layout inside the wheel (White Color) */
         .wheel-slice-text { position: absolute; width: 100%; height: 100%; top: 0; left: 0; pointer-events: none; }
         .slice-label { position: absolute; font-size: 13px; font-weight: bold; color: #ffffff; text-shadow: 1px 1px 3px rgba(0,0,0,0.9); width: 80px; text-align: center; }
 
         /* Movable Support Popup Button */
         #floating-support { position: fixed; bottom: 85px; right: 20px; background: #16a34a; color: #fff; width: 50px; height: 50px; border-radius: 50%; display: flex; justify-content: center; align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.3); cursor: pointer; z-index: 2999; font-size: 22px; touch-action: none; }
 
-        /* Profile Logout Button Parallel to Support Button Area */
         .profile-bottom-actions { display: flex; gap: 10px; align-items: center; margin-top: 30px; }
         .profile-bottom-actions .btn { margin-top: 0; flex: 1; }
 
-        /* History & Modals Lists */
         .history-item { background: #f8fafc; border: 1px solid #e2e8f0; padding: 10px; border-radius: 8px; margin-bottom: 8px; font-size: 12px; display: flex; justify-content: space-between; align-items: center; }
     </style>
 </head>
@@ -129,27 +130,27 @@
         </div>
         <div class="input-group">
             <label>Mobile Number</label>
-            <input type="text" id="signup-phone" placeholder="Enter 10-digit mobile number">
+            <input type="text" id="signup-phone" placeholder="Enter 10-digit mobile number" oninput="clearError(this)">
         </div>
         <div class="input-group">
             <label>Create Password</label>
             <div class="password-container">
-                <input type="password" id="signup-pass" placeholder="Create strong password">
+                <input type="password" id="signup-pass" placeholder="Create strong password" oninput="clearError(this)">
                 <i class="fa-solid fa-eye password-toggle-icon" onclick="togglePasswordVisibility('signup-pass', this)"></i>
             </div>
         </div>
         <div class="input-group">
             <label>Confirm Password</label>
             <div class="password-container">
-                <input type="password" id="signup-cpass" placeholder="Confirm password">
+                <input type="password" id="signup-cpass" placeholder="Confirm password" oninput="clearError(this)">
                 <i class="fa-solid fa-eye password-toggle-icon" onclick="togglePasswordVisibility('signup-cpass', this)"></i>
             </div>
         </div>
         <div class="input-group">
             <label>OTP Verification</label>
             <div style="display: flex; gap: 8px;">
-                <input type="text" id="signup-otp" placeholder="Enter 6-digit OTP" style="flex:1;">
-                <button class="btn" style="width: 80px; margin-top:0;" onclick="sendSignupOtp()">Send</button>
+                <input type="text" id="signup-otp" placeholder="Enter 6-digit OTP" style="flex:1;" oninput="clearError(this)">
+                <button class="btn" id="signup-otp-btn" style="width: 110px; margin-top:0;" onclick="sendSignupOtp()">Send OTP</button>
             </div>
         </div>
 
@@ -174,7 +175,7 @@
         </div>
         <div class="input-group">
             <label>Mobile Number</label>
-            <input type="text" id="login-phone" placeholder="Enter mobile number">
+            <input type="text" id="login-phone" placeholder="Enter mobile number" oninput="clearError(this)">
         </div>
         <div class="input-group">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
@@ -182,7 +183,7 @@
                 <span style="font-size: 12px; color: #4f46e5; cursor: pointer; font-weight: bold;" onclick="showScreen('forgot-screen')">Forgot?</span>
             </div>
             <div class="password-container">
-                <input type="password" id="login-pass" placeholder="Enter password">
+                <input type="password" id="login-pass" placeholder="Enter password" oninput="clearError(this)">
                 <i class="fa-solid fa-eye password-toggle-icon" onclick="togglePasswordVisibility('login-pass', this)"></i>
             </div>
         </div>
@@ -208,27 +209,27 @@
         </div>
         <div class="input-group">
             <label>Mobile Number</label>
-            <input type="text" id="forgot-phone" placeholder="Enter registered mobile number">
+            <input type="text" id="forgot-phone" placeholder="Enter registered mobile number" oninput="clearError(this)">
         </div>
         <div class="input-group">
             <label>Create New Password</label>
             <div class="password-container">
-                <input type="password" id="forgot-newpass" placeholder="New password">
+                <input type="password" id="forgot-newpass" placeholder="New password" oninput="clearError(this)">
                 <i class="fa-solid fa-eye password-toggle-icon" onclick="togglePasswordVisibility('forgot-newpass', this)"></i>
             </div>
         </div>
         <div class="input-group">
             <label>Confirm New Password</label>
             <div class="password-container">
-                <input type="password" id="forgot-cnewpass" placeholder="Confirm new password">
+                <input type="password" id="forgot-cnewpass" placeholder="Confirm new password" oninput="clearError(this)">
                 <i class="fa-solid fa-eye password-toggle-icon" onclick="togglePasswordVisibility('forgot-cnewpass', this)"></i>
             </div>
         </div>
         <div class="input-group">
             <label>OTP Verification</label>
             <div style="display: flex; gap: 8px;">
-                <input type="text" id="forgot-otp" placeholder="Enter OTP" style="flex:1;">
-                <button class="btn" style="width: 80px; margin-top:0;" onclick="sendForgotOtp()">Send</button>
+                <input type="text" id="forgot-otp" placeholder="Enter OTP" style="flex:1;" oninput="clearError(this)">
+                <button class="btn" id="forgot-otp-btn" style="width: 110px; margin-top:0;" onclick="sendForgotOtp()">Send OTP</button>
             </div>
         </div>
 
@@ -264,8 +265,8 @@
 
             <div class="task-card">
                 <h4>👥 Refer Friends</h4>
-                <p style="font-size: 13px; color: #666;">Share your link with friends to earn big rewards.</p>
-                <button class="btn" onclick="shareApp()" style="margin-top:5px;"><i class="fa-solid fa-share-nodes"></i> Share App / Refer</button>
+                <p style="font-size: 13px; color: #666;">Refer friends and earn <b>5000 Coins</b> per referral!</p>
+                <button class="btn" onclick="shareApp()" style="margin-top:5px;"><i class="fa-solid fa-share-nodes"></i> Share App / Refer (+5000 Coins)</button>
             </div>
         </div>
 
@@ -312,7 +313,6 @@
                 <button class="btn" style="margin-top:0; background:#6366f1;" onclick="openCoinHistoryModal()"><i class="fa-solid fa-coins"></i> Coin History</button>
             </div>
 
-            <!-- Logout button placed at the bottom parallel to support button positioning region -->
             <div class="profile-bottom-actions">
                 <button class="btn" onclick="openSupportModal()" style="background:#16a34a;"><i class="fa-solid fa-headset"></i> Support</button>
                 <button class="btn" onclick="logout()" style="background:#ef4444;">Logout</button>
@@ -334,6 +334,8 @@
 <div id="withdraw-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:2500; justify-content:center; align-items:center;">
     <div class="modal-content" style="text-align:left;">
         <h3><i class="fa-solid fa-wallet"></i> Request Withdrawal</h3>
+        <p style="font-size: 11px; color: #666; margin-top: 4px;">Min: 100 Coins (₹1) | Max: 1,000,000 Coins (₹10,000)</p>
+        
         <div class="input-group" style="margin-top:10px;">
             <label>Withdrawal Method</label>
             <select id="withdraw-method" onchange="toggleWithdrawalFields()">
@@ -359,8 +361,9 @@
         </div>
 
         <div class="input-group">
-            <label>Coins to Withdraw</label>
-            <input type="number" id="withdraw-amount" placeholder="Enter coins amount">
+            <label>Coins to Withdraw (100 Coins = ₹1)</label>
+            <input type="number" id="withdraw-amount" placeholder="Enter coins (Min 100)" oninput="calculateRupees(this.value)">
+            <small id="rupees-conversion-text" style="color: #16a34a; font-weight: bold; display: block; margin-top: 4px;">You will get: ₹0.00</small>
         </div>
 
         <button class="btn" onclick="submitWithdrawal()">Submit Request</button>
@@ -407,12 +410,14 @@
         <div class="policy-section">
             <b>1. How to Earn Coins:</b><br>
             • Claim daily check-in bonus, watch video ads, and test your luck on the Spin Wheel.<br>
-            • Share referral links to gain bonus coins.
+            • Share referral links to earn <b>5000 Coins</b> per referral!
         </div>
         <div class="policy-section">
-            <b>2. Withdrawal Policy & Auto-Refund:</b><br>
-            • Withdrawals can be requested via UPI or Bank.<br>
-            • If any withdrawal request is <b>Rejected</b> by admin, your coins are instantly <b>refunded back to your wallet</b> automatically!
+            <b>2. Withdrawal Policy & Limits:</b><br>
+            • Minimum withdrawal: <b>100 Coins (₹1)</b><br>
+            • Maximum withdrawal: <b>1,000,000 Coins (₹10,000)</b><br>
+            • Conversion rate: <b>100 Coins = 1 Indian Rupee</b><br>
+            • If any withdrawal request is rejected by admin, your coins are instantly refunded back to your wallet!
         </div>
         <button class="btn" onclick="closePolicyModal()">I Agree & Continue</button>
     </div>
@@ -451,6 +456,29 @@
             iconEl.classList.remove('fa-eye-slash');
             iconEl.classList.add('fa-eye');
         }
+    }
+
+    function clearError(el) {
+        el.classList.remove('input-error');
+    }
+
+    // 60 Seconds Timer Helper for OTP Buttons
+    function startOtpTimer(btnId) {
+        const btn = document.getElementById(btnId);
+        btn.disabled = true;
+        let timeLeft = 60;
+        btn.innerText = `Resend (${timeLeft}s)`;
+        
+        const timerInterval = setInterval(() => {
+            timeLeft--;
+            if (timeLeft > 0) {
+                btn.innerText = `Resend (${timeLeft}s)`;
+            } else {
+                clearInterval(timerInterval);
+                btn.disabled = false;
+                btn.innerText = 'Send OTP';
+            }
+        }, 1000);
     }
 
     // Draggable Movable Support Button Logic
@@ -530,79 +558,137 @@
     function openSupportModal() { document.getElementById('support-modal').style.display = 'flex'; }
     function closeSupportModal() { document.getElementById('support-modal').style.display = 'none'; }
 
-    // Mock OTP & Auth Handlers
+    // OTP Handlers with 60s timer
     function sendSignupOtp() {
-        const phone = document.getElementById('signup-phone').value;
-        if(!phone || phone.length < 10) { alert('Enter valid mobile number'); return; }
+        const phone = document.getElementById('signup-phone');
+        if(!phone.value || phone.value.length < 10) {
+            phone.classList.add('input-error');
+            alert('Enter valid 10-digit mobile number');
+            return;
+        }
+        startOtpTimer('signup-otp-btn');
         alert('OTP sent successfully! (Mock OTP: 123456)');
     }
 
     function sendForgotOtp() {
-        const phone = document.getElementById('forgot-phone').value;
-        if(!phone || phone.length < 10) { alert('Enter valid registered mobile number'); return; }
+        const phone = document.getElementById('forgot-phone');
+        if(!phone.value || phone.value.length < 10) {
+            phone.classList.add('input-error');
+            alert('Enter valid registered mobile number');
+            return;
+        }
+        startOtpTimer('forgot-otp-btn');
         alert('Password Reset OTP sent! (Mock OTP: 123456)');
     }
 
     async function handleSignup() {
         const region = document.getElementById('signup-region').value;
-        const phone = document.getElementById('signup-phone').value;
-        const password = document.getElementById('signup-pass').value;
-        const cpass = document.getElementById('signup-cpass').value;
-        const otp = document.getElementById('signup-otp').value;
+        const phoneEl = document.getElementById('signup-phone');
+        const passEl = document.getElementById('signup-pass');
+        const cpassEl = document.getElementById('signup-cpass');
+        const otpEl = document.getElementById('signup-otp');
 
-        if(!phone || !password) { alert('Please fill all fields'); return; }
-        if(password !== cpass) { alert('Passwords do not match'); return; }
+        if(!phoneEl.value || !passEl.value || !cpassEl.value || !otpEl.value) {
+            alert('Please fill all fields');
+            return;
+        }
+
+        if(passEl.value !== cpassEl.value) {
+            passEl.classList.add('input-error');
+            cpassEl.classList.add('input-error');
+            passEl.value = '';
+            cpassEl.value = '';
+            alert('Passwords do not match!');
+            return;
+        }
 
         let res = await fetch('/api/register', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ region, phone, password, otp })
+            body: JSON.stringify({ region, phone: phoneEl.value, password: passEl.value, otp: otpEl.value })
         });
         let data = await res.json();
         if(res.ok) {
             currentUser = data.user;
             initMainApp();
         } else {
-            alert(data.error || 'Number already registered or error occurred!');
+            if(data.error && data.error.toLowerCase().includes('otp')) {
+                otpEl.classList.add('input-error');
+                otpEl.value = '';
+            } else {
+                phoneEl.classList.add('input-error');
+            }
+            alert(data.error || 'Registration failed!');
         }
     }
 
     async function handleLogin() {
-        const phone = document.getElementById('login-phone').value;
-        const password = document.getElementById('login-pass').value;
+        const phoneEl = document.getElementById('login-phone');
+        const passEl = document.getElementById('login-pass');
+
+        if(!phoneEl.value || !passEl.value) {
+            alert('Please fill all fields');
+            return;
+        }
 
         let res = await fetch('/api/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ phone, password })
+            body: JSON.stringify({ phone: phoneEl.value, password: passEl.value })
         });
         let data = await res.json();
         if(res.ok) {
             currentUser = data.user;
             initMainApp();
         } else {
-            alert(data.error || 'Invalid credentials');
+            const errText = (data.error || '').toLowerCase();
+            if(errText.includes('not register') || errText.includes('not found')) {
+                phoneEl.classList.add('input-error');
+                alert('Not registered mobile number!');
+            } else {
+                passEl.classList.add('input-error');
+                passEl.value = '';
+                alert('Wrong password!');
+            }
         }
     }
 
     async function handlePasswordChange() {
-        const phone = document.getElementById('forgot-phone').value;
-        const newpass = document.getElementById('forgot-newpass').value;
-        const cnewpass = document.getElementById('forgot-cnewpass').value;
-        const otp = document.getElementById('forgot-otp').value;
+        const phoneEl = document.getElementById('forgot-phone');
+        const newpassEl = document.getElementById('forgot-newpass');
+        const cnewpassEl = document.getElementById('forgot-cnewpass');
+        const otpEl = document.getElementById('forgot-otp');
 
-        if(newpass !== cnewpass) { alert('New passwords do not match'); return; }
+        if(!phoneEl.value || !newpassEl.value || !cnewpassEl.value || !otpEl.value) {
+            alert('Please fill all fields');
+            return;
+        }
+
+        if(newpassEl.value !== cnewpassEl.value) {
+            newpassEl.classList.add('input-error');
+            cnewpassEl.classList.add('input-error');
+            newpassEl.value = '';
+            cnewpassEl.value = '';
+            alert('New passwords do not match!');
+            return;
+        }
 
         let res = await fetch('/api/change-password', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ phone, newpass, otp })
+            body: JSON.stringify({ phone: phoneEl.value, newpass: newpassEl.value, otp: otpEl.value })
         });
         let data = await res.json();
         if(res.ok) {
             alert('Password changed successfully! Please login.');
             showScreen('login-screen');
         } else {
+            if(data.error && data.error.toLowerCase().includes('otp')) {
+                otpEl.classList.add('input-error');
+                otpEl.value = '';
+            } else {
+                phoneEl.classList.add('input-error');
+            }
             alert(data.error || 'Failed to update password');
         }
     }
@@ -638,11 +724,23 @@
     }
 
     async function shareApp() {
+        // Referral awards 5000 coins upon successful share / referral mock logic
+        const res = await fetch('/api/points', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userId: currentUser._id, pointsToAdd: 5000, source: 'Referral Bonus' })
+        });
+        const data = await res.json();
+        if(res.ok) {
+            currentUser.points = data.points;
+            updateUI();
+        }
+
         if (navigator.share) {
-            try { await navigator.share({ title: 'Reward Zone', text: 'Earn coins daily!', url: window.location.href }); } catch(e){}
+            try { await navigator.share({ title: 'Reward Zone', text: 'Earn 5000 coins per referral!', url: window.location.href }); } catch(e){}
         } else {
             navigator.clipboard.writeText(window.location.href);
-            alert('Referral link copied to clipboard!');
+            alert('Referral link copied! 5000 Coins added to your account.');
         }
     }
 
@@ -674,22 +772,19 @@
         }
     }
 
-    // Lucky Wheel logic mapping wheel slices & fixed reward angles strictly
+    // Lucky Wheel logic landing on Purple slice (50-200, angle 30)
     async function spinWheel() {
         const wheel = document.getElementById('spin-wheel-element');
-        
-        const sliceAngles = [30, 90, 150, 210, 270, 330];
-        const randomTargetAngle = sliceAngles[Math.floor(Math.random() * sliceAngles.length)];
-        
+        const targetPurpleAngle = 30;
         const extraSpins = 360 * 6;
-        currentRotation += extraSpins + randomTargetAngle;
+        currentRotation += extraSpins + targetPurpleAngle;
         wheel.style.transform = `rotate(${currentRotation}deg)`;
 
         setTimeout(async () => {
             const res = await fetch('/api/spin-wheel', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ userId: currentUser._id, landedAngle: randomTargetAngle })
+                body: JSON.stringify({ userId: currentUser._id, landedAngle: targetPurpleAngle })
             });
             const data = await res.json();
             if(res.ok) {
@@ -700,10 +795,16 @@
         }, 4000);
     }
 
-    // Withdrawal Modals
+    // Withdrawal Modals & Validation Logic (Min 100, Max 1000000)
     function openWithdrawModal() { document.getElementById('withdraw-modal').style.display = 'flex'; }
     function closeWithdrawModal() { document.getElementById('withdraw-modal').style.display = 'none'; }
     
+    function calculateRupees(val) {
+        const amt = Number(val);
+        const rupees = amt / 100;
+        document.getElementById('rupees-conversion-text').innerText = `You will get: ₹${rupees.toFixed(2)}`;
+    }
+
     function toggleWithdrawalFields() {
         const method = document.getElementById('withdraw-method').value;
         if(method === 'UPI') {
@@ -718,6 +819,17 @@
     async function submitWithdrawal() {
         const method = document.getElementById('withdraw-method').value;
         const amount = Number(document.getElementById('withdraw-amount').value);
+
+        // Validation limits
+        if(amount < 100) {
+            alert('Minimum withdrawal amount is 100 coins!');
+            return;
+        }
+        if(amount > 1000000) {
+            alert('Maximum withdrawal amount is 1,000,000 coins!');
+            return;
+        }
+
         let details = method === 'UPI' ? {
             upiId: document.getElementById('upi-id').value,
             holderName: document.getElementById('upi-holder').value
