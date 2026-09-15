@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reward Zone - Earn Daily Points & Rewards</title>
+    <title>Reward Zone - Earn Daily Coins & Rewards</title>
     <!-- Logo Favicon Link -->
     <link rel="icon" type="image/svg+xml" href="logo.svg">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -50,6 +50,10 @@
         .input-group input, .input-group select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; }
         .task-card { background: #f9fafb; border: 1px solid #eee; padding: 15px; border-radius: 12px; margin-bottom: 15px; display: flex; flex-direction: column; gap: 8px; }
         
+        /* Coin Styling Badge */
+        .coin-badge { display: inline-flex; align-items: center; gap: 5px; background: #fef08a; color: #854d0e; padding: 2px 8px; border-radius: 12px; font-weight: bold; font-size: 14px; border: 1px solid #fde047; }
+        .coin-icon { color: #eab308; }
+
         /* Profile UI */
         .profile-header { display: flex; align-items: center; gap: 15px; background: #f8fafc; padding: 15px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 20px; }
         .avatar-container { position: relative; width: 70px; height: 70px; border-radius: 50%; overflow: hidden; border: 2px solid #4f46e5; cursor: pointer; flex-shrink: 0; }
@@ -65,9 +69,14 @@
         .avatar-option:hover, .avatar-option.selected { border-color: #4f46e5; transform: scale(1.05); }
 
         /* 3D Spin Wheel */
-        .wheel-container { display: flex; flex-direction: column; align-items: center; margin: 20px 0; }
-        .wheel { width: 260px; height: 260px; border-radius: 50%; border: 8px solid #4f46e5; position: relative; transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99); background: conic-gradient(#4f46e5 0deg 60deg, #7c3aed 60deg 120deg, #ec4899 120deg 180deg, #f59e0b 180deg 240deg, #10b981 240deg 300deg, #3b82f6 300deg 360deg); }
-        .wheel-pointer { width: 0; height: 0; border-left: 12px solid transparent; border-right: 12px solid transparent; border-bottom: 25px solid #ef4444; position: absolute; top: -15px; left: 50%; transform: translateX(-50%); z-index: 10; }
+        .wheel-container { display: flex; flex-direction: column; align-items: center; margin: 20px 0; position: relative; }
+        .wheel-coin-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 45px; height: 45px; background: #fff; border-radius: 50%; display: flex; justify-content: center; align-items: center; z-index: 15; box-shadow: 0 0 10px rgba(0,0,0,0.2); border: 2px solid #eab308; }
+        .wheel { width: 260px; height: 260px; border-radius: 50%; border: 8px solid #4f46e5; position: relative; transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99); background: conic-gradient(#4f46e5 0deg 60deg, #7c3aed 60deg 120deg, #ec4899 120deg 180deg, #f59e0b 180deg 240deg, #10b981 240deg 300deg, #ef4444 300deg 360deg); }
+        .wheel-pointer { width: 0; height: 0; border-left: 12px solid transparent; border-right: 12px solid transparent; border-bottom: 25px solid #111; position: absolute; top: -18px; left: 50%; transform: translateX(-50%); z-index: 20; }
+        .wheel-labels { font-size: 11px; font-weight: bold; color: #fff; text-align: center; margin-top: 10px; background: #f8fafc; padding: 8px; border-radius: 8px; border: 1px solid #e2e8f0; width: 100%; color: #444; }
+
+        /* History & Modals Lists */
+        .history-item { background: #f8fafc; border: 1px solid #e2e8f0; padding: 10px; border-radius: 8px; margin-bottom: 8px; font-size: 12px; display: flex; justify-content: space-between; align-items: center; }
     </style>
 </head>
 <body>
@@ -75,7 +84,7 @@
 <!-- 5-SECOND SPLASH SCREEN -->
 <div id="splash-screen">
     <div class="splash-logo-circle">
-        <i class="fa-solid fa-trophy" style="font-size: 45px; color: #ff7e00;"></i>
+        <i class="fa-solid fa-coins" style="font-size: 45px; color: #eab308;"></i>
     </div>
     <h1 style="font-size: 26px; font-weight: 900; letter-spacing: 2px;">REWARD ZONE</h1>
     <p style="font-size: 13px; color: #aaa; margin-top: 5px;">Loading Your Earning Hub...</p>
@@ -86,45 +95,137 @@
 
 <div class="app-container">
     
-    <!-- AUTH SCREEN -->
-    <div id="auth-screen" class="screen active">
-        <h2 style="text-align:center; margin-bottom: 20px; color:#4f46e5;">Welcome to Reward Zone</h2>
+    <!-- 1. SIGNUP SCREEN -->
+    <div id="signup-screen" class="screen active">
+        <h2 style="text-align:center; margin-bottom: 15px; color:#4f46e5;">Create Account</h2>
+        
+        <div class="input-group">
+            <label>Select Region / Country</label>
+            <select id="signup-region">
+                <option value="India">India (+91)</option>
+                <option value="USA">USA (+1)</option>
+                <option value="UK">UK (+44)</option>
+                <option value="UAE">UAE (+971)</option>
+            </select>
+        </div>
         <div class="input-group">
             <label>Mobile Number</label>
-            <input type="text" id="auth-phone" placeholder="Enter 10-digit mobile number">
-        </div>
-        <div class="input-group" id="otp-group" style="display:none;">
-            <label>Enter 6-Digit OTP</label>
-            <input type="text" id="auth-otp" placeholder="Enter OTP">
+            <input type="text" id="signup-phone" placeholder="Enter 10-digit mobile number">
         </div>
         <div class="input-group">
-            <label>Password</label>
-            <input type="password" id="auth-password" placeholder="Enter password">
+            <label>Create Password</label>
+            <input type="password" id="signup-pass" placeholder="Create strong password">
         </div>
-        <button class="btn" id="send-otp-btn" onclick="sendOtp()">Send 6-Digit OTP</button>
-        <button class="btn" id="login-register-btn" onclick="handleAuth()" style="display:none;">Login / Register</button>
+        <div class="input-group">
+            <label>Confirm Password</label>
+            <input type="password" id="signup-cpass" placeholder="Confirm password">
+        </div>
+        <div class="input-group">
+            <label>OTP Verification</label>
+            <div style="display: flex; gap: 8px;">
+                <input type="text" id="signup-otp" placeholder="Enter 6-digit OTP" style="flex:1;">
+                <button class="btn" style="width: 80px; margin-top:0;" onclick="sendSignupOtp()">Send</button>
+            </div>
+        </div>
+
+        <button class="btn" onclick="handleSignup()">Sign Up</button>
+        <p style="text-align: center; margin-top: 15px; font-size: 13px; color: #666;">
+            I have an already account <span style="color: #4f46e5; text-decoration: underline; cursor: pointer; font-weight: bold;" onclick="showScreen('login-screen')">(Login)</span>
+        </p>
+    </div>
+
+    <!-- LOGIN SCREEN -->
+    <div id="login-screen" class="screen">
+        <h2 style="text-align:center; margin-bottom: 15px; color:#4f46e5;">Welcome Back</h2>
+        
+        <div class="input-group">
+            <label>Select Region / Country</label>
+            <select id="login-region">
+                <option value="India">India (+91)</option>
+                <option value="USA">USA (+1)</option>
+                <option value="UK">UK (+44)</option>
+                <option value="UAE">UAE (+971)</option>
+            </select>
+        </div>
+        <div class="input-group">
+            <label>Mobile Number</label>
+            <input type="text" id="login-phone" placeholder="Enter mobile number">
+        </div>
+        <div class="input-group">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                <label style="margin-bottom:0;">Password</label>
+                <span style="font-size: 12px; color: #4f46e5; cursor: pointer; font-weight: bold;" onclick="showScreen('forgot-screen')">Forgot?</span>
+            </div>
+            <input type="password" id="login-pass" placeholder="Enter password">
+        </div>
+
+        <button class="btn" onclick="handleLogin()">Login</button>
+        <p style="text-align: center; margin-top: 15px; font-size: 13px; color: #666;">
+            Don't have an account? <span style="color: #4f46e5; text-decoration: underline; cursor: pointer; font-weight: bold;" onclick="showScreen('signup-screen')">Sign Up</span>
+        </p>
+    </div>
+
+    <!-- FORGOT PASSWORD SCREEN -->
+    <div id="forgot-screen" class="screen">
+        <h2 style="text-align:center; margin-bottom: 15px; color:#4f46e5;">Reset Password</h2>
+        
+        <div class="input-group">
+            <label>Select Region / Country</label>
+            <select id="forgot-region">
+                <option value="India">India (+91)</option>
+                <option value="USA">USA (+1)</option>
+                <option value="UK">UK (+44)</option>
+                <option value="UAE">UAE (+971)</option>
+            </select>
+        </div>
+        <div class="input-group">
+            <label>Mobile Number</label>
+            <input type="text" id="forgot-phone" placeholder="Enter registered mobile number">
+        </div>
+        <div class="input-group">
+            <label>Create New Password</label>
+            <input type="password" id="forgot-newpass" placeholder="New password">
+        </div>
+        <div class="input-group">
+            <label>Confirm New Password</label>
+            <input type="password" id="forgot-cnewpass" placeholder="Confirm new password">
+        </div>
+        <div class="input-group">
+            <label>OTP Verification</label>
+            <div style="display: flex; gap: 8px;">
+                <input type="text" id="forgot-otp" placeholder="Enter OTP" style="flex:1;">
+                <button class="btn" style="width: 80px; margin-top:0;" onclick="sendForgotOtp()">Send</button>
+            </div>
+        </div>
+
+        <button class="btn" onclick="handlePasswordChange()">Change Password</button>
+        <p style="text-align: center; margin-top: 15px; font-size: 13px;">
+            <span style="color: #4f46e5; cursor: pointer; font-weight: bold;" onclick="showScreen('login-screen')"><i class="fa-solid fa-arrow-left"></i> Back to Login</span>
+        </p>
     </div>
 
     <!-- MAIN APP SCREENS -->
     <div id="main-app" style="display:none; flex:1; flex-direction:column;">
         
         <!-- HOME SCREEN -->
-        <div id="home-screen" class="screen">
+        <div id="home-screen" class="screen active">
             <div class="card">
-                <h3>Available Points</h3>
-                <h1 id="user-points" style="font-size: 36px; margin-top: 5px;">0</h1>
+                <h3>My Wallet Balance</h3>
+                <div style="font-size: 32px; font-weight: bold; margin-top: 5px; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                    <i class="fa-solid fa-coins" style="color: #fde047;"></i> <span id="user-points">0</span> Coins
+                </div>
             </div>
 
             <div class="task-card">
                 <h4>📺 Watch Video Ad & Earn</h4>
-                <p style="font-size: 13px; color: #666;">Watch sponsored video to earn instant points.</p>
-                <button class="btn" onclick="watchAd()" style="margin-top:5px;">Watch Ad Now</button>
+                <p style="font-size: 13px; color: #666;">Watch sponsored video to earn instant coins.</p>
+                <button class="btn" onclick="watchAd()" style="margin-top:5px;">Watch Ad Now (+50 Coins)</button>
             </div>
 
             <div class="task-card">
                 <h4>🎁 Daily Check-in Bonus</h4>
-                <p style="font-size: 13px; color: #666;">Claim your free daily login points (+20).</p>
-                <button class="btn" onclick="claimDaily()" style="margin-top:5px;">Claim Daily Reward</button>
+                <p style="font-size: 13px; color: #666;">Claim your free daily login reward.</p>
+                <button class="btn" onclick="claimDaily()" style="margin-top:5px;">Claim Daily Reward (+20 Coins)</button>
             </div>
 
             <div class="task-card">
@@ -136,15 +237,20 @@
 
         <!-- LUCKY WHEEL SCREEN -->
         <div id="wheel-screen" class="screen">
-            <h2 style="text-align:center; margin-bottom: 10px;">Lucky Spin Wheel</h2>
-            <p style="text-align:center; font-size: 13px; color: #666; margin-bottom: 20px;">Spin & Win 50 to 200 Points based on your luck! No limits.</p>
+            <h2 style="text-align:center; margin-bottom: 5px;">Lucky Spin Wheel</h2>
+            <p style="text-align:center; font-size: 12px; color: #666; margin-bottom: 10px;">Spin & Win! Slices: (1) 50-200 Coins, (2) 100-500, (3) 1000-5000, (4) 3000-10000, (5) 5000-20000, (6) Lost</p>
             
             <div class="wheel-container">
                 <div class="wheel-pointer"></div>
+                <div class="wheel-coin-center"><i class="fa-solid fa-coins" style="color: #eab308; font-size: 22px;"></i></div>
                 <div class="wheel" id="spin-wheel-element"></div>
             </div>
 
-            <button class="btn" onclick="spinWheel()" style="margin-top: 20px;">Spin the Wheel Now</button>
+            <div class="wheel-labels">
+                🎯 Pointer lands randomly on <b>Slice 1 (Win)</b> or <b>Slice 6 (Lost)</b>!
+            </div>
+
+            <button class="btn" onclick="spinWheel()" style="margin-top: 15px;">Spin the Wheel Now</button>
         </div>
 
         <!-- PROFILE SCREEN -->
@@ -155,49 +261,21 @@
                 </div>
                 <div class="user-meta">
                     <span class="uid-badge" id="profile-uid">UID: ------</span>
-                    <input type="text" id="profile-username-input" onchange="updateUsername(this.value)" placeholder="Enter Username" style="font-weight:bold; font-size:15px; border:1px solid #ccc; padding:3px 6px; border-radius:5px; width:100%;">
-                    <p style="font-size: 13px; color: #666; margin-top:4px;">Points: <span id="profile-points-display" style="font-weight:bold; color:#4f46e5;">0</span></p>
+                    <input type="text" id="profile-username-input" onchange="updateUsername(this.value)" placeholder="Enter Username" style="font-weight:bold; font-size:14px; border:1px solid #ccc; padding:3px 6px; border-radius:5px; width:100%;">
+                    <p style="font-size: 13px; color: #666; margin-top:4px;">Coins: <span id="profile-points-display" class="coin-badge"><i class="fa-solid fa-coins coin-icon"></i> 0</span></p>
                 </div>
             </div>
 
-            <div class="card" style="padding: 15px; text-align: left;">
-                <h4 style="margin-bottom: 10px;"><i class="fa-solid fa-wallet"></i> Redeem Points</h4>
-                <div class="input-group">
-                    <label>Withdrawal Method</label>
-                    <select id="withdraw-method" onchange="toggleWithdrawalFields()">
-                        <option value="UPI">UPI ID</option>
-                        <option value="Bank">Bank Account</option>
-                    </select>
-                </div>
+            <div style="display: flex; gap: 8px; margin-bottom: 15px;">
+                <button class="btn" style="margin-top:0; background:#0ea5e9;" onclick="openWithdrawModal()"><i class="fa-solid fa-wallet"></i> Withdraw</button>
+                <button class="btn" style="margin-top:0; background:#8b5cf6;" onclick="openHistoryModal()"><i class="fa-solid fa-clock-rotate-left"></i> History</button>
+            </div>
 
-                <div id="upi-fields" class="input-group">
-                    <label>UPI ID</label>
-                    <input type="text" id="upi-id" placeholder="e.g. username@oksbi">
-                    <label style="margin-top: 8px;">Mobile Number</label>
-                    <input type="text" id="upi-mobile" placeholder="Linked Mobile Number">
-                    <label style="margin-top: 8px;">Account Holder Name</label>
-                    <input type="text" id="upi-holder" placeholder="As per bank/UPI profile">
-                </div>
-
-                <div id="bank-fields" class="input-group" style="display:none;">
-                    <label>Bank Name</label>
-                    <input type="text" id="bank-name" placeholder="e.g. State Bank of India">
-                    <label style="margin-top: 8px;">Account Number</label>
-                    <input type="text" id="bank-acc" placeholder="Enter Account Number">
-                    <label style="margin-top: 8px;">IFSC Code</label>
-                    <input type="text" id="bank-ifsc" placeholder="Enter IFSC Code">
-                    <label style="margin-top: 8px;">Account Holder Name</label>
-                    <input type="text" id="bank-holder" placeholder="Account Holder Name">
-                    <label style="margin-top: 8px;">Linked Mobile Number</label>
-                    <input type="text" id="bank-mobile" placeholder="Mobile Number">
-                </div>
-
-                <div class="input-group">
-                    <label>Points to Withdraw</label>
-                    <input type="number" id="withdraw-amount" placeholder="Enter points">
-                </div>
-
-                <button class="btn" onclick="submitWithdrawal()">Submit Withdrawal Request</button>
+            <!-- Customer Support Section -->
+            <div class="task-card" style="background: #f0fdf4; border-color: #bbf7d0;">
+                <h4 style="color: #166534;"><i class="fa-solid fa-headset"></i> Customer Support</h4>
+                <p style="font-size: 12px; color: #555; margin-top: 2px;">Facing any issue? Contact us directly:</p>
+                <a href="mailto:14sunilsunil3@gmail.com" style="font-size: 13px; color: #2563eb; font-weight: bold; margin-top: 4px; display: inline-block;"><i class="fa-solid fa-envelope"></i> 14sunilsunil3@gmail.com</a>
             </div>
 
             <button class="btn" onclick="logout()" style="background:#ef4444; margin-top:10px;">Logout</button>
@@ -214,104 +292,115 @@
 
 </div>
 
-<!-- TERMS, SECURITY POLICY & GUIDE POPUP -->
+<!-- WITHDRAWAL MODAL -->
+<div id="withdraw-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:2500; justify-content:center; align-items:center;">
+    <div class="modal-content" style="text-align:left;">
+        <h3><i class="fa-solid fa-wallet"></i> Request Withdrawal</h3>
+        <div class="input-group" style="margin-top:10px;">
+            <label>Withdrawal Method</label>
+            <select id="withdraw-method" onchange="toggleWithdrawalFields()">
+                <option value="UPI">UPI ID</option>
+                <option value="Bank">Bank Account</option>
+            </select>
+        </div>
+
+        <div id="upi-fields" class="input-group">
+            <label>UPI ID</label>
+            <input type="text" id="upi-id" placeholder="username@oksbi">
+            <label style="margin-top: 8px;">Account Holder Name</label>
+            <input type="text" id="upi-holder" placeholder="Name as per UPI">
+        </div>
+
+        <div id="bank-fields" class="input-group" style="display:none;">
+            <label>Bank Name & IFSC</label>
+            <input type="text" id="bank-name" placeholder="Bank Name & IFSC">
+            <label style="margin-top: 8px;">Account Number</label>
+            <input type="text" id="bank-acc" placeholder="Account Number">
+            <label style="margin-top: 8px;">Holder Name</label>
+            <input type="text" id="bank-holder" placeholder="Account Holder Name">
+        </div>
+
+        <div class="input-group">
+            <label>Coins to Withdraw</label>
+            <input type="number" id="withdraw-amount" placeholder="Enter coins amount">
+        </div>
+
+        <button class="btn" onclick="submitWithdrawal()">Submit Request</button>
+        <button class="btn" onclick="closeWithdrawModal()" style="background:#666; margin-top:5px;">Cancel</button>
+    </div>
+</div>
+
+<!-- HISTORY MODAL (Withdrawal & Coin History) -->
+<div id="history-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:2500; justify-content:center; align-items:center;">
+    <div class="modal-content" style="text-align:left; max-width:440px;">
+        <h3><i class="fa-solid fa-chart-line"></i> Activity & History</h3>
+        
+        <h4 style="margin-top: 12px; color:#4f46e5; font-size:14px;">Withdrawal Requests</h4>
+        <div id="withdrawal-history-list" style="max-height: 140px; overflow-y: auto; margin-top:5px;">
+            <p style="font-size:12px; color:#777;">No withdrawals yet.</p>
+        </div>
+
+        <h4 style="margin-top: 15px; color:#4f46e5; font-size:14px;">Coin Earnings History</h4>
+        <div id="coin-history-list" style="max-height: 140px; overflow-y: auto; margin-top:5px;">
+            <p style="font-size:12px; color:#777;">No earnings recorded yet.</p>
+        </div>
+
+        <button class="btn" onclick="closeHistoryModal()" style="background:#666; margin-top:15px;">Close</button>
+    </div>
+</div>
+
+<!-- TERMS & GUIDE POPUP -->
 <div id="policy-modal">
     <div class="policy-content">
         <h3><i class="fa-solid fa-shield-halved"></i> Welcome Guide & Security Policy</h3>
-        
         <div class="policy-section">
-            <b>1. How to Use App & Earn:</b><br>
-            • Complete daily login bonus, watch ads, and spin the lucky wheel to collect reward points daily.<br>
-            • Share your referral link with friends to earn bonus points.
+            <b>1. How to Earn Coins:</b><br>
+            • Claim daily check-in bonus, watch video ads, and test your luck on the Spin Wheel.<br>
+            • Share referral links to gain bonus coins.
         </div>
-
         <div class="policy-section">
-            <b>2. Withdrawal & Security Rules:</b><br>
-            • You can withdraw points via <b>UPI ID</b> or <b>Bank Account</b> from your Profile section.<br>
-            • Ensure the account holder name matches your profile to avoid payout failure.<br>
-            • Any fraudulent activity or script usage will lead to immediate account suspension.
+            <b>2. Withdrawal Policy & Auto-Refund:</b><br>
+            • Withdrawals can be requested via UPI or Bank.<br>
+            • If any withdrawal request is <b>Rejected</b> by admin, your coins are instantly <b>refunded back to your wallet</b> automatically!
         </div>
-
-        <div class="policy-section">
-            <b>3. Privacy & Terms:</b><br>
-            • Your data is completely safe and encrypted under our security guidelines.
-        </div>
-
         <button class="btn" onclick="closePolicyModal()">I Agree & Continue</button>
     </div>
 </div>
 
-<!-- ADD TO DESKTOP POPUP BANNER -->
-<div id="pwa-install-banner">
-    <div style="display:flex; align-items:center; gap:8px;">
-        <i class="fa-solid fa-mobile-screen-button" style="font-size:20px; color:#4f46e5;"></i>
-        <div>
-            <div style="font-size:13px; font-weight:bold;">Add to Home Screen</div>
-            <div style="font-size:11px; color:#aaa;">Install app for quick access</div>
-        </div>
-    </div>
-    <button onclick="installAppPrompt()">Add</button>
-</div>
-
-<!-- AI AVATAR SELECTION MODAL -->
+<!-- AI AVATAR MODAL -->
 <div id="avatar-modal">
     <div class="modal-content">
         <h3>Choose AI Profile Picture</h3>
-        <p style="font-size:12px; color:#666; margin-top:5px;">Select an exclusive AI generated avatar.</p>
         <div class="avatar-grid" id="avatar-grid-list"></div>
         <button class="btn" onclick="closeAvatarModal()" style="margin-top:15px; background:#666;">Close</button>
     </div>
 </div>
 
 <script>
-    // 5-Second Splash Screen Timer
     window.addEventListener('load', () => {
         setTimeout(() => {
             const splash = document.getElementById('splash-screen');
             splash.style.opacity = '0';
             setTimeout(() => { splash.style.display = 'none'; }, 500);
-        }, 5000); // 5 Seconds delay
+        }, 5000);
     });
 
     let currentUser = null;
     let currentRotation = 0;
-    let deferredPrompt = null;
 
-    // PWA Install Banner trigger
-    window.addEventListener('beforeinstallprompt', (e) => {
-        e.preventDefault();
-        deferredPrompt = e;
-        document.getElementById('pwa-install-banner').style.display = 'flex';
-    });
-
-    function installAppPrompt() {
-        if (deferredPrompt) {
-            deferredPrompt.prompt();
-            deferredPrompt.userChoice.then((choiceResult) => {
-                if (choiceResult.outcome === 'accepted') {
-                    document.getElementById('pwa-install-banner').style.display = 'none';
-                }
-                deferredPrompt = null;
-            });
-        } else {
-            alert('To install, tap browser menu (3 dots) and select "Add to Home screen".');
-        }
+    function showScreen(screenId) {
+        document.querySelectorAll('.app-container > .screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(screenId).classList.add('active');
     }
 
-    // Populate AI Avatars (10 options)
+    // Avatars Setup
     const avatars = [
         'https://api.dicebear.com/7.x/bottts/svg?seed=avatar1',
         'https://api.dicebear.com/7.x/bottts/svg?seed=avatar2',
         'https://api.dicebear.com/7.x/avataaars/svg?seed=avatar3',
-        'https://api.dicebear.com/7.x/avataaars/svg?seed=avatar4',
-        'https://api.dicebear.com/7.x/micah/svg?seed=avatar5',
-        'https://api.dicebear.com/7.x/micah/svg?seed=avatar6',
-        'https://api.dicebear.com/7.x/identicon/svg?seed=avatar7',
-        'https://api.dicebear.com/7.x/identicon/svg?seed=avatar8',
-        'https://api.dicebear.com/7.x/adventurer/svg?seed=avatar9',
-        'https://api.dicebear.com/7.x/adventurer/svg?seed=avatar10'
+        'https://api.dicebear.com/7.x/micah/svg?seed=avatar4',
+        'https://api.dicebear.com/7.x/identicon/svg?seed=avatar5'
     ];
-
     const gridEl = document.getElementById('avatar-grid-list');
     avatars.forEach(url => {
         const img = document.createElement('img');
@@ -323,7 +412,6 @@
 
     function openAvatarModal() { document.getElementById('avatar-modal').style.display = 'flex'; }
     function closeAvatarModal() { document.getElementById('avatar-modal').style.display = 'none'; }
-
     async function selectAvatar(url) {
         currentUser.profilePic = url;
         document.getElementById('profile-avatar-img').src = url;
@@ -339,90 +427,112 @@
 
     async function saveProfileToServer(data) {
         try {
-            const res = await fetch('/api/update-profile', {
+            await fetch('/api/update-profile', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ userId: currentUser._id, ...data })
             });
-            const result = await res.json();
-            if(result.user) currentUser = result.user;
         } catch(e) { console.error(e); }
     }
 
-    // Auth functions
-    async function sendOtp() {
-        const phone = document.getElementById('auth-phone').value;
-        if (!phone || phone.length < 10) { alert('Enter valid 10-digit number'); return; }
-        
-        const res = await fetch('/api/send-otp', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ phone })
-        });
-        const data = await res.json();
-        if (res.ok) {
-            alert('OTP Sent! (Mock OTP: ' + data.otp + ')');
-            document.getElementById('otp-group').style.display = 'block';
-            document.getElementById('send-otp-btn').style.display = 'none';
-            document.getElementById('login-register-btn').style.display = 'block';
-        } else {
-            alert(data.error);
-        }
+    // Mock OTP & Auth Handlers
+    function sendSignupOtp() {
+        const phone = document.getElementById('signup-phone').value;
+        if(!phone || phone.length < 10) { alert('Enter valid mobile number'); return; }
+        alert('OTP sent successfully! (Mock OTP: 123456)');
     }
 
-    async function handleAuth() {
-        const phone = document.getElementById('auth-phone').value;
-        const otp = document.getElementById('auth-otp').value;
-        const password = document.getElementById('auth-password').value;
+    function sendForgotOtp() {
+        const phone = document.getElementById('forgot-phone').value;
+        if(!phone || phone.length < 10) { alert('Enter valid registered mobile number'); return; }
+        alert('Password Reset OTP sent! (Mock OTP: 123456)');
+    }
+
+    async function handleSignup() {
+        const region = document.getElementById('signup-region').value;
+        const phone = document.getElementById('signup-phone').value;
+        const password = document.getElementById('signup-pass').value;
+        const cpass = document.getElementById('signup-cpass').value;
+        const otp = document.getElementById('signup-otp').value;
+
+        if(!phone || !password) { alert('Please fill all fields'); return; }
+        if(password !== cpass) { alert('Passwords do not match'); return; }
 
         let res = await fetch('/api/register', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ phone, password, otp })
+            body: JSON.stringify({ region, phone, password, otp })
         });
         let data = await res.json();
-
-        if (!res.ok) {
-            res = await fetch('/api/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ phone, password })
-            });
-            data = await res.json();
-        }
-
-        if (res.ok) {
+        if(res.ok) {
             currentUser = data.user;
-            initApp();
+            initMainApp();
         } else {
-            alert(data.error || 'Authentication failed');
+            alert(data.error || 'Number already registered or error occurred!');
         }
     }
 
-    function initApp() {
-        document.getElementById('auth-screen').classList.remove('active');
+    async function handleLogin() {
+        const phone = document.getElementById('login-phone').value;
+        const password = document.getElementById('login-pass').value;
+
+        let res = await fetch('/api/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ phone, password })
+        });
+        let data = await res.json();
+        if(res.ok) {
+            currentUser = data.user;
+            initMainApp();
+        } else {
+            alert(data.error || 'Invalid credentials');
+        }
+    }
+
+    async function handlePasswordChange() {
+        const phone = document.getElementById('forgot-phone').value;
+        const newpass = document.getElementById('forgot-newpass').value;
+        const cnewpass = document.getElementById('forgot-cnewpass').value;
+        const otp = document.getElementById('forgot-otp').value;
+
+        if(newpass !== cnewpass) { alert('New passwords do not match'); return; }
+
+        let res = await fetch('/api/change-password', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ phone, newpass, otp })
+        });
+        let data = await res.json();
+        if(res.ok) {
+            alert('Password changed successfully! Please login.');
+            showScreen('login-screen');
+        } else {
+            alert(data.error || 'Failed to update password');
+        }
+    }
+
+    function initMainApp() {
+        document.getElementById('signup-screen').style.display = 'none';
+        document.getElementById('login-screen').style.display = 'none';
+        document.getElementById('forgot-screen').style.display = 'none';
         document.getElementById('main-app').style.display = 'flex';
         updateUI();
-        // Show terms & security policy guide popup after login/home screen load
-        setTimeout(() => {
-            document.getElementById('policy-modal').style.display = 'flex';
-        }, 500);
+        document.getElementById('policy-modal').style.display = 'flex';
     }
 
-    function closePolicyModal() {
-        document.getElementById('policy-modal').style.display = 'none';
-    }
+    function closePolicyModal() { document.getElementById('policy-modal').style.display = 'none'; }
 
     function updateUI() {
-        document.getElementById('user-points').innerText = currentUser.points;
-        document.getElementById('profile-points-display').innerText = currentUser.points;
+        document.getElementById('user-points').innerText = currentUser.points || 0;
+        document.getElementById('profile-points-display').innerHTML = `<i class="fa-solid fa-coins coin-icon"></i> ${currentUser.points || 0}`;
         document.getElementById('profile-uid').innerText = 'UID: ' + (currentUser.uid || 'N/A');
         document.getElementById('profile-username-input').value = currentUser.username || '';
         document.getElementById('profile-avatar-img').src = currentUser.profilePic || avatars[0];
     }
 
     function switchTab(tabName, el) {
-        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('#main-app > .screen').forEach(s => s.classList.remove('active'));
         document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
         
         if(tabName === 'home') document.getElementById('home-screen').classList.add('active');
@@ -433,13 +543,8 @@
     }
 
     async function shareApp() {
-        const shareData = {
-            title: 'Reward Zone',
-            text: 'Join Reward Zone and earn points daily!',
-            url: window.location.href
-        };
         if (navigator.share) {
-            try { await navigator.share(shareData); } catch (err) { console.log(err); }
+            try { await navigator.share({ title: 'Reward Zone', text: 'Earn coins daily!', url: window.location.href }); } catch(e){}
         } else {
             navigator.clipboard.writeText(window.location.href);
             alert('Referral link copied to clipboard!');
@@ -464,37 +569,45 @@
         const res = await fetch('/api/points', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ userId: currentUser._id, pointsToAdd: 50 })
+            body: JSON.stringify({ userId: currentUser._id, pointsToAdd: 50, source: 'Watch Ad' })
         });
         const data = await res.json();
         if(res.ok) {
             currentUser.points = data.points;
             updateUI();
-            alert('Ad watched successfully! +50 Points added.');
+            alert('Ad watched successfully! +50 Coins added.');
         }
     }
 
+    // Wheel logic with Slice 1 & 6 random landing
     async function spinWheel() {
         const wheel = document.getElementById('spin-wheel-element');
-        const randomDeg = Math.floor(Math.random() * 3600) + 720;
-        currentRotation += randomDeg;
+        // Slice 1 (Win 50-200) or Slice 6 (Lost)
+        const outcomes = [30, 330]; // Angles pointing to slice 1 or slice 6
+        const randomChoice = outcomes[Math.floor(Math.random() * outcomes.length)];
+        const extraSpins = 360 * 5;
+        currentRotation += extraSpins + randomChoice;
         wheel.style.transform = `rotate(${currentRotation}deg)`;
 
         setTimeout(async () => {
             const res = await fetch('/api/spin-wheel', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ userId: currentUser._id })
+                body: JSON.stringify({ userId: currentUser._id, landedAngle: randomChoice })
             });
             const data = await res.json();
             if(res.ok) {
                 currentUser.points = data.points;
                 updateUI();
-                alert(`Congratulations! You won ${data.wonPoints} points!`);
+                alert(data.message);
             } else { alert(data.error); }
         }, 4000);
     }
 
+    // Withdrawal Modals
+    function openWithdrawModal() { document.getElementById('withdraw-modal').style.display = 'flex'; }
+    function closeWithdrawModal() { document.getElementById('withdraw-modal').style.display = 'none'; }
+    
     function toggleWithdrawalFields() {
         const method = document.getElementById('withdraw-method').value;
         if(method === 'UPI') {
@@ -509,25 +622,14 @@
     async function submitWithdrawal() {
         const method = document.getElementById('withdraw-method').value;
         const amount = Number(document.getElementById('withdraw-amount').value);
-        let details = {};
-
-        if (method === 'UPI') {
-            details = {
-                upiId: document.getElementById('upi-id').value,
-                mobile: document.getElementById('upi-mobile').value,
-                holderName: document.getElementById('upi-holder').value
-            };
-            if(!details.upiId || !details.holderName) { alert('Please fill all UPI fields'); return; }
-        } else {
-            details = {
-                bankName: document.getElementById('bank-name').value,
-                accountNumber: document.getElementById('bank-acc').value,
-                ifsc: document.getElementById('bank-ifsc').value,
-                holderName: document.getElementById('bank-holder').value,
-                mobile: document.getElementById('bank-mobile').value
-            };
-            if(!details.accountNumber || !details.holderName || !details.ifsc) { alert('Please fill all Bank details'); return; }
-        }
+        let details = method === 'UPI' ? {
+            upiId: document.getElementById('upi-id').value,
+            holderName: document.getElementById('upi-holder').value
+        } : {
+            bankDetails: document.getElementById('bank-name').value,
+            accountNumber: document.getElementById('bank-acc').value,
+            holderName: document.getElementById('bank-holder').value
+        };
 
         const res = await fetch('/api/withdraw', {
             method: 'POST',
@@ -538,18 +640,37 @@
         if(res.ok) {
             currentUser = data.user;
             updateUI();
-            alert(data.message);
-        } else {
-            alert(data.error);
-        }
+            closeWithdrawalModal();
+            alert('Withdrawal request submitted successfully!');
+        } else { alert(data.error); }
     }
 
-    // Logout with confirmation popup
+    // History Modal
+    async function openHistoryModal() {
+        document.getElementById('history-modal').style.display = 'flex';
+        try {
+            const res = await fetch(`/api/history?userId=${currentUser._id}`);
+            const data = await res.json();
+            
+            // Withdrawals
+            const wList = document.getElementById('withdrawal-history-list');
+            wList.innerHTML = data.withdrawals.length ? '' : '<p style="font-size:12px; color:#777;">No withdrawals yet.</p>';
+            data.withdrawals.forEach(w => {
+                wList.innerHTML += `<div class="history-item"><div><b>${w.amount} Coins</b> (${w.method})<br><small>${w.date}</small></div><span style="font-weight:bold; color:${w.status==='Success'?'green':w.status==='Rejected'?'red':'orange'}">${w.status}</span></div>`;
+            });
+
+            // Coin History
+            const cList = document.getElementById('coin-history-list');
+            cList.innerHTML = data.coinLogs.length ? '' : '<p style="font-size:12px; color:#777;">No coin logs yet.</p>';
+            data.coinLogs.forEach(c => {
+                cList.innerHTML += `<div class="history-item"><div><b>+${c.coins} Coins</b><br><small>${c.source}</small></div><span style="color:#666; font-size:11px;">${c.date}</span></div>`;
+            });
+        } catch(e) { console.error(e); }
+    }
+    function closeHistoryModal() { document.getElementById('history-modal').style.display = 'none'; }
+
     function logout() {
-        const confirmLogout = confirm("Are you sure you want to logout? Another user can then login with a different account.");
-        if (confirmLogout) {
-            location.reload();
-        }
+        if(confirm("Are you sure you want to logout?")) location.reload();
     }
 </script>
 </body>
