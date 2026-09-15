@@ -83,6 +83,10 @@
         /* Movable Support Popup Button */
         #floating-support { position: fixed; bottom: 85px; right: 20px; background: #16a34a; color: #fff; width: 50px; height: 50px; border-radius: 50%; display: flex; justify-content: center; align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.3); cursor: pointer; z-index: 2999; font-size: 22px; touch-action: none; }
 
+        /* Profile Logout Button Parallel to Support Button Area */
+        .profile-bottom-actions { display: flex; gap: 10px; align-items: center; margin-top: 30px; }
+        .profile-bottom-actions .btn { margin-top: 0; flex: 1; }
+
         /* History & Modals Lists */
         .history-item { background: #f8fafc; border: 1px solid #e2e8f0; padding: 10px; border-radius: 8px; margin-bottom: 8px; font-size: 12px; display: flex; justify-content: space-between; align-items: center; }
     </style>
@@ -287,29 +291,28 @@
         </div>
 
         <!-- PROFILE SCREEN -->
-        <div id="profile-screen" class="screen" style="display: flex; flex-direction: column; justify-content: space-between;">
-            <div>
-                <div class="profile-header">
-                    <div class="avatar-container" onclick="openAvatarModal()" title="Change Avatar">
-                        <img id="profile-avatar-img" src="" alt="Avatar">
-                    </div>
-                    <div class="user-meta">
-                        <span class="uid-badge" id="profile-uid">UID: ------</span>
-                        <input type="text" id="profile-username-input" onchange="updateUsername(this.value)" placeholder="Enter Username" style="font-weight:bold; font-size:14px; border:1px solid #ccc; padding:3px 6px; border-radius:5px; width:100%;">
-                        <p style="font-size: 13px; color: #666; margin-top:4px;">Coins: <span id="profile-points-display" class="coin-badge"><i class="fa-solid fa-coins coin-icon"></i> 0</span></p>
-                    </div>
+        <div id="profile-screen" class="screen">
+            <div class="profile-header">
+                <div class="avatar-container" onclick="openAvatarModal()" title="Change Avatar">
+                    <img id="profile-avatar-img" src="" alt="Avatar">
                 </div>
-
-                <div style="display: flex; flex-direction: column; gap: 8px;">
-                    <button class="btn" style="margin-top:0; background:#0ea5e9;" onclick="openWithdrawModal()"><i class="fa-solid fa-wallet"></i> Withdraw</button>
-                    <button class="btn" style="margin-top:0; background:#8b5cf6;" onclick="openWithdrawHistoryModal()"><i class="fa-solid fa-clock-rotate-left"></i> Withdrawal History</button>
-                    <button class="btn" style="margin-top:0; background:#6366f1;" onclick="openCoinHistoryModal()"><i class="fa-solid fa-coins"></i> Coin History</button>
+                <div class="user-meta">
+                    <span class="uid-badge" id="profile-uid">UID: ------</span>
+                    <input type="text" id="profile-username-input" onchange="updateUsername(this.value)" placeholder="Enter Username" style="font-weight:bold; font-size:14px; border:1px solid #ccc; padding:3px 6px; border-radius:5px; width:100%;">
+                    <p style="font-size: 13px; color: #666; margin-top:4px;">Coins: <span id="profile-points-display" class="coin-badge"><i class="fa-solid fa-coins coin-icon"></i> 0</span></p>
                 </div>
             </div>
 
-            <!-- Logout button shifted completely to the bottom of the screen -->
-            <div style="margin-top: 30px;">
-                <button class="btn" onclick="logout()" style="background:#ef4444; width:100%;">Logout</button>
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+                <button class="btn" style="margin-top:0; background:#0ea5e9;" onclick="openWithdrawModal()"><i class="fa-solid fa-wallet"></i> Withdraw</button>
+                <button class="btn" style="margin-top:0; background:#8b5cf6;" onclick="openWithdrawHistoryModal()"><i class="fa-solid fa-clock-rotate-left"></i> Withdrawal History</button>
+                <button class="btn" style="margin-top:0; background:#6366f1;" onclick="openCoinHistoryModal()"><i class="fa-solid fa-coins"></i> Coin History</button>
+            </div>
+
+            <!-- Logout button placed at the bottom parallel to support button positioning region -->
+            <div class="profile-bottom-actions">
+                <button class="btn" onclick="openSupportModal()" style="background:#16a34a;"><i class="fa-solid fa-headset"></i> Support</button>
+                <button class="btn" onclick="logout()" style="background:#ef4444;">Logout</button>
             </div>
         </div>
 
@@ -672,8 +675,6 @@
     async function spinWheel() {
         const wheel = document.getElementById('spin-wheel-element');
         
-        // 6 Slices: 0-60 (Purple: 50-200), 60-120 (Orange: 100-500), 120-180 (Pink: 1000-5000), 
-        // 180-240 (Green: 3000-10000), 240-300 (Blue: 5000-20000), 300-360 (Red: Lost)
         const sliceAngles = [30, 90, 150, 210, 270, 330];
         const randomTargetAngle = sliceAngles[Math.floor(Math.random() * sliceAngles.length)];
         
