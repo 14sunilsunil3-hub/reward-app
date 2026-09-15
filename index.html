@@ -1,96 +1,164 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Reward App</title>
-  <style>
-    body { font-family: Arial, sans-serif; background: #f4f7fe; padding: 20px; margin: 0; }
-    .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); max-width: 400px; margin: 20px auto; }
-    h2 { color: #333; margin-top: 0; }
-    input { width: 100%; padding: 10px; margin: 8px 0; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
-    button { width: 100%; padding: 10px; background: #4F46E5; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; margin-top: 8px; }
-    button:hover { background: #4338CA; }
-    .status { margin-top: 10px; font-size: 14px; word-break: break-word; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reward App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .card {
+            background: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+        h2 { margin-top: 0; font-size: 1.2rem; color: #333; }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #5c6bc0;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        button:hover { background-color: #3f51b5; }
+        .message { margin-top: 10px; font-size: 0.9rem; color: green; }
+        .error { color: red; }
+    </style>
 </head>
 <body>
 
-  <!-- Signup Form -->
-  <div class="card">
-    <h2>1. Create Account (Signup)</h2>
-    <input type="text" id="signupUsername" placeholder="Username">
-    <input type="email" id="signupEmail" placeholder="Email">
-    <input type="password" id="signupPassword" placeholder="Password">
-    <button onclick="signup()">Signup</button>
-    <div id="signupStatus" class="status"></div>
-  </div>
+    <!-- 1. Signup Section -->
+    <div class="card">
+        <h2>1. Create Account (Signup)</h2>
+        <input type="text" id="signup-username" placeholder="Username">
+        <input type="email" id="signup-email" placeholder="Email">
+        <input type="text" id="signup-phone" placeholder="Phone Number">
+        <input type="password" id="signup-password" placeholder="Password">
+        <button onclick="handleSignup()">Signup</button>
+        <div id="signup-msg" class="message"></div>
+    </div>
 
-  <!-- Login Form -->
-  <div class="card">
-    <h2>2. User Login</h2>
-    <input type="email" id="loginEmail" placeholder="Email">
-    <input type="password" id="loginPassword" placeholder="Password">
-    <button onclick="login()">Login</button>
-    <div id="loginStatus" class="status"></div>
-  </div>
+    <!-- 2. Login Section -->
+    <div class="card">
+        <h2>2. User Login</h2>
+        <input type="email" id="login-email" placeholder="Email">
+        <input type="password" id="login-password" placeholder="Password">
+        <button onclick="handleLogin()">Login</button>
+        <div id="login-msg" class="message"></div>
+    </div>
 
-  <!-- Reward Points Form -->
-  <div class="card">
-    <h2>3. Reward Points</h2>
-    <input type="text" id="userId" placeholder="User ID (Login ke baad milega)">
-    <input type="number" id="pointsAmount" placeholder="Points (e.g. 10 ya -5)">
-    <button onclick="updatePoints()">Update Points</button>
-    <div id="pointsStatus" class="status"></div>
-  </div>
+    <!-- 3. Reward Points Section -->
+    <div class="card">
+        <h2>3. Reward Points</h2>
+        <input type="text" id="points-userid" placeholder="User ID (Login ke baad milega)">
+        <input type="number" id="points-amount" placeholder="Points (e.g. 10 ya -5)">
+        <button onclick="handleUpdatePoints()">Update Points</button>
+        <div id="points-msg" class="message"></div>
+    </div>
 
-  <script>
-    const API_URL = 'https://reward-app-1-OgjO.onrender.com';
+    <script>
+        const API_URL = 'https://reward-app-1-OgjO.onrender.com';
 
-    async function signup() {
-      const username = document.getElementById('signupUsername').value;
-      const email = document.getElementById('signupEmail').value;
-      const password = document.getElementById('signupPassword').value;
+        async function handleSignup() {
+            const username = document.getElementById('signup-username').value;
+            const email = document.getElementById('signup-email').value;
+            const phone = document.getElementById('signup-phone').value;
+            const password = document.getElementById('signup-password').value;
+            const msgDiv = document.getElementById('signup-msg');
 
-      const res = await fetch(`${API_URL}/api/signup`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, email, password })
-      });
-      const data = await res.json();
-      document.getElementById('signupStatus').innerText = JSON.stringify(data);
-    }
+            try {
+                const res = await fetch(`${API_URL}/api/signup`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, email, phone, password })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    msgDiv.className = "message";
+                    msgDiv.innerText = "Signup Successful! Now Login.";
+                } else {
+                    msgDiv.className = "message error";
+                    msgDiv.innerText = data.message || "Signup failed";
+                }
+            } catch (err) {
+                msgDiv.className = "message error";
+                msgDiv.innerText = "Server Error or Sleeping (Wait 30s)";
+            }
+        }
 
-    async function login() {
-      const email = document.getElementById('loginEmail').value;
-      const password = document.getElementById('loginPassword').value;
+        async function handleLogin() {
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            const msgDiv = document.getElementById('login-msg');
 
-      const res = await fetch(`${API_URL}/api/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
-      });
-      const data = await res.json();
-      if(data.success) {
-        document.getElementById('userId').value = data.user._id;
-        document.getElementById('loginStatus').innerText = "Login Successful! User ID Auto-filled below.";
-      } else {
-        document.getElementById('loginStatus').innerText = data.message;
-      }
-    }
+            try {
+                const res = await fetch(`${API_URL}/api/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    msgDiv.className = "message";
+                    msgDiv.innerText = "Login Successful!";
+                    // Auto-fill User ID in points section
+                    document.getElementById('points-userid').value = data.user._id;
+                } else {
+                    msgDiv.className = "message error";
+                    msgDiv.innerText = data.message || "Invalid credentials";
+                }
+            } catch (err) {
+                msgDiv.className = "message error";
+                msgDiv.innerText = "Server Error or Sleeping (Wait 30s)";
+            }
+        }
 
-    async function updatePoints() {
-      const userId = document.getElementById('userId').value;
-      const pointsToAdd = parseInt(document.getElementById('pointsAmount').value);
+        async function handleUpdatePoints() {
+            const userId = document.getElementById('points-userid').value;
+            const pointsToAdd = parseInt(document.getElementById('points-amount').value);
+            const msgDiv = document.getElementById('points-msg');
 
-      const res = await fetch(`${API_URL}/api/update-points`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId, pointsToAdd })
-      });
-      const data = await res.json();
-      document.getElementById('pointsStatus').innerText = JSON.stringify(data);
-    }
-  </script>
+            try {
+                const res = await fetch(`${API_URL}/api/update-points`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId, pointsToAdd })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    msgDiv.className = "message";
+                    msgDiv.innerText = `Points Updated! Total Points: ${data.newPoints}`;
+                } else {
+                    msgDiv.className = "message error";
+                    msgDiv.innerText = data.message || "Update failed";
+                }
+            } catch (err) {
+                msgDiv.className = "message error";
+                msgDiv.innerText = "Server Error or Sleeping (Wait 30s)";
+            }
+        }
+    </script>
 </body>
 </html>
