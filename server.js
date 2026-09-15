@@ -6,8 +6,8 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-// MongoDB Connection String (Apna password daalna na bhulein)
-const MONGO_URI = "mongodb+srv://14sunilsunil3_db_user:APNA_PASSWORD_YAHAN_DAALEIN@cluster0.xawbrm2.mongodb.net/?appName=Cluster0";
+// MongoDB Connection String with your password
+const MONGO_URI = "mongodb+srv://14sunilsunil3_db_user:YYKnpJ6cUOxedvyW@cluster0.xawbrm2.mongodb.net/?appName=Cluster0";
 
 mongoose.connect(MONGO_URI)
 .then(() => console.log('MongoDB Cloud Connected!'))
@@ -29,7 +29,6 @@ app.post('/api/register', async (req, res) => {
     try {
         const { name, email, phone, password } = req.body;
         
-        // Ensure at least email or phone is provided
         if (!email && !phone) {
             return res.status(400).json({ error: 'Either email or phone is required' });
         }
@@ -39,7 +38,7 @@ app.post('/api/register', async (req, res) => {
             email: email || undefined,
             phone: phone || undefined,
             password,
-            points: 10 // Starting signup bonus points
+            points: 10
         });
 
         await newUser.save();
@@ -52,7 +51,7 @@ app.post('/api/register', async (req, res) => {
 // Login Route (Supports login via Email or Phone using $or)
 app.post('/api/login', async (req, res) => {
     try {
-        const { loginId, password } = req.body; // loginId can be email or phone
+        const { loginId, password } = req.body;
 
         if (!loginId || !password) {
             return res.status(400).json({ error: 'Please provide login ID and password' });
