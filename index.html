@@ -37,10 +37,6 @@
         .nav-item.active { color: #4f46e5; font-weight: bold; }
         .nav-item i { font-size: 20px; display: block; margin-bottom: 3px; }
 
-        /* Add to Desktop Popup */
-        #pwa-install-banner { position: fixed; bottom: 65px; left: 50%; transform: translateX(-50%); width: 92%; max-width: 440px; background: #222; color: #fff; padding: 10px 15px; border-radius: 10px; display: none; justify-content: space-between; align-items: center; z-index: 999; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
-        #pwa-install-banner button { background: #4f46e5; color: #fff; border: none; padding: 6px 12px; border-radius: 5px; cursor: pointer; font-weight: bold; }
-
         /* General UI Elements */
         .card { background: linear-gradient(135deg, #4f46e5, #7c3aed); color: #fff; padding: 20px; border-radius: 15px; text-align: center; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3); }
         .btn { background: #4f46e5; color: #fff; border: none; width: 100%; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 10px; transition: 0.2s; }
@@ -68,12 +64,18 @@
         .avatar-option { width: 50px; height: 50px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; }
         .avatar-option:hover, .avatar-option.selected { border-color: #4f46e5; transform: scale(1.05); }
 
-        /* 3D Spin Wheel */
+        /* Lucky Spin Wheel (Corrected Pointer & Slices with Coin Logo) */
         .wheel-container { display: flex; flex-direction: column; align-items: center; margin: 20px 0; position: relative; }
         .wheel-coin-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 45px; height: 45px; background: #fff; border-radius: 50%; display: flex; justify-content: center; align-items: center; z-index: 15; box-shadow: 0 0 10px rgba(0,0,0,0.2); border: 2px solid #eab308; }
-        .wheel { width: 260px; height: 260px; border-radius: 50%; border: 8px solid #4f46e5; position: relative; transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99); background: conic-gradient(#4f46e5 0deg 60deg, #7c3aed 60deg 120deg, #ec4899 120deg 180deg, #f59e0b 180deg 240deg, #10b981 240deg 300deg, #ef4444 300deg 360deg); }
-        .wheel-pointer { width: 0; height: 0; border-left: 12px solid transparent; border-right: 12px solid transparent; border-bottom: 25px solid #111; position: absolute; top: -18px; left: 50%; transform: translateX(-50%); z-index: 20; }
-        .wheel-labels { font-size: 11px; font-weight: bold; color: #fff; text-align: center; margin-top: 10px; background: #f8fafc; padding: 8px; border-radius: 8px; border: 1px solid #e2e8f0; width: 100%; color: #444; }
+        .wheel { width: 260px; height: 260px; border-radius: 50%; border: 8px solid #4f46e5; position: relative; transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99); background: conic-gradient(#7c3aed 0deg 60deg, #f59e0b 60deg 120deg, #ec4899 120deg 180deg, #10b981 180deg 240deg, #3b82f6 240deg 300deg, #ef4444 300deg 360deg); }
+        .wheel-pointer { width: 0; height: 0; border-left: 12px solid transparent; border-right: 12px solid transparent; border-top: 25px solid #111; position: absolute; top: -18px; left: 50%; transform: translateX(-50%) rotate(180deg); z-index: 20; }
+        
+        .wheel-legend { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; margin-top: 10px; font-size: 11px; font-weight: bold; width: 100%; }
+        .legend-item { display: flex; align-items: center; gap: 5px; background: #f8fafc; padding: 6px; border-radius: 6px; border: 1px solid #e2e8f0; }
+        .legend-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+
+        /* Movable Support Popup Button */
+        #floating-support { position: fixed; bottom: 85px; right: 20px; background: #16a34a; color: #fff; width: 50px; height: 50px; border-radius: 50%; display: flex; justify-content: center; align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.3); cursor: pointer; z-index: 2999; font-size: 22px; touch-action: none; }
 
         /* History & Modals Lists */
         .history-item { background: #f8fafc; border: 1px solid #e2e8f0; padding: 10px; border-radius: 8px; margin-bottom: 8px; font-size: 12px; display: flex; justify-content: space-between; align-items: center; }
@@ -91,6 +93,11 @@
     <div class="spinner-dots">
         <span></span><span></span><span></span>
     </div>
+</div>
+
+<!-- MOVABLE CUSTOMER SUPPORT POPUP BUTTON -->
+<div id="floating-support" title="Customer Support" onclick="openSupportModal()">
+    <i class="fa-solid fa-headset"></i>
 </div>
 
 <div class="app-container">
@@ -238,7 +245,7 @@
         <!-- LUCKY WHEEL SCREEN -->
         <div id="wheel-screen" class="screen">
             <h2 style="text-align:center; margin-bottom: 5px;">Lucky Spin Wheel</h2>
-            <p style="text-align:center; font-size: 12px; color: #666; margin-bottom: 10px;">Spin & Win! Slices: (1) 50-200 Coins, (2) 100-500, (3) 1000-5000, (4) 3000-10000, (5) 5000-20000, (6) Lost</p>
+            <p style="text-align:center; font-size: 12px; color: #666; margin-bottom: 10px;">Spin & Win Coins based on your luck!</p>
             
             <div class="wheel-container">
                 <div class="wheel-pointer"></div>
@@ -246,8 +253,13 @@
                 <div class="wheel" id="spin-wheel-element"></div>
             </div>
 
-            <div class="wheel-labels">
-                🎯 Pointer lands randomly on <b>Slice 1 (Win)</b> or <b>Slice 6 (Lost)</b>!
+            <div class="wheel-legend">
+                <div class="legend-item"><span class="legend-dot" style="background:#7c3aed;"></span> <i class="fa-solid fa-coins coin-icon"></i> 50-200 (Purple)</div>
+                <div class="legend-item"><span class="legend-dot" style="background:#f59e0b;"></span> <i class="fa-solid fa-coins coin-icon"></i> 100-500 (Orange)</div>
+                <div class="legend-item"><span class="legend-dot" style="background:#ec4899;"></span> <i class="fa-solid fa-coins coin-icon"></i> 1000-5000 (Pink)</div>
+                <div class="legend-item"><span class="legend-dot" style="background:#10b981;"></span> <i class="fa-solid fa-coins coin-icon"></i> 3000-10000 (Green)</div>
+                <div class="legend-item"><span class="legend-dot" style="background:#3b82f6;"></span> <i class="fa-solid fa-coins coin-icon"></i> 5000-20000 (Blue)</div>
+                <div class="legend-item"><span class="legend-dot" style="background:#ef4444;"></span> ❌ Lost (Red)</div>
             </div>
 
             <button class="btn" onclick="spinWheel()" style="margin-top: 15px;">Spin the Wheel Now</button>
@@ -266,19 +278,13 @@
                 </div>
             </div>
 
-            <div style="display: flex; gap: 8px; margin-bottom: 15px;">
+            <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 15px;">
                 <button class="btn" style="margin-top:0; background:#0ea5e9;" onclick="openWithdrawModal()"><i class="fa-solid fa-wallet"></i> Withdraw</button>
-                <button class="btn" style="margin-top:0; background:#8b5cf6;" onclick="openHistoryModal()"><i class="fa-solid fa-clock-rotate-left"></i> History</button>
+                <button class="btn" style="margin-top:0; background:#8b5cf6;" onclick="openWithdrawHistoryModal()"><i class="fa-solid fa-clock-rotate-left"></i> Withdrawal History</button>
+                <button class="btn" style="margin-top:0; background:#6366f1;" onclick="openCoinHistoryModal()"><i class="fa-solid fa-coins"></i> Coin History</button>
             </div>
 
-            <!-- Customer Support Section -->
-            <div class="task-card" style="background: #f0fdf4; border-color: #bbf7d0;">
-                <h4 style="color: #166534;"><i class="fa-solid fa-headset"></i> Customer Support</h4>
-                <p style="font-size: 12px; color: #555; margin-top: 2px;">Facing any issue? Contact us directly:</p>
-                <a href="mailto:14sunilsunil3@gmail.com" style="font-size: 13px; color: #2563eb; font-weight: bold; margin-top: 4px; display: inline-block;"><i class="fa-solid fa-envelope"></i> 14sunilsunil3@gmail.com</a>
-            </div>
-
-            <button class="btn" onclick="logout()" style="background:#ef4444; margin-top:10px;">Logout</button>
+            <button class="btn" onclick="logout()" style="background:#ef4444; margin-top:20px;">Logout</button>
         </div>
 
         <!-- NAVBAR -->
@@ -330,22 +336,35 @@
     </div>
 </div>
 
-<!-- HISTORY MODAL (Withdrawal & Coin History) -->
-<div id="history-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:2500; justify-content:center; align-items:center;">
+<!-- WITHDRAWAL HISTORY MODAL -->
+<div id="withdraw-history-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:2500; justify-content:center; align-items:center;">
     <div class="modal-content" style="text-align:left; max-width:440px;">
-        <h3><i class="fa-solid fa-chart-line"></i> Activity & History</h3>
-        
-        <h4 style="margin-top: 12px; color:#4f46e5; font-size:14px;">Withdrawal Requests</h4>
-        <div id="withdrawal-history-list" style="max-height: 140px; overflow-y: auto; margin-top:5px;">
+        <h3><i class="fa-solid fa-clock-rotate-left"></i> Withdrawal History</h3>
+        <div id="withdrawal-history-list" style="max-height: 250px; overflow-y: auto; margin-top:10px;">
             <p style="font-size:12px; color:#777;">No withdrawals yet.</p>
         </div>
+        <button class="btn" onclick="closeWithdrawHistoryModal()" style="background:#666; margin-top:15px;">Close</button>
+    </div>
+</div>
 
-        <h4 style="margin-top: 15px; color:#4f46e5; font-size:14px;">Coin Earnings History</h4>
-        <div id="coin-history-list" style="max-height: 140px; overflow-y: auto; margin-top:5px;">
+<!-- COIN HISTORY MODAL -->
+<div id="coin-history-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:2500; justify-content:center; align-items:center;">
+    <div class="modal-content" style="text-align:left; max-width:440px;">
+        <h3><i class="fa-solid fa-coins"></i> Coin Earnings History</h3>
+        <div id="coin-history-list" style="max-height: 250px; overflow-y: auto; margin-top:10px;">
             <p style="font-size:12px; color:#777;">No earnings recorded yet.</p>
         </div>
+        <button class="btn" onclick="closeCoinHistoryModal()" style="background:#666; margin-top:15px;">Close</button>
+    </div>
+</div>
 
-        <button class="btn" onclick="closeHistoryModal()" style="background:#666; margin-top:15px;">Close</button>
+<!-- CUSTOMER SUPPORT POPUP MODAL -->
+<div id="support-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:3500; justify-content:center; align-items:center;">
+    <div class="modal-content" style="text-align:center;">
+        <h3 style="color:#16a34a;"><i class="fa-solid fa-headset"></i> Customer Support</h3>
+        <p style="font-size: 13px; color: #555; margin: 10px 0;">Facing any issue? Contact us directly via email:</p>
+        <a href="mailto:14sunilsunil3@gmail.com" style="font-size: 14px; color: #2563eb; font-weight: bold; display: block; margin: 15px 0;"><i class="fa-solid fa-envelope"></i> 14sunilsunil3@gmail.com</a>
+        <button class="btn" onclick="closeSupportModal()" style="background:#666; margin-top:10px;">Close</button>
     </div>
 </div>
 
@@ -387,6 +406,32 @@
 
     let currentUser = null;
     let currentRotation = 0;
+
+    // Draggable Movable Support Button Logic
+    const floatingBtn = document.getElementById('floating-support');
+    let isDragging = false, startX, startY, initialX, initialY;
+
+    floatingBtn.addEventListener('pointerdown', (e) => {
+        isDragging = true;
+        startX = e.clientX;
+        startY = e.clientY;
+        const rect = floatingBtn.getBoundingClientRect();
+        initialX = rect.left;
+        initialY = rect.top;
+        floatingBtn.setPointerCapture(e.pointerId);
+    });
+
+    floatingBtn.addEventListener('pointermove', (e) => {
+        if (!isDragging) return;
+        const dx = e.clientX - startX;
+        const dy = e.clientY - startY;
+        floatingBtn.style.left = (initialX + dx) + 'px';
+        floatingBtn.style.top = (initialY + dy) + 'px';
+        floatingBtn.style.bottom = 'auto';
+        floatingBtn.style.right = 'auto';
+    });
+
+    floatingBtn.addEventListener('pointerup', (e) => { isDragging = false; });
 
     function showScreen(screenId) {
         document.querySelectorAll('.app-container > .screen').forEach(s => s.classList.remove('active'));
@@ -434,6 +479,10 @@
             });
         } catch(e) { console.error(e); }
     }
+
+    // Support Modal
+    function openSupportModal() { document.getElementById('support-modal').style.display = 'flex'; }
+    function closeSupportModal() { document.getElementById('support-modal').style.display = 'none'; }
 
     // Mock OTP & Auth Handlers
     function sendSignupOtp() {
@@ -579,11 +628,10 @@
         }
     }
 
-    // Wheel logic with Slice 1 & 6 random landing
+    // Wheel logic with pointer landing strictly on Purple (50-200) or Red (Lost)
     async function spinWheel() {
         const wheel = document.getElementById('spin-wheel-element');
-        // Slice 1 (Win 50-200) or Slice 6 (Lost)
-        const outcomes = [30, 330]; // Angles pointing to slice 1 or slice 6
+        const outcomes = [30, 330]; // Angles for Purple or Red slices
         const randomChoice = outcomes[Math.floor(Math.random() * outcomes.length)];
         const extraSpins = 360 * 5;
         currentRotation += extraSpins + randomChoice;
@@ -645,29 +693,34 @@
         } else { alert(data.error); }
     }
 
-    // History Modal
-    async function openHistoryModal() {
-        document.getElementById('history-modal').style.display = 'flex';
+    // Separate Withdrawal History & Coin History Modals
+    async function openWithdrawHistoryModal() {
+        document.getElementById('withdraw-history-modal').style.display = 'flex';
         try {
             const res = await fetch(`/api/history?userId=${currentUser._id}`);
             const data = await res.json();
-            
-            // Withdrawals
             const wList = document.getElementById('withdrawal-history-list');
             wList.innerHTML = data.withdrawals.length ? '' : '<p style="font-size:12px; color:#777;">No withdrawals yet.</p>';
             data.withdrawals.forEach(w => {
                 wList.innerHTML += `<div class="history-item"><div><b>${w.amount} Coins</b> (${w.method})<br><small>${w.date}</small></div><span style="font-weight:bold; color:${w.status==='Success'?'green':w.status==='Rejected'?'red':'orange'}">${w.status}</span></div>`;
             });
+        } catch(e) { console.error(e); }
+    }
+    function closeWithdrawHistoryModal() { document.getElementById('withdraw-history-modal').style.display = 'none'; }
 
-            // Coin History
+    async function openCoinHistoryModal() {
+        document.getElementById('coin-history-modal').style.display = 'flex';
+        try {
+            const res = await fetch(`/api/history?userId=${currentUser._id}`);
+            const data = await res.json();
             const cList = document.getElementById('coin-history-list');
-            cList.innerHTML = data.coinLogs.length ? '' : '<p style="font-size:12px; color:#777;">No coin logs yet.</p>';
+            cList.innerHTML = data.coinLogs.length ? '' : '<p style="font-size:12px; color:#777;">No earnings recorded yet.</p>';
             data.coinLogs.forEach(c => {
                 cList.innerHTML += `<div class="history-item"><div><b>+${c.coins} Coins</b><br><small>${c.source}</small></div><span style="color:#666; font-size:11px;">${c.date}</span></div>`;
             });
         } catch(e) { console.error(e); }
     }
-    function closeHistoryModal() { document.getElementById('history-modal').style.display = 'none'; }
+    function closeCoinHistoryModal() { document.getElementById('coin-history-modal').style.display = 'none'; }
 
     function logout() {
         if(confirm("Are you sure you want to logout?")) location.reload();
