@@ -5,7 +5,7 @@ const cors = require('cors');
 const app = express();
 app.use(express.json());
 app.use(cors());
-app.use(express.static('.')); // Yeh line static HTML file serve karne ke liye hai
+app.use(express.static('.'));
 
 // MongoDB Connection String
 const MONGO_URI = "mongodb+srv://14sunilsunil3_db_user:YYKnpJ6cUOxedvyW@cluster0.xawbrm2.mongodb.net/?appName=Cluster0";
@@ -14,18 +14,18 @@ mongoose.connect(MONGO_URI)
 .then(() => console.log('MongoDB Cloud Connected!'))
 .catch((err) => console.log('MongoDB Connection Error:', err));
 
-// Updated User Schema (Mobile, Password, OTP, Points, Referrals, Withdrawals)
+// Updated User Schema (Fixed password requirement for OTP generation)
 const userSchema = new mongoose.Schema({
     phone: { type: String, required: true, unique: true },
-    password: { type: String, required: true },
+    password: { type: String, default: '' }, // Fixed: password is not required during initial OTP phase
     points: { type: Number, default: 0 },
     otp: { type: String },
-    lastDailyLogin: { type: String, default: '' }, // Format: YYYY-MM-DD
+    lastDailyLogin: { type: String, default: '' }, 
     referralCount: { type: Number, default: 0 },
     lastSpinDate: { type: Date },
     withdrawals: [
         {
-            method: String, // 'UPI', 'Bank', 'GooglePlay'
+            method: String, 
             details: String,
             amount: Number,
             status: { type: String, default: 'Pending' },
@@ -132,13 +132,13 @@ app.post('/api/daily-login', async (req, res) => {
         const user = await User.findById(userId);
         if (!user) return res.status(404).json({ error: 'User not found' });
 
-        const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+        const today = new Date().toISOString().slice(0, 10);
         if (user.lastDailyLogin === today) {
             return res.status(400).json({ error: 'Daily reward already claimed today!' });
         }
 
         user.lastDailyLogin = today;
-        user.points += 20; // Daily bonus points
+        user.points += 20;
         await user.save();
 
         res.status(200).json({ message: 'Daily reward claimed!', points: user.points });
@@ -147,7 +147,7 @@ app.post('/api/daily-login', async (req, res) => {
     }
 });
 
-// 6. Lucky Wheel Spin Route (Requires 10 referrals in 24h)
+// 6. Lucky Wheel Spin Route
 app.post('/api/spin-wheel', async (req, res) => {
     try {
         const { userId } = req.body;
@@ -171,7 +171,7 @@ app.post('/api/spin-wheel', async (req, res) => {
     }
 });
 
-// 7. Points Update Route (For Ad Watching, etc.)
+// 7. Points Update Route
 app.post('/api/points', async (req, res) => {
     try {
         const { userId, pointsToAdd } = req.body;
