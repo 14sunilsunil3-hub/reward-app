@@ -7,11 +7,11 @@ app.use(express.json());
 app.use(cors());
 
 // MongoDB Connection
-const MONGO_URI = 'mongodb+srv://14sunilsunil3_db_user:yIcicYHYQII7ZAzp@cluster0.xawbrm2.mongodb.net/rewardApp?retryWrites=true&w=majority';
+const MONGO_URI = 'mongodb+srv://14sunilsunil3_db_user:ylciicYHlYQI17Az@cluster0.xaubrn2.mongodb.net/rewardapp?retryWrites=true&w=majority';
 
 mongoose.connect(MONGO_URI)
   .then(() => console.log('MongoDB Cloud Connected!'))
-  .catch(err => console.error('MongoDB Connection Error:', err));
+  .catch((err) => console.error('MongoDB Connection Error:', err));
 
 // User Schema & Model
 const userSchema = new mongoose.Schema({
@@ -33,8 +33,7 @@ app.get('/', (req, res) => {
 app.post('/api/signup', async (req, res) => {
   try {
     const { username, email, password } = req.body;
-    
-    // Check if user exists
+
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).json({ success: false, message: 'Email already registered' });
@@ -69,7 +68,7 @@ app.post('/api/login', async (req, res) => {
 app.post('/api/update-points', async (req, res) => {
   try {
     const { userId, pointsToAdd } = req.body;
-    
+
     const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({ success: false, message: 'User not found' });
@@ -86,6 +85,4 @@ app.post('/api/update-points', async (req, res) => {
 
 // Server Start
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server live on port ${PORT}`);
-});
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
