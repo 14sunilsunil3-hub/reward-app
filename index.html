@@ -3,392 +3,477 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reward Earn App</title>
-    <!-- PWA Manifest & Meta for Desktop/Mobile Add to Home Screen -->
-    <meta name="theme-color" content="#4f46e5">
+    <title>Reward App</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background: #f3f4f6; color: #1f2937; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
-        .app-container { width: 100%; max-width: 480px; background: #ffffff; min-height: 100vh; box-shadow: 0 4px 20px rgba(0,0,0,0.1); display: flex; flex-direction: column; position: relative; overflow-y: auto; }
-        .screen { padding: 20px; flex: 1; display: none; padding-bottom: 80px; }
+        body { background: #f4f5f7; color: #333; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .app-container { width: 100%; max-width: 480px; background: #fff; min-height: 100vh; display: flex; flex-direction: column; position: relative; box-shadow: 0 0 20px rgba(0,0,0,0.1); padding-bottom: 70px; }
+        .screen { display: none; padding: 20px; flex: 1; overflow-y: auto; }
         .screen.active { display: block; }
-        h2 { margin-bottom: 20px; color: #4f46e5; text-align: center; }
-        input, select { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #d1d5db; border-radius: 8px; font-size: 16px; }
-        .password-container { position: relative; width: 100%; margin: 10px 0; }
-        .password-container input { margin: 0; padding-right: 45px; width: 100%; }
-        .eye-btn { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); cursor: pointer; font-size: 18px; user-select: none; }
-        button { width: 100%; padding: 12px; background: #4f46e5; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px; transition: background 0.2s; }
-        button:hover { background: #4338ca; }
-        .secondary-btn { background: #e5e7eb; color: #374151; }
-        .secondary-btn:hover { background: #d1d5db; }
-        .nav-bar { position: fixed; bottom: 0; width: 100%; max-width: 480px; background: white; border-top: 1px solid #e5e7eb; display: flex; justify-content: space-around; padding: 10px 0; z-index: 100; }
-        .nav-item { text-align: center; cursor: pointer; font-size: 12px; color: #6b7280; }
+        
+        /* Navigation Bar */
+        .navbar { position: fixed; bottom: 0; width: 100%; max-width: 480px; background: #fff; display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid #eee; z-index: 1000; }
+        .nav-item { text-align: center; color: #777; cursor: pointer; font-size: 12px; }
         .nav-item.active { color: #4f46e5; font-weight: bold; }
-        .nav-item span { display: block; font-size: 20px; }
-        .card { background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 12px; padding: 15px; margin-bottom: 15px; }
-        .badge { background: #d1fae5; color: #065f46; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; }
-        .error { color: #dc2626; font-size: 14px; text-align: center; margin-top: 5px; }
-        .success { color: #059669; font-size: 14px; text-align: center; margin-top: 5px; }
-        .wallet-box { background: linear-gradient(135deg, #4f46e5, #818cf8); color: white; padding: 20px; border-radius: 12px; text-align: center; margin-bottom: 20px; }
-        .wallet-box h1 { font-size: 32px; margin-top: 5px; }
+        .nav-item i { font-size: 20px; display: block; margin-bottom: 3px; }
+
+        /* Add to Desktop Popup */
+        #pwa-install-banner { position: fixed; bottom: 65px; left: 50%; transform: translateX(-50%); width: 92%; max-width: 440px; background: #222; color: #fff; padding: 10px 15px; border-radius: 10px; display: none; justify-content: space-between; align-items: center; z-index: 999; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        #pwa-install-banner button { background: #4f46e5; color: #fff; border: none; padding: 6px 12px; border-radius: 5px; cursor: pointer; font-weight: bold; }
+
+        /* General UI Elements */
+        .card { background: linear-gradient(135deg, #4f46e5, #7c3aed); color: #fff; padding: 20px; border-radius: 15px; text-align: center; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3); }
+        .btn { background: #4f46e5; color: #fff; border: none; width: 100%; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 10px; transition: 0.2s; }
+        .btn:active { transform: scale(0.98); }
+        .input-group { margin-bottom: 15px; }
+        .input-group label { display: block; font-size: 13px; margin-bottom: 5px; color: #555; font-weight: 600; }
+        .input-group input, .input-group select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; }
+        .task-card { background: #f9fafb; border: 1px solid #eee; padding: 15px; border-radius: 12px; margin-bottom: 15px; display: flex; flex-direction: column; gap: 8px; }
+        
+        /* Profile UI */
+        .profile-header { display: flex; align-items: center; gap: 15px; background: #f8fafc; padding: 15px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 20px; }
+        .avatar-container { position: relative; width: 70px; height: 70px; border-radius: 50%; overflow: hidden; border: 2px solid #4f46e5; cursor: pointer; }
+        .avatar-container img { width: 100%; height: 100%; object-fit: cover; }
+        .user-meta { flex: 1; }
+        .uid-badge { font-size: 11px; background: #e0e7ff; color: #3730a3; padding: 2px 6px; border-radius: 4px; display: inline-block; margin-bottom: 4px; font-weight: bold; }
+        
+        /* AI Avatar Modal */
+        #avatar-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; justify-content: center; align-items: center; }
+        .modal-content { background: #fff; width: 90%; max-width: 400px; padding: 20px; border-radius: 12px; text-align: center; max-height: 80vh; overflow-y: auto; }
+        .avatar-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 15px; }
+        .avatar-option { width: 50px; height: 50px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; }
+        .avatar-option:hover, .avatar-option.selected { border-color: #4f46e5; transform: scale(1.05); }
+
+        /* 3D Spin Wheel */
+        .wheel-container { display: flex; flex-direction: column; align-items: center; margin: 20px 0; }
+        .wheel { width: 260px; height: 260px; border-radius: 50%; border: 8px solid #4f46e5; position: relative; transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99); background: conic-gradient(#4f46e5 0deg 60deg, #7c3aed 60deg 120deg, #ec4899 120deg 180deg, #f59e0b 180deg 240deg, #10b981 240deg 300deg, #3b82f6 300deg 360deg); }
+        .wheel-pointer { width: 0; height: 0; border-left: 12px solid transparent; border-right: 12px solid transparent; border-bottom: 25px solid #ef4444; position: absolute; top: -15px; left: 50%; transform: translateX(-50%); z-index: 10; }
     </style>
 </head>
 <body>
 
-<div class="app-container" id="app">
-
-    <!-- 1. AUTH SCREEN (Login / Signup / Forgot Password) -->
-    <div id="authScreen" class="screen active">
-        <h2 id="authTitle">Welcome to Reward App</h2>
-        
-        <!-- Login Form -->
-        <div id="loginForm">
-            <input type="text" id="loginPhone" placeholder="Mobile Number">
-            <div class="password-container">
-                <input type="password" id="loginPassword" placeholder="Password">
-                <span class="eye-btn" onclick="togglePassword('loginPassword', this)">👁️</span>
-            </div>
-            <button onclick="loginUser()">Login</button>
-            <button class="secondary-btn" onclick="switchAuth('signup')">Create New Account (Signup)</button>
-            <button class="secondary-btn" onclick="switchAuth('forgot')">Forgot Password?</button>
+<div class="app-container">
+    
+    <!-- AUTH SCREEN -->
+    <div id="auth-screen" class="screen active">
+        <h2 style="text-align:center; margin-bottom: 20px; color:#4f46e5;">Welcome to Reward App</h2>
+        <div class="input-group">
+            <label>Mobile Number</label>
+            <input type="text" id="auth-phone" placeholder="Enter 10-digit mobile number">
         </div>
-
-        <!-- Signup Form -->
-        <div id="signupForm" style="display:none;">
-            <input type="text" id="signupPhone" placeholder="Mobile Number">
-            <button onclick="sendOtp('signup')">Send 6-Digit OTP</button>
-            <input type="text" id="signupOtp" placeholder="Enter 6-Digit OTP">
-            <div class="password-container">
-                <input type="password" id="signupPassword" placeholder="Create Password">
-                <span class="eye-btn" onclick="togglePassword('signupPassword', this)">👁️</span>
-            </div>
-            <div class="password-container">
-                <input type="password" id="signupConfirmPassword" placeholder="Confirm Password">
-                <span class="eye-btn" onclick="togglePassword('signupConfirmPassword', this)">👁️</span>
-            </div>
-            <button onclick="registerUser()">Verify & Register</button>
-            <button class="secondary-btn" onclick="switchAuth('login')">Already have an account? Login</button>
+        <div class="input-group" id="otp-group" style="display:none;">
+            <label>Enter 6-Digit OTP</label>
+            <input type="text" id="auth-otp" placeholder="Enter OTP">
         </div>
-
-        <!-- Forgot Password Form -->
-        <div id="forgotForm" style="display:none;">
-            <input type="text" id="forgotPhone" placeholder="Registered Mobile Number">
-            <button onclick="sendOtp('forgot')">Send OTP for Reset</button>
-            <input type="text" id="forgotOtp" placeholder="Enter 6-Digit OTP">
-            <div class="password-container">
-                <input type="password" id="forgotNewPassword" placeholder="New Password">
-                <span class="eye-btn" onclick="togglePassword('forgotNewPassword', this)">👁️</span>
-            </div>
-            <button onclick="resetPassword()">Reset Password</button>
-            <button class="secondary-btn" onclick="switchAuth('login')">Back to Login</button>
+        <div class="input-group">
+            <label>Password</label>
+            <input type="password" id="auth-password" placeholder="Enter password">
         </div>
-        <p id="authMsg" class="error"></p>
+        <button class="btn" id="send-otp-btn" onclick="sendOtp()">Send 6-Digit OTP</button>
+        <button class="btn" id="login-register-btn" onclick="handleAuth()" style="display:none;">Login / Register</button>
     </div>
 
-    <!-- MAIN APP SCREENS WITH BOTTOM NAVIGATION -->
-    <div id="mainApp" style="display:none; flex:1; display:flex; flex-direction:column;">
+    <!-- MAIN APP SCREENS -->
+    <div id="main-app" style="display:none; flex:1; display:flex; flex-direction:column;">
         
-        <!-- HOME / MISSIONS SCREEN -->
-        <div id="homeScreen" class="screen active">
-            <div class="wallet-box">
-                <p>Available Points</p>
-                <h1 id="userPoints">0</h1>
-            </div>
-            <h3>🔥 High-Reward Missions</h3>
-            
+        <!-- HOME SCREEN -->
+        <div id="home-screen" class="screen">
             <div class="card">
+                <h3>Available Points</h3>
+                <h1 id="user-points" style="font-size: 36px; margin-top: 5px;">0</h1>
+            </div>
+
+            <div class="task-card">
                 <h4>📺 Watch Video Ad & Earn</h4>
-                <p style="font-size: 13px; color: #6b7280; margin: 5px 0;">Watch a short sponsored ad to earn massive rewards (Higher than referrals!)</p>
-                <span class="badge">Reward: +50 Points</span>
-                <button onclick="watchAd()">Watch Ad Now</button>
+                <p style="font-size: 13px; color: #666;">Watch sponsored video to earn instant points.</p>
+                <button class="btn" onclick="watchAd()" style="margin-top:5px;">Watch Ad Now</button>
             </div>
 
-            <div class="card">
+            <div class="task-card">
                 <h4>🎁 Daily Check-in Bonus</h4>
-                <p style="font-size: 13px; color: #6b7280; margin: 5px 0;">Claim your free daily login points.</p>
-                <span class="badge">Reward: +20 Points</span>
-                <button onclick="claimDailyLogin()">Claim Daily Reward</button>
+                <p style="font-size: 13px; color: #666;">Claim your free daily login points (+20).</p>
+                <button class="btn" onclick="claimDaily()" style="margin-top:5px;">Claim Daily Reward</button>
             </div>
 
-            <div class="card">
+            <div class="task-card">
                 <h4>👥 Refer Friends</h4>
-                <p style="font-size: 13px; color: #6b7280; margin: 5px 0;">Share with friends to build referral streak.</p>
-                <span class="badge">Bonus Points</span>
-                <button class="secondary-btn" onclick="alert('Share link: https://reward-app-1-0gj0.onrender.com/?ref=' + currentUser.phone)">Copy Referral Link</button>
+                <p style="font-size: 13px; color: #666;">Share your link with friends to earn big rewards.</p>
+                <button class="btn" onclick="shareApp()" style="margin-top:5px;"><i class="fa-solid fa-share-nodes"></i> Share App / Refer</button>
             </div>
         </div>
 
         <!-- LUCKY WHEEL SCREEN -->
-        <div id="wheelScreen" class="screen">
-            <h2>🎡 Lucky Spin Wheel</h2>
-            <div class="card" style="text-align: center;">
-                <p>Spin the wheel to win up to <strong>200% Bonus Points!</strong></p>
-                <p style="font-size: 12px; color: #6b7280; margin-top: 5px;">Requirement: Refer 10 users in 24 hours to unlock 1 spin.</p>
-                <h3 style="margin: 15px 0; color: #4f46e5;">Your Referrals: <span id="refCount">0</span>/10</h3>
-                <button onclick="spinWheel()">Spin the Wheel Now 🎡</button>
+        <div id="wheel-screen" class="screen">
+            <h2 style="text-align:center; margin-bottom: 10px;">Lucky Spin Wheel</h2>
+            <p style="text-align:center; font-size: 13px; color: #666; margin-bottom: 20px;">Spin & Win 50 to 200 Points based on your luck! No limits.</p>
+            
+            <div class="wheel-container">
+                <div class="wheel-pointer"></div>
+                <div class="wheel" id="spin-wheel-element"></div>
             </div>
+
+            <button class="btn" onclick="spinWheel()" style="margin-top: 20px;">Spin the Wheel Now</button>
         </div>
 
-        <!-- PROFILE & WITHDRAWAL SCREEN -->
-        <div id="profileScreen" class="screen">
-            <h2>👤 User Profile</h2>
-            <div class="card">
-                <p><strong>Mobile:</strong> <span id="profilePhone"></span></p>
-                <p><strong>Points:</strong> <span id="profilePoints"></span></p>
+        <!-- PROFILE SCREEN -->
+        <div id="profile-screen" class="screen">
+            <div class="profile-header">
+                <div class="avatar-container" onclick="openAvatarModal()" title="Change Avatar">
+                    <img id="profile-avatar-img" src="" alt="Avatar">
+                </div>
+                <div class="user-meta">
+                    <span class="uid-badge" id="profile-uid">UID: ------</span>
+                    <input type="text" id="profile-username-input" onchange="updateUsername(this.value)" placeholder="Enter Username" style="font-weight:bold; font-size:15px; border:1px solid #ccc; padding:3px 6px; border-radius:5px; width:100%;">
+                    <p style="font-size: 13px; color: #666; margin-top:4px;">Points: <span id="profile-points-display" style="font-weight:bold; color:#4f46e5;">0</span></p>
+                </div>
             </div>
 
-            <h3>💸 Redeem Points</h3>
-            <div class="card">
-                <select id="withdrawMethod">
-                    <option value="UPI">UPI Transfer</option>
-                    <option value="Bank">Bank Account</option>
-                    <option value="GooglePlay">Google Play Redeem Code</option>
-                </select>
-                <input type="text" id="withdrawDetails" placeholder="Enter UPI ID / Bank A/C / Email">
-                <input type="number" id="withdrawAmount" placeholder="Points to Withdraw">
-                <button onclick="requestWithdrawal()">Submit Withdrawal Request</button>
+            <div class="card" style="padding: 15px; text-align: left;">
+                <h4 style="margin-bottom: 10px;"><i class="fa-solid fa-wallet"></i> Redeem Points</h4>
+                <div class="input-group">
+                    <label>Withdrawal Method</label>
+                    <select id="withdraw-method" onchange="toggleWithdrawalFields()">
+                        <option value="UPI">UPI ID</option>
+                        <option value="Bank">Bank Account</option>
+                    </select>
+                </div>
+
+                <div id="upi-fields" class="input-group">
+                    <label>UPI ID</label>
+                    <input type="text" id="upi-id" placeholder="e.g. username@oksbi">
+                    <label style="margin-top: 8px;">Mobile Number</label>
+                    <input type="text" id="upi-mobile" placeholder="Linked Mobile Number">
+                    <label style="margin-top: 8px;">Account Holder Name</label>
+                    <input type="text" id="upi-holder" placeholder="As per bank/UPI profile">
+                </div>
+
+                <div id="bank-fields" class="input-group" style="display:none;">
+                    <label>Bank Name</label>
+                    <input type="text" id="bank-name" placeholder="e.g. State Bank of India">
+                    <label style="margin-top: 8px;">Account Number</label>
+                    <input type="text" id="bank-acc" placeholder="Enter Account Number">
+                    <label style="margin-top: 8px;">IFSC Code</label>
+                    <input type="text" id="bank-ifsc" placeholder="Enter IFSC Code">
+                    <label style="margin-top: 8px;">Account Holder Name</label>
+                    <input type="text" id="bank-holder" placeholder="Account Holder Name">
+                    <label style="margin-top: 8px;">Linked Mobile Number</label>
+                    <input type="text" id="bank-mobile" placeholder="Mobile Number">
+                </div>
+
+                <div class="input-group">
+                    <label>Points to Withdraw</label>
+                    <input type="number" id="withdraw-amount" placeholder="Enter points">
+                </div>
+
+                <button class="btn" onclick="submitWithdrawal()">Submit Withdrawal Request</button>
             </div>
 
-            <h3>🛠️ Support & Desktop App</h3>
-            <div class="card">
-                <button class="secondary-btn" onclick="openSupport()">Contact Customer Support</button>
-                <button style="background: #059669; margin-top: 10px;" onclick="installPWA()">Install App on Desktop/Mobile (APK/PWA)</button>
-            </div>
+            <button class="btn" onclick="logout()" style="background:#ef4444; margin-top:10px;">Logout</button>
         </div>
 
-        <!-- BOTTOM NAVIGATION BAR -->
-        <div class="nav-bar">
-            <div class="nav-item active" onclick="switchTab('homeScreen', this)">
-                <span>🏠</span>Home
-            </div>
-            <div class="nav-item" onclick="switchTab('wheelScreen', this)">
-                <span>🎡</span>Lucky Wheel
-            </div>
-            <div class="nav-item" onclick="switchTab('profileScreen', this)">
-                <span>👤</span>Profile
-            </div>
+        <!-- NAVBAR -->
+        <div class="navbar">
+            <div class="nav-item active" onclick="switchTab('home', this)"><i class="fa-solid fa-house"></i>Home</div>
+            <div class="nav-item" onclick="switchTab('wheel', this)"><i class="fa-solid fa-dharmachakra"></i>Lucky Wheel</div>
+            <div class="nav-item" onclick="switchTab('profile', this)"><i class="fa-solid fa-user"></i>Profile</div>
         </div>
+
     </div>
 
 </div>
 
-<script>
-    const API_URL = "https://reward-app-1-0gj0.onrender.com";
-    let currentUser = null;
+<!-- ADD TO DESKTOP POPUP BANNER -->
+<div id="pwa-install-banner">
+    <div style="display:flex; align-items:center; gap:8px;">
+        <i class="fa-solid fa-mobile-screen-button" style="font-size:20px; color:#4f46e5;"></i>
+        <div>
+            <div style="font-size:13px; font-weight:bold;">Add to Home Screen</div>
+            <div style="font-size:11px; color:#aaa;">Install app for quick access</div>
+        </div>
+    </div>
+    <button onclick="installAppPrompt()">Add</button>
+</div>
 
-    // Toggle Password Visibility (Eye Button)
-    function togglePassword(fieldId, icon) {
-        const field = document.getElementById(fieldId);
-        if (field.type === 'password') {
-            field.type = 'text';
-            icon.innerText = '🙈';
+<!-- AI AVATAR SELECTION MODAL -->
+<div id="avatar-modal">
+    <div class="modal-content">
+        <h3>Choose AI Profile Picture</h3>
+        <p style="font-size:12px; color:#666; margin-top:5px;">Select an exclusive AI generated avatar.</p>
+        <div class="avatar-grid" id="avatar-grid-list"></div>
+        <button class="btn" onclick="closeAvatarModal()" style="margin-top:15px; background:#666;">Close</button>
+    </div>
+</div>
+
+<script>
+    let currentUser = null;
+    let currentRotation = 0;
+    let deferredPrompt = null;
+
+    // PWA Install Banner trigger
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        document.getElementById('pwa-install-banner').style.display = 'flex';
+    });
+
+    function installAppPrompt() {
+        if (deferredPrompt) {
+            deferredPrompt.prompt();
+            deferredPrompt.userChoice.then((choiceResult) => {
+                if (choiceResult.outcome === 'accepted') {
+                    document.getElementById('pwa-install-banner').style.display = 'none';
+                }
+                deferredPrompt = null;
+            });
         } else {
-            field.type = 'password';
-            icon.innerText = '👁️';
+            alert('To install, tap browser menu (3 dots) and select "Add to Home screen".');
         }
     }
 
-    function switchAuth(type) {
-        document.getElementById('loginForm').style.display = type === 'login' ? 'block' : 'none';
-        document.getElementById('signupForm').style.display = type === 'signup' ? 'block' : 'none';
-        document.getElementById('forgotForm').style.display = type === 'forgot' ? 'block' : 'none';
-        document.getElementById('authMsg').innerText = '';
+    // Populate AI Avatars (10 options)
+    const avatars = [
+        'https://api.dicebear.com/7.x/bottts/svg?seed=avatar1',
+        'https://api.dicebear.com/7.x/bottts/svg?seed=avatar2',
+        'https://api.dicebear.com/7.x/avataaars/svg?seed=avatar3',
+        'https://api.dicebear.com/7.x/avataaars/svg?seed=avatar4',
+        'https://api.dicebear.com/7.x/micah/svg?seed=avatar5',
+        'https://api.dicebear.com/7.x/micah/svg?seed=avatar6',
+        'https://api.dicebear.com/7.x/identicon/svg?seed=avatar7',
+        'https://api.dicebear.com/7.x/identicon/svg?seed=avatar8',
+        'https://api.dicebear.com/7.x/adventurer/svg?seed=avatar9',
+        'https://api.dicebear.com/7.x/adventurer/svg?seed=avatar10'
+    ];
+
+    const gridEl = document.getElementById('avatar-grid-list');
+    avatars.forEach(url => {
+        const img = document.createElement('img');
+        img.src = url;
+        img.className = 'avatar-option';
+        img.onclick = () => selectAvatar(url);
+        gridEl.appendChild(img);
+    });
+
+    function openAvatarModal() { document.getElementById('avatar-modal').style.display = 'flex'; }
+    function closeAvatarModal() { document.getElementById('avatar-modal').style.display = 'none'; }
+
+    async function selectAvatar(url) {
+        currentUser.profilePic = url;
+        document.getElementById('profile-avatar-img').src = url;
+        closeAvatarModal();
+        await saveProfileToServer({ profilePic: url });
     }
 
-    function switchTab(screenId, element) {
-        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-        document.getElementById(screenId).classList.add('active');
-        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-        element.classList.add('active');
+    async function updateUsername(newVal) {
+        if (!newVal.trim()) return;
+        currentUser.username = newVal;
+        await saveProfileToServer({ username: newVal });
     }
 
-    async function sendOtp(type) {
-        const phone = document.getElementById(type === 'signup' ? 'signupPhone' : 'forgotPhone').value;
-        if (!phone) { alert('Enter mobile number'); return; }
+    async function saveProfileToServer(data) {
+        try {
+            const res = await fetch('/api/update-profile', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userId: currentUser._id, ...data })
+            });
+            const result = await res.json();
+            if(result.user) currentUser = result.user;
+        } catch(e) { console.error(e); }
+    }
+
+    // Auth functions
+    async function sendOtp() {
+        const phone = document.getElementById('auth-phone').value;
+        if (!phone || phone.length < 10) { alert('Enter valid 10-digit number'); return; }
         
-        const res = await fetch(`${API_URL}/api/send-otp`, {
+        const res = await fetch('/api/send-otp', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ phone })
         });
         const data = await res.json();
         if (res.ok) {
-            alert(`OTP Sent! (For testing: ${data.otp})`);
+            alert('OTP Sent! (Mock OTP: ' + data.otp + ')');
+            document.getElementById('otp-group').style.display = 'block';
+            document.getElementById('send-otp-btn').style.display = 'none';
+            document.getElementById('login-register-btn').style.display = 'block';
         } else {
             alert(data.error);
         }
     }
 
-    async function registerUser() {
-        const phone = document.getElementById('signupPhone').value;
-        const otp = document.getElementById('signupOtp').value;
-        const password = document.getElementById('signupPassword').value;
-        const confirmPassword = document.getElementById('signupConfirmPassword').value;
+    async function handleAuth() {
+        const phone = document.getElementById('auth-phone').value;
+        const otp = document.getElementById('auth-otp').value;
+        const password = document.getElementById('auth-password').value;
 
-        if (password !== confirmPassword) {
-            document.getElementById('authMsg').innerText = 'Passwords do not match!';
-            return;
-        }
-
-        const res = await fetch(`${API_URL}/api/register`, {
+        // Try register first, if already exists try login
+        let res = await fetch('/api/register', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ phone, password, otp })
         });
-        const data = await res.json();
-        if (res.ok) {
-            alert('Registration Successful! Logging in...');
-            currentUser = data.user;
-            initApp();
-        } else {
-            document.getElementById('authMsg').innerText = data.error;
+        let data = await res.json();
+
+        if (!res.ok) {
+            // Try regular login if already registered
+            res = await fetch('/api/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ phone, password })
+            });
+            data = await res.json();
         }
-    }
 
-    async function loginUser() {
-        const phone = document.getElementById('loginPhone').value;
-        const password = document.getElementById('loginPassword').value;
-
-        const res = await fetch(`${API_URL}/api/login`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ phone, password })
-        });
-        const data = await res.json();
         if (res.ok) {
             currentUser = data.user;
             initApp();
         } else {
-            document.getElementById('authMsg').innerText = data.error;
-        }
-    }
-
-    async function resetPassword() {
-        const phone = document.getElementById('forgotPhone').value;
-        const otp = document.getElementById('forgotOtp').value;
-        const newPassword = document.getElementById('forgotNewPassword').value;
-
-        const res = await fetch(`${API_URL}/api/forgot-password`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ phone, otp, newPassword })
-        });
-        const data = await res.json();
-        if (res.ok) {
-            alert('Password reset successful! Please login.');
-            switchAuth('login');
-        } else {
-            alert(data.error);
+            alert(data.error || 'Authentication failed');
         }
     }
 
     function initApp() {
-        document.getElementById('authScreen').classList.remove('active');
-        document.getElementById('mainApp').style.display = 'flex';
+        document.getElementById('auth-screen').classList.remove('active');
+        document.getElementById('main-app').style.display = 'flex';
         updateUI();
     }
 
     function updateUI() {
-        document.getElementById('userPoints').innerText = currentUser.points;
-        document.getElementById('profilePhone').innerText = currentUser.phone;
-        document.getElementById('profilePoints').innerText = currentUser.points;
-        document.getElementById('refCount').innerText = currentUser.referralCount || 0;
+        document.getElementById('user-points').innerText = currentUser.points;
+        document.getElementById('profile-points-display').innerText = currentUser.points;
+        document.getElementById('profile-uid').innerText = 'UID: ' + (currentUser.uid || 'N/A');
+        document.getElementById('profile-username-input').value = currentUser.username || '';
+        document.getElementById('profile-avatar-img').src = currentUser.profilePic || avatars[0];
+    }
+
+    function switchTab(tabName, el) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        
+        if(tabName === 'home') document.getElementById('home-screen').classList.add('active');
+        if(tabName === 'wheel') document.getElementById('wheel-screen').classList.add('active');
+        if(tabName === 'profile') document.getElementById('profile-screen').classList.add('active');
+        
+        el.classList.add('active');
+    }
+
+    // Share / Refer functionality via Web Share API
+    async function shareApp() {
+        const shareData = {
+            title: 'Reward App',
+            text: 'Join this amazing reward app and earn points daily!',
+            url: window.location.href
+        };
+        if (navigator.share) {
+            try { await navigator.share(shareData); } catch (err) { console.log(err); }
+        } else {
+            navigator.clipboard.writeText(window.location.href);
+            alert('Referral link copied to clipboard!');
+        }
+    }
+
+    async function claimDaily() {
+        const res = await fetch('/api/daily-login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userId: currentUser._id })
+        });
+        const data = await res.json();
+        if(res.ok) {
+            currentUser.points = data.points;
+            updateUI();
+            alert(data.message);
+        } else { alert(data.error); }
     }
 
     async function watchAd() {
-        alert('Simulating Sponsored Ad View... Please wait 3 seconds.');
+        const res = await fetch('/api/points', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userId: currentUser._id, pointsToAdd: 50 })
+        });
+        const data = await res.json();
+        if(res.ok) {
+            currentUser.points = data.points;
+            updateUI();
+            alert('Ad watched successfully! +50 Points added.');
+        }
+    }
+
+    // Spin Wheel Animation & Request
+    async function spinWheel() {
+        const wheel = document.getElementById('spin-wheel-element');
+        const randomDeg = Math.floor(Math.random() * 3600) + 720;
+        currentRotation += randomDeg;
+        wheel.style.transform = `rotate(${currentRotation}deg)`;
+
         setTimeout(async () => {
-            const res = await fetch(`${API_URL}/api/points`, {
+            const res = await fetch('/api/spin-wheel', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ userId: currentUser._id, pointsToAdd: 50 })
+                body: JSON.stringify({ userId: currentUser._id })
             });
             const data = await res.json();
-            if (res.ok) {
+            if(res.ok) {
                 currentUser.points = data.points;
                 updateUI();
-                alert('🎉 Ad watched successfully! +50 Points added.');
-            }
-        }, 3000);
+                alert(`Congratulations! You won ${data.wonPoints} points!`);
+            } else { alert(data.error); }
+        }, 4000);
     }
 
-    async function claimDailyLogin() {
-        const res = await fetch(`${API_URL}/api/daily-login`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ userId: currentUser._id })
-        });
-        const data = await res.json();
-        if (res.ok) {
-            currentUser.points = data.points;
-            updateUI();
-            alert(data.message);
+    function toggleWithdrawalFields() {
+        const method = document.getElementById('withdraw-method').value;
+        if(method === 'UPI') {
+            document.getElementById('upi-fields').style.display = 'block';
+            document.getElementById('bank-fields').style.display = 'none';
         } else {
-            alert(data.error);
+            document.getElementById('upi-fields').style.display = 'none';
+            document.getElementById('bank-fields').style.display = 'block';
         }
     }
 
-    async function spinWheel() {
-        const res = await fetch(`${API_URL}/api/spin-wheel`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ userId: currentUser._id })
-        });
-        const data = await res.json();
-        if (res.ok) {
-            currentUser.points = data.points;
-            updateUI();
-            alert(data.message);
+    async function submitWithdrawal() {
+        const method = document.getElementById('withdraw-method').value;
+        const amount = Number(document.getElementById('withdraw-amount').value);
+        let details = {};
+
+        if (method === 'UPI') {
+            details = {
+                upiId: document.getElementById('upi-id').value,
+                mobile: document.getElementById('upi-mobile').value,
+                holderName: document.getElementById('upi-holder').value
+            };
+            if(!details.upiId || !details.holderName) { alert('Please fill all UPI fields'); return; }
         } else {
-            alert(data.error);
+            details = {
+                bankName: document.getElementById('bank-name').value,
+                accountNumber: document.getElementById('bank-acc').value,
+                ifsc: document.getElementById('bank-ifsc').value,
+                holderName: document.getElementById('bank-holder').value,
+                mobile: document.getElementById('bank-mobile').value
+            };
+            if(!details.accountNumber || !details.holderName || !details.ifsc) { alert('Please fill all Bank details'); return; }
         }
-    }
 
-    async function requestWithdrawal() {
-        const method = document.getElementById('withdrawMethod5') || document.getElementById('withdrawMethod').value;
-        const details = document.getElementById('withdrawDetails').value;
-        const amount = Number(document.getElementById('withdrawAmount').value);
-
-        if (!details || !amount) { alert('Fill all withdrawal details'); return; }
-
-        const res = await fetch(`${API_URL}/api/withdraw`, {
+        const res = await fetch('/api/withdraw', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ userId: currentUser._id, method, details, amount })
         });
         const data = await res.json();
-        if (res.ok) {
+        if(res.ok) {
             currentUser = data.user;
             updateUI();
-            alert('Withdrawal request submitted successfully! Status: Pending');
+            alert(data.message);
         } else {
             alert(data.error);
         }
     }
 
-    function openSupport() {
-        window.location.href = "mailto:14sunilsunil3@gmail.com?subject=Support%20Request%20-%20Reward%20App&body=Hi%20Admin,%20I%20am%20facing%20issue%20with%20my%20account:%20";
-    }
-
-    let deferredPrompt;
-    window.addEventListener('beforeinstallprompt', (e) => {
-        e.preventDefault();
-        deferredPrompt = e;
-    });
-
-    function installPWA() {
-        if (deferredPrompt) {
-            deferredPrompt.prompt();
-            deferredPrompt.userChoice.then((choiceResult) => {
-                if (choiceResult.outcome === 'accepted') {
-                    console.log('User accepted the install prompt');
-                }
-                deferredPrompt = null;
-            });
-        } else {
-            alert('To install on Desktop or Mobile, open your browser menu (3 dots) and select "Add to Home Screen" or "Install App".');
-        }
-    }
+    function logout() { location.reload(); }
 </script>
 </body>
 </html>
