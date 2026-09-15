@@ -14,6 +14,9 @@
         .screen.active { display: block; }
         h2 { margin-bottom: 20px; color: #4f46e5; text-align: center; }
         input, select { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #d1d5db; border-radius: 8px; font-size: 16px; }
+        .password-container { position: relative; width: 100%; margin: 10px 0; }
+        .password-container input { margin: 0; padding-right: 45px; width: 100%; }
+        .eye-btn { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); cursor: pointer; font-size: 18px; user-select: none; }
         button { width: 100%; padding: 12px; background: #4f46e5; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px; transition: background 0.2s; }
         button:hover { background: #4338ca; }
         .secondary-btn { background: #e5e7eb; color: #374151; }
@@ -37,28 +40,45 @@
     <!-- 1. AUTH SCREEN (Login / Signup / Forgot Password) -->
     <div id="authScreen" class="screen active">
         <h2 id="authTitle">Welcome to Reward App</h2>
+        
+        <!-- Login Form -->
         <div id="loginForm">
             <input type="text" id="loginPhone" placeholder="Mobile Number">
-            <input type="password" id="loginPassword" placeholder="Password">
+            <div class="password-container">
+                <input type="password" id="loginPassword" placeholder="Password">
+                <span class="eye-btn" onclick="togglePassword('loginPassword', this)">👁️</span>
+            </div>
             <button onclick="loginUser()">Login</button>
             <button class="secondary-btn" onclick="switchAuth('signup')">Create New Account (Signup)</button>
             <button class="secondary-btn" onclick="switchAuth('forgot')">Forgot Password?</button>
         </div>
 
+        <!-- Signup Form -->
         <div id="signupForm" style="display:none;">
             <input type="text" id="signupPhone" placeholder="Mobile Number">
             <button onclick="sendOtp('signup')">Send 6-Digit OTP</button>
             <input type="text" id="signupOtp" placeholder="Enter 6-Digit OTP">
-            <input type="password" id="signupPassword" placeholder="Create Password">
+            <div class="password-container">
+                <input type="password" id="signupPassword" placeholder="Create Password">
+                <span class="eye-btn" onclick="togglePassword('signupPassword', this)">👁️</span>
+            </div>
+            <div class="password-container">
+                <input type="password" id="signupConfirmPassword" placeholder="Confirm Password">
+                <span class="eye-btn" onclick="togglePassword('signupConfirmPassword', this)">👁️</span>
+            </div>
             <button onclick="registerUser()">Verify & Register</button>
             <button class="secondary-btn" onclick="switchAuth('login')">Already have an account? Login</button>
         </div>
 
+        <!-- Forgot Password Form -->
         <div id="forgotForm" style="display:none;">
             <input type="text" id="forgotPhone" placeholder="Registered Mobile Number">
             <button onclick="sendOtp('forgot')">Send OTP for Reset</button>
             <input type="text" id="forgotOtp" placeholder="Enter 6-Digit OTP">
-            <input type="password" id="forgotNewPassword" placeholder="New Password">
+            <div class="password-container">
+                <input type="password" id="forgotNewPassword" placeholder="New Password">
+                <span class="eye-btn" onclick="togglePassword('forgotNewPassword', this)">👁️</span>
+            </div>
             <button onclick="resetPassword()">Reset Password</button>
             <button class="secondary-btn" onclick="switchAuth('login')">Back to Login</button>
         </div>
@@ -153,9 +173,20 @@
 </div>
 
 <script>
-    // Live Backend API URL
     const API_URL = "https://reward-app-1-0gj0.onrender.com";
     let currentUser = null;
+
+    // Toggle Password Visibility (Eye Button)
+    function togglePassword(fieldId, icon) {
+        const field = document.getElementById(fieldId);
+        if (field.type === 'password') {
+            field.type = 'text';
+            icon.innerText = '🙈';
+        } else {
+            field.type = 'password';
+            icon.innerText = '👁️';
+        }
+    }
 
     function switchAuth(type) {
         document.getElementById('loginForm').style.display = type === 'login' ? 'block' : 'none';
@@ -192,6 +223,12 @@
         const phone = document.getElementById('signupPhone').value;
         const otp = document.getElementById('signupOtp').value;
         const password = document.getElementById('signupPassword').value;
+        const confirmPassword = document.getElementById('signupConfirmPassword').value;
+
+        if (password !== confirmPassword) {
+            document.getElementById('authMsg').innerText = 'Passwords do not match!';
+            return;
+        }
 
         const res = await fetch(`${API_URL}/api/register`, {
             method: 'POST',
@@ -258,9 +295,8 @@
         document.getElementById('refCount').innerText = currentUser.referralCount || 0;
     }
 
-    // High Reward Ad Watching Task
     async function watchAd() {
-        alert('Simulating Sponsored Ad View... Please wait 5 seconds.');
+        alert('Simulating Sponsored Ad View... Please wait 3 seconds.');
         setTimeout(async () => {
             const res = await fetch(`${API_URL}/api/points`, {
                 method: 'POST',
@@ -309,7 +345,7 @@
     }
 
     async function requestWithdrawal() {
-        const method = document.getElementById('withdrawMethod').value;
+        const method = document.getElementById('withdrawMethod5') || document.getElementById('withdrawMethod').value;
         const details = document.getElementById('withdrawDetails').value;
         const amount = Number(document.getElementById('withdrawAmount').value);
 
@@ -330,12 +366,10 @@
         }
     }
 
-    // Customer Support directly to your email
     function openSupport() {
         window.location.href = "mailto:14sunilsunil3@gmail.com?subject=Support%20Request%20-%20Reward%20App&body=Hi%20Admin,%20I%20am%20facing%20issue%20with%20my%20account:%20";
     }
 
-    // PWA / Desktop App Installation prompt
     let deferredPrompt;
     window.addEventListener('beforeinstallprompt', (e) => {
         e.preventDefault();
