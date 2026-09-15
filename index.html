@@ -53,8 +53,8 @@
     <div class="card">
         <h2>1. Create Account (Signup)</h2>
         <input type="text" id="signup-username" placeholder="Username">
-        <input type="email" id="signup-email" placeholder="Email">
-        <input type="text" id="signup-phone" placeholder="Phone Number">
+        <input type="email" id="signup-email" placeholder="Email (Optional)">
+        <input type="text" id="signup-phone" placeholder="Phone Number (Optional)">
         <input type="password" id="signup-password" placeholder="Password">
         <button onclick="handleSignup()">Signup</button>
         <div id="signup-msg" class="message"></div>
@@ -63,7 +63,7 @@
     <!-- 2. Login Section -->
     <div class="card">
         <h2>2. User Login</h2>
-        <input type="email" id="login-email" placeholder="Email">
+        <input type="text" id="login-id" placeholder="Enter Email or Phone Number">
         <input type="password" id="login-password" placeholder="Password">
         <button onclick="handleLogin()">Login</button>
         <div id="login-msg" class="message"></div>
@@ -109,7 +109,7 @@
         }
 
         async function handleLogin() {
-            const email = document.getElementById('login-email').value;
+            const loginId = document.getElementById('login-id').value;
             const password = document.getElementById('login-password').value;
             const msgDiv = document.getElementById('login-msg');
 
@@ -117,13 +117,12 @@
                 const res = await fetch(`${API_URL}/api/login`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, password })
+                    body: JSON.stringify({ loginId, password })
                 });
                 const data = await res.json();
                 if (data.success) {
                     msgDiv.className = "message";
                     msgDiv.innerText = "Login Successful!";
-                    // Auto-fill User ID in points section
                     document.getElementById('points-userid').value = data.user._id;
                 } else {
                     msgDiv.className = "message error";
