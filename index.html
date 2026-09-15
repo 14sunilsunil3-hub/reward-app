@@ -44,6 +44,12 @@
         .input-group { margin-bottom: 15px; }
         .input-group label { display: block; font-size: 13px; margin-bottom: 5px; color: #555; font-weight: 600; }
         .input-group input, .input-group select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; }
+        
+        /* Password Field with Eye Toggle Container */
+        .password-container { position: relative; }
+        .password-container input { padding-right: 40px; }
+        .password-toggle-icon { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #777; font-size: 16px; }
+
         .task-card { background: #f9fafb; border: 1px solid #eee; padding: 15px; border-radius: 12px; margin-bottom: 15px; display: flex; flex-direction: column; gap: 8px; }
         
         /* Coin Styling Badge */
@@ -64,7 +70,7 @@
         .avatar-option { width: 50px; height: 50px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; }
         .avatar-option:hover, .avatar-option.selected { border-color: #4f46e5; transform: scale(1.05); }
 
-        /* Lucky Spin Wheel (Corrected Pointer & Slices with Coin Logo) */
+        /* Lucky Spin Wheel */
         .wheel-container { display: flex; flex-direction: column; align-items: center; margin: 20px 0; position: relative; }
         .wheel-coin-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 45px; height: 45px; background: #fff; border-radius: 50%; display: flex; justify-content: center; align-items: center; z-index: 15; box-shadow: 0 0 10px rgba(0,0,0,0.2); border: 2px solid #eab308; }
         .wheel { width: 260px; height: 260px; border-radius: 50%; border: 8px solid #4f46e5; position: relative; transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99); background: conic-gradient(#7c3aed 0deg 60deg, #f59e0b 60deg 120deg, #ec4899 120deg 180deg, #10b981 180deg 240deg, #3b82f6 240deg 300deg, #ef4444 300deg 360deg); }
@@ -121,11 +127,17 @@
         </div>
         <div class="input-group">
             <label>Create Password</label>
-            <input type="password" id="signup-pass" placeholder="Create strong password">
+            <div class="password-container">
+                <input type="password" id="signup-pass" placeholder="Create strong password">
+                <i class="fa-solid fa-eye password-toggle-icon" onclick="togglePasswordVisibility('signup-pass', this)"></i>
+            </div>
         </div>
         <div class="input-group">
             <label>Confirm Password</label>
-            <input type="password" id="signup-cpass" placeholder="Confirm password">
+            <div class="password-container">
+                <input type="password" id="signup-cpass" placeholder="Confirm password">
+                <i class="fa-solid fa-eye password-toggle-icon" onclick="togglePasswordVisibility('signup-cpass', this)"></i>
+            </div>
         </div>
         <div class="input-group">
             <label>OTP Verification</label>
@@ -163,7 +175,10 @@
                 <label style="margin-bottom:0;">Password</label>
                 <span style="font-size: 12px; color: #4f46e5; cursor: pointer; font-weight: bold;" onclick="showScreen('forgot-screen')">Forgot?</span>
             </div>
-            <input type="password" id="login-pass" placeholder="Enter password">
+            <div class="password-container">
+                <input type="password" id="login-pass" placeholder="Enter password">
+                <i class="fa-solid fa-eye password-toggle-icon" onclick="togglePasswordVisibility('login-pass', this)"></i>
+            </div>
         </div>
 
         <button class="btn" onclick="handleLogin()">Login</button>
@@ -191,11 +206,17 @@
         </div>
         <div class="input-group">
             <label>Create New Password</label>
-            <input type="password" id="forgot-newpass" placeholder="New password">
+            <div class="password-container">
+                <input type="password" id="forgot-newpass" placeholder="New password">
+                <i class="fa-solid fa-eye password-toggle-icon" onclick="togglePasswordVisibility('forgot-newpass', this)"></i>
+            </div>
         </div>
         <div class="input-group">
             <label>Confirm New Password</label>
-            <input type="password" id="forgot-cnewpass" placeholder="Confirm new password">
+            <div class="password-container">
+                <input type="password" id="forgot-cnewpass" placeholder="Confirm new password">
+                <i class="fa-solid fa-eye password-toggle-icon" onclick="togglePasswordVisibility('forgot-cnewpass', this)"></i>
+            </div>
         </div>
         <div class="input-group">
             <label>OTP Verification</label>
@@ -266,25 +287,30 @@
         </div>
 
         <!-- PROFILE SCREEN -->
-        <div id="profile-screen" class="screen">
-            <div class="profile-header">
-                <div class="avatar-container" onclick="openAvatarModal()" title="Change Avatar">
-                    <img id="profile-avatar-img" src="" alt="Avatar">
+        <div id="profile-screen" class="screen" style="display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+                <div class="profile-header">
+                    <div class="avatar-container" onclick="openAvatarModal()" title="Change Avatar">
+                        <img id="profile-avatar-img" src="" alt="Avatar">
+                    </div>
+                    <div class="user-meta">
+                        <span class="uid-badge" id="profile-uid">UID: ------</span>
+                        <input type="text" id="profile-username-input" onchange="updateUsername(this.value)" placeholder="Enter Username" style="font-weight:bold; font-size:14px; border:1px solid #ccc; padding:3px 6px; border-radius:5px; width:100%;">
+                        <p style="font-size: 13px; color: #666; margin-top:4px;">Coins: <span id="profile-points-display" class="coin-badge"><i class="fa-solid fa-coins coin-icon"></i> 0</span></p>
+                    </div>
                 </div>
-                <div class="user-meta">
-                    <span class="uid-badge" id="profile-uid">UID: ------</span>
-                    <input type="text" id="profile-username-input" onchange="updateUsername(this.value)" placeholder="Enter Username" style="font-weight:bold; font-size:14px; border:1px solid #ccc; padding:3px 6px; border-radius:5px; width:100%;">
-                    <p style="font-size: 13px; color: #666; margin-top:4px;">Coins: <span id="profile-points-display" class="coin-badge"><i class="fa-solid fa-coins coin-icon"></i> 0</span></p>
+
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <button class="btn" style="margin-top:0; background:#0ea5e9;" onclick="openWithdrawModal()"><i class="fa-solid fa-wallet"></i> Withdraw</button>
+                    <button class="btn" style="margin-top:0; background:#8b5cf6;" onclick="openWithdrawHistoryModal()"><i class="fa-solid fa-clock-rotate-left"></i> Withdrawal History</button>
+                    <button class="btn" style="margin-top:0; background:#6366f1;" onclick="openCoinHistoryModal()"><i class="fa-solid fa-coins"></i> Coin History</button>
                 </div>
             </div>
 
-            <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 15px;">
-                <button class="btn" style="margin-top:0; background:#0ea5e9;" onclick="openWithdrawModal()"><i class="fa-solid fa-wallet"></i> Withdraw</button>
-                <button class="btn" style="margin-top:0; background:#8b5cf6;" onclick="openWithdrawHistoryModal()"><i class="fa-solid fa-clock-rotate-left"></i> Withdrawal History</button>
-                <button class="btn" style="margin-top:0; background:#6366f1;" onclick="openCoinHistoryModal()"><i class="fa-solid fa-coins"></i> Coin History</button>
+            <!-- Logout button shifted completely to the bottom of the screen -->
+            <div style="margin-top: 30px;">
+                <button class="btn" onclick="logout()" style="background:#ef4444; width:100%;">Logout</button>
             </div>
-
-            <button class="btn" onclick="logout()" style="background:#ef4444; margin-top:20px;">Logout</button>
         </div>
 
         <!-- NAVBAR -->
@@ -406,6 +432,20 @@
 
     let currentUser = null;
     let currentRotation = 0;
+
+    // Password See/Hide Toggle Function
+    function togglePasswordVisibility(fieldId, iconEl) {
+        const passwordInput = document.getElementById(fieldId);
+        if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+            iconEl.classList.remove('fa-eye');
+            iconEl.classList.add('fa-eye-slash');
+        } else {
+            passwordInput.type = 'password';
+            iconEl.classList.remove('fa-eye-slash');
+            iconEl.classList.add('fa-eye');
+        }
+    }
 
     // Draggable Movable Support Button Logic
     const floatingBtn = document.getElementById('floating-support');
@@ -628,20 +668,24 @@
         }
     }
 
-    // Wheel logic with pointer landing strictly on Purple (50-200) or Red (Lost)
+    // Lucky Wheel logic mapping wheel slices & fixed reward angles strictly to color patterns
     async function spinWheel() {
         const wheel = document.getElementById('spin-wheel-element');
-        const outcomes = [30, 330]; // Angles for Purple or Red slices
-        const randomChoice = outcomes[Math.floor(Math.random() * outcomes.length)];
-        const extraSpins = 360 * 5;
-        currentRotation += extraSpins + randomChoice;
+        
+        // 6 Slices: 0-60 (Purple: 50-200), 60-120 (Orange: 100-500), 120-180 (Pink: 1000-5000), 
+        // 180-240 (Green: 3000-10000), 240-300 (Blue: 5000-20000), 300-360 (Red: Lost)
+        const sliceAngles = [30, 90, 150, 210, 270, 330];
+        const randomTargetAngle = sliceAngles[Math.floor(Math.random() * sliceAngles.length)];
+        
+        const extraSpins = 360 * 6;
+        currentRotation += extraSpins + randomTargetAngle;
         wheel.style.transform = `rotate(${currentRotation}deg)`;
 
         setTimeout(async () => {
             const res = await fetch('/api/spin-wheel', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ userId: currentUser._id, landedAngle: randomChoice })
+                body: JSON.stringify({ userId: currentUser._id, landedAngle: randomTargetAngle })
             });
             const data = await res.json();
             if(res.ok) {
@@ -693,7 +737,7 @@
         } else { alert(data.error); }
     }
 
-    // Separate Withdrawal History & Coin History Modals
+    // History Modals
     async function openWithdrawHistoryModal() {
         document.getElementById('withdraw-history-modal').style.display = 'flex';
         try {
