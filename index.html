@@ -71,14 +71,16 @@
         .avatar-option:hover, .avatar-option.selected { border-color: #4f46e5; transform: scale(1.05); }
 
         /* Lucky Spin Wheel */
-        .wheel-container { display: flex; flex-direction: column; align-items: center; margin: 20px 0; position: relative; }
+        .wheel-container { display: flex; flex-direction: column; align-items: center; margin: 10px 0; position: relative; }
         .wheel-coin-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 45px; height: 45px; background: #fff; border-radius: 50%; display: flex; justify-content: center; align-items: center; z-index: 15; box-shadow: 0 0 10px rgba(0,0,0,0.2); border: 2px solid #eab308; }
-        .wheel { width: 260px; height: 260px; border-radius: 50%; border: 8px solid #4f46e5; position: relative; transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99); background: conic-gradient(#7c3aed 0deg 60deg, #f59e0b 60deg 120deg, #ec4899 120deg 180deg, #10b981 180deg 240deg, #3b82f6 240deg 300deg, #ef4444 300deg 360deg); }
-        .wheel-pointer { width: 0; height: 0; border-left: 12px solid transparent; border-right: 12px solid transparent; border-top: 25px solid #111; position: absolute; top: -18px; left: 50%; transform: translateX(-50%) rotate(180deg); z-index: 20; }
+        .wheel { width: 280px; height: 280px; border-radius: 50%; border: 8px solid #4f46e5; position: relative; transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99); background: conic-gradient(#7c3aed 0deg 60deg, #f59e0b 60deg 120deg, #ec4899 120deg 180deg, #ef4444 180deg 240deg, #3b82f6 240deg 300deg, #10b981 300deg 360deg); }
         
-        .wheel-legend { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; margin-top: 10px; font-size: 11px; font-weight: bold; width: 100%; }
-        .legend-item { display: flex; align-items: center; gap: 5px; background: #f8fafc; padding: 6px; border-radius: 6px; border: 1px solid #e2e8f0; }
-        .legend-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+        /* Flipped Pointer / Teer pointing downwards */
+        .wheel-pointer { width: 0; height: 0; border-left: 12px solid transparent; border-right: 12px solid transparent; border-bottom: 25px solid #111; position: absolute; top: -12px; left: 50%; transform: translateX(-50%); z-index: 20; }
+        
+        /* Slices text layout inside the wheel (Forced to White Color) */
+        .wheel-slice-text { position: absolute; width: 100%; height: 100%; top: 0; left: 0; pointer-events: none; }
+        .slice-label { position: absolute; font-size: 13px; font-weight: bold; color: #ffffff; text-shadow: 1px 1px 3px rgba(0,0,0,0.9); width: 80px; text-align: center; }
 
         /* Movable Support Popup Button */
         #floating-support { position: fixed; bottom: 85px; right: 20px; background: #16a34a; color: #fff; width: 50px; height: 50px; border-radius: 50%; display: flex; justify-content: center; align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.3); cursor: pointer; z-index: 2999; font-size: 22px; touch-action: none; }
@@ -269,25 +271,26 @@
 
         <!-- LUCKY WHEEL SCREEN -->
         <div id="wheel-screen" class="screen">
-            <h2 style="text-align:center; margin-bottom: 5px;">Lucky Spin Wheel</h2>
-            <p style="text-align:center; font-size: 12px; color: #666; margin-bottom: 10px;">Spin & Win Coins based on your luck!</p>
+            <h2 style="text-align:center; margin-bottom: 2px;">Lucky Spin Wheel</h2>
+            <p style="text-align:center; font-size: 12px; color: #666; margin-bottom: 5px;">Spin & Win Coins based on your luck!</p>
             
             <div class="wheel-container">
                 <div class="wheel-pointer"></div>
                 <div class="wheel-coin-center"><i class="fa-solid fa-coins" style="color: #eab308; font-size: 22px;"></i></div>
-                <div class="wheel" id="spin-wheel-element"></div>
+                <div class="wheel" id="spin-wheel-element">
+                    <!-- Text overlays for each slice in White Color -->
+                    <div class="wheel-slice-text">
+                        <div class="slice-label" style="top: 25px; left: 165px; transform: rotate(30deg);">50-200</div>
+                        <div class="slice-label" style="top: 95px; left: 200px; transform: rotate(90deg);">100-500</div>
+                        <div class="slice-label" style="top: 175px; left: 155px; transform: rotate(150deg);">1000-5000</div>
+                        <div class="slice-label" style="top: 215px; left: 65px; transform: rotate(210deg);">Lost</div>
+                        <div class="slice-label" style="top: 155px; left: 15px; transform: rotate(270deg);">50000-20000</div>
+                        <div class="slice-label" style="top: 75px; left: 40px; transform: rotate(330deg);">3000-10000</div>
+                    </div>
+                </div>
             </div>
 
-            <div class="wheel-legend">
-                <div class="legend-item"><span class="legend-dot" style="background:#7c3aed;"></span> <i class="fa-solid fa-coins coin-icon"></i> 50-200 (Purple)</div>
-                <div class="legend-item"><span class="legend-dot" style="background:#f59e0b;"></span> <i class="fa-solid fa-coins coin-icon"></i> 100-500 (Orange)</div>
-                <div class="legend-item"><span class="legend-dot" style="background:#ec4899;"></span> <i class="fa-solid fa-coins coin-icon"></i> 1000-5000 (Pink)</div>
-                <div class="legend-item"><span class="legend-dot" style="background:#10b981;"></span> <i class="fa-solid fa-coins coin-icon"></i> 3000-10000 (Green)</div>
-                <div class="legend-item"><span class="legend-dot" style="background:#3b82f6;"></span> <i class="fa-solid fa-coins coin-icon"></i> 5000-20000 (Blue)</div>
-                <div class="legend-item"><span class="legend-dot" style="background:#ef4444;"></span> ❌ Lost (Red)</div>
-            </div>
-
-            <button class="btn" onclick="spinWheel()" style="margin-top: 15px;">Spin the Wheel Now</button>
+            <button class="btn" onclick="spinWheel()" style="margin-top: 10px;">Spin</button>
         </div>
 
         <!-- PROFILE SCREEN -->
@@ -671,7 +674,7 @@
         }
     }
 
-    // Lucky Wheel logic mapping wheel slices & fixed reward angles strictly to color patterns
+    // Lucky Wheel logic mapping wheel slices & fixed reward angles strictly
     async function spinWheel() {
         const wheel = document.getElementById('spin-wheel-element');
         
