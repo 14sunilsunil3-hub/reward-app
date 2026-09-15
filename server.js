@@ -13,11 +13,11 @@ mongoose.connect(MONGO_URI)
   .then(() => console.log('MongoDB Cloud Connected!'))
   .catch((err) => console.error('MongoDB Connection Error:', err));
 
-// User Schema & Model (Added phone field)
+// User Schema & Model
 const userSchema = new mongoose.Schema({
-  username: { type: String, required: true, unique: true },
-  email: { type: String, required: true, unique: true },
-  phone: { type: String, required: true, unique: true },
+  username: { type: String, required: true },
+  email: { type: String, unique: true, sparse: true }, // Optional/Unique
+  phone: { type: String, unique: true, sparse: true }, // Optional/Unique
   password: { type: String, required: true },
   points: { type: Number, default: 0 },
   createdAt: { type: Date, default: Date.now }
@@ -30,17 +30,26 @@ app.get('/', (req, res) => {
   res.send('Reward App Backend is Running!');
 });
 
-// 2. User Signup Endpoint (Supports phone)
+// 2. User Signup Endpoint (Email ya Phone me se koi ek ya dono)
 app.post('/api/signup', async (req, res) => {
   try {
     const { username, email, phone, password } = req.body;
 
-    const existingUser = await User.findOne({ $or: [{ email }, { phone }] });
+    if (!email && !phone) {
+      return res.status(400).json({ success: false, message: 'Please provide either Email or Phone number' });
+    }
+
+    // Check if already registered
+    const query = [];
+    if (email) query.push({ email });
+    if (phone) query.push({ phone });
+
+    const existingUser = await User.findOne({ $or: query });
     if (existingUser) {
       return res.status(400).json({ success: false, message: 'Email or Phone already registered' });
     }
 
-    const newUser = new User({ username, email, phone, password });
+    const newUser = new User({ username, email: email || undefined, phone: phone || undefined, password });
     await newUser.save();
 
     res.status(201).json({ success: true, message: 'User created successfully', user: newUser });
@@ -49,11 +58,15 @@ app.post('/api/signup', async (req, res) => {
   }
 });
 
-// 3. User Login Endpoint
+// 3. User Login Endpoint (Email ya Phone dono se login ho sakega)
 app.post('/api/login', async (req, res) => {
   try {
-    const { email, password } = req.body;
-    const user = await User.findOne({ email, password });
+    const { loginId, password } = req.body; // loginId matlab email ya phone
+
+    const user = await User.findOne({
+      $or: [{ email: loginId }, { phone: loginId }],
+      password: password
+    });
 
     if (!user) {
       return res.status(401).json({ success: false, message: 'Invalid credentials' });
@@ -65,7 +78,7 @@ app.post('/api/login', async (req, res) => {
   }
 });
 
-// 4. Update Reward Points (Add or Redeem)
+// 4. Update Reward Points
 app.post('/api/update-points', async (req, res) => {
   try {
     const { userId, pointsToAdd } = req.body;
