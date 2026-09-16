@@ -219,5 +219,93 @@ app.post('/api/withdraw', async (req, res) => {
   }
 });
 
+// Advanced Color & Number Trading Game with House Profit Control
+let gameHistory = [];
+
+app.post('/api/color-game', async (req, res) => {
+  try {
+    const { userId, betType, betValue, betAmount, timerType } = req.body;
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ error: 'User not found' });
+
+    const bet = Number(betAmount);
+    if (isNaN(bet) || bet < 1) {
+      return res.status(400).json({ error: 'Minimum bet is 1 coin!' });
+    }
+    if (user.points < bet) {
+      return res.status(400).json({ error: 'Aapke wallet mein itne coins nahi hain!' });
+    }
+
+    let winningNumber = Math.floor(Math.random() * 10);
+
+    // House Profit Control Logic for Big / Small
+    if (betType === 'size') {
+      if (betValue === 'small' && winningNumber <= 4) {
+        winningNumber = Math.floor(Math.random() * 5) + 5; 
+      } else if (betValue === 'big' && winningNumber >= 5) {
+        winningNumber = Math.floor(Math.random() * 5); 
+      }
+    }
+
+    const winningSize = winningNumber <= 4 ? 'small' : 'big';
+
+    let winningColor = 'green';
+    if (winningNumber === 0 || winningNumber === 5) winningColor = 'violet';
+    else if (winningNumber % 2 === 0) winningColor = 'red';
+    else winningColor = 'green';
+
+    let isWin = false;
+    let profitMultiplier = 0;
+
+    if (betType === 'color' && betValue === winningColor) {
+      isWin = true;
+      profitMultiplier = 1; // 100% profit
+    } else if (betType === 'size' && betValue === winningSize) {
+      isWin = true;
+      profitMultiplier = 0.9; // 90% profit
+    } else if (betType === 'number' && Number(betValue) === winningNumber) {
+      isWin = true;
+      profitMultiplier = 2; // 200% profit
+    }
+
+    let netReturn = 0;
+    if (isWin) {
+      netReturn = Math.floor(bet * profitMultiplier);
+      user.points += netReturn;
+    } else {
+      user.points -= bet;
+    }
+
+    await user.save();
+
+    const periodId = '2026' + Math.floor(100000 + Math.random() * 900000);
+
+    const historyItem = {
+      period: periodId,
+      number: winningNumber,
+      color: winningColor,
+      size: winningSize,
+      time: timerType
+    };
+    gameHistory.unshift(historyItem);
+    if (gameHistory.length > 10) gameHistory.pop();
+
+    res.status(200).json({
+      success: isWin,
+      winningNumber,
+      winningColor,
+      winningSize,
+      periodId,
+      points: user.points,
+      profit: netReturn,
+      message: isWin ? `Jeet gaye! 🎉 Number: ${winningNumber} (${winningColor.toUpperCase()}) | +${netReturn} Coins` : `Haar gaye! ❌ Number: ${winningNumber} (${winningColor.toUpperCase()}) | -${bet} Coins`,
+      history: gameHistory
+    });
+
+  } catch (err) {
+    res.status(500).json({ error: 'Game server error', details: err.message });
+  }
+});
+
 const PORT = process.env.PORT || 10000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
