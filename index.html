@@ -8,101 +8,100 @@
     <link rel="icon" type="image/svg+xml" href="logo.svg">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background: #f4f5f7; color: #333; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
-        .app-container { width: 100%; max-width: 480px; background: #fff; min-height: 100vh; box-shadow: 0 0 20px rgba(0,0,0,0.1); position: relative; display: flex; flex-direction: column; }
-        .screen { display: none; padding: 20px; overflow-y: auto; flex: 1; padding-bottom: 80px; }
-        .screen.active { display: block; }
+      * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+      body { background: #f4f5f7; color: #333; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+      .app-container { width: 100%; max-width: 480px; background: #fff; min-height: 100vh; display: flex; flex-direction: column; position: relative; padding: 20px; overflow-y: auto; padding-bottom: 90px; }
+      .screen { display: none; }
+      .screen.active { display: block; }
 
-        /* 5-Second Splash Screen Styles */
-        #splash-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #16a34a, #15803d); z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; color: #fff; }
-        .splash-logo-circle { width: 110px; height: 110px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; justify-content: center; align-items: center; margin-bottom: 20px; animation: pulse 1.5s infinite; }
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.08); } 100% { transform: scale(1); } }
-        .spinner-dots { display: flex; gap: 6px; margin-top: 15px; }
-        .spinner-dots span { width: 10px; height: 10px; background: #ffe700; border-radius: 50%; animation: bounce 0.6s infinite alternate; }
-        .spinner-dots span:nth-child(2) { animation-delay: 0.2s; }
-        .spinner-dots span:nth-child(3) { animation-delay: 0.4s; }
-        @keyframes bounce { to { transform: translateY(-10px); background: #fff; } }
+      /* 5-Second Splash Screen Styles */
+      #splash-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #0f172a, #1e293b); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; color: #fff; text-align: center; }
+      .splash-logo-circle { width: 110px; height: 110px; border-radius: 50%; background: #fff; display: flex; justify-content: center; align-items: center; box-shadow: 0 10px 25px rgba(0,0,0,0.3); margin-bottom: 25px; animation: pulse 2s infinite; }
+      @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.08); } 100% { transform: scale(1); } }
+      .spinner-dots { display: flex; gap: 6px; margin-top: 15px; }
+      .spinner-dots span { width: 10px; height: 10px; background: #ff7f00; border-radius: 50%; animation: bounce 0.6s infinite alternate; }
+      .spinner-dots span:nth-child(2) { animation-delay: 0.2s; }
+      .spinner-dots span:nth-child(3) { animation-delay: 0.4s; }
+      @keyframes bounce { to { transform: translateY(-10px); background: #fff; } }
 
-        /* Terms & Guide Modal Popup */
-        #policy-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; padding: 20px; }
-        .policy-content { background: #fff; width: 100%; max-width: 420px; padding: 20px; border-radius: 12px; max-height: 80vh; overflow-y: auto; }
-        .policy-content h3 { color: #16a34a; font-size: 18px; margin-bottom: 12px; text-align: center; }
-        .policy-section { font-size: 13px; color: #555; margin-bottom: 12px; line-height: 1.5; }
-        .policy-section b { color: #222; }
+      /* Terms & Guide Modal Popup */
+      #policy-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; justify-content: center; align-items: center; padding: 20px; }
+      .policy-content { background: #fff; width: 100%; max-width: 420px; padding: 20px; border-radius: 15px; max-height: 80vh; overflow-y: auto; }
+      .policy-content h3 { color: #4f46e5; margin-bottom: 12px; text-align: center; }
+      .policy-section { font-size: 13px; color: #555; margin-bottom: 12px; line-height: 1.5; }
+      .policy-section b { color: #222; }
 
-        /* Navigation Bar */
-        .navbar { position: fixed; bottom: 0; width: 100%; max-width: 480px; background: #fff; display: flex; justify-content: space-around; padding: 10px 0; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); z-index: 100; }
-        .nav-item { text-align: center; color: #777; cursor: pointer; font-size: 12px; }
-        .nav-item.active { color: #16a34a; font-weight: bold; }
-        .nav-item i { font-size: 20px; display: block; margin-bottom: 3px; }
+      /* Navigation Bar */
+      .navbar { position: fixed; bottom: 0; width: 100%; max-width: 480px; background: #fff; display: flex; justify-content: space-around; padding: 12px 0; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); z-index: 100; left: 50%; transform: translateX(-50%); }
+      .nav-item { text-align: center; color: #777; cursor: pointer; font-size: 12px; flex: 1; }
+      .nav-item.active { color: #4f46e5; font-weight: bold; }
+      .nav-item i { font-size: 20px; display: block; margin-bottom: 3px; }
 
-        /* General UI Elements */
-        .card { background: linear-gradient(135deg, #16a34a, #15803d); color: #fff; padding: 20px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(22,163,74,0.2); }
-        .btn { background: #16a34a; color: #fff; border: none; width: 100%; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.2s; }
-        .btn:active { transform: scale(0.98); }
-        .input-group { margin-bottom: 15px; }
-        .input-group label { display: block; font-size: 13px; margin-bottom: 5px; color: #555; font-weight: 600; }
-        .input-group input, .input-group select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; }
-        
-        /* Error Input Highlight Class */
-        .input-error { border: 2px solid #ef4444 !important; background-color: #fef2f2 !important; }
+      /* General UI Elements */
+      .card { background: linear-gradient(135deg, #4f46e5, #7c3aed); color: #fff; padding: 20px; border-radius: 15px; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(79, 70, 229, 0.2); }
+      .btn { background: #4f46e5; color: #fff; border: none; width: 100%; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.2s; margin-top: 5px; }
+      .btn:active { transform: scale(0.98); }
+      .input-group { margin-bottom: 15px; }
+      .input-group label { display: block; font-size: 13px; margin-bottom: 5px; color: #555; font-weight: 600; }
+      .input-group input, .input-group select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; }
+      
+      /* Error Input Highlight Class */
+      .input-error { border: 2px solid #ef4444 !important; background-color: #fef2f2 !important; }
 
-        /* Password Field with Eye Toggle Container */
-        .password-container { position: relative; }
-        .password-container input { padding-right: 40px; }
-        .password-toggle-icon { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #777; }
+      /* Password Field with Eye Toggle Container */
+      .password-container { position: relative; }
+      .password-container input { padding-right: 40px; }
+      .password-toggle-icon { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #777; font-size: 16px; }
 
-        .task-card { background: #fbfbfb; border: 1px solid #eee; padding: 15px; border-radius: 12px; margin-bottom: 15px; }
-        
-        /* Coin Styling Badge */
-        .coin-badge { display: inline-flex; align-items: center; gap: 5px; background: #fef08a; color: #854d0e; padding: 2px 8px; border-radius: 20px; font-size: 12px; font-weight: bold; }
+      .task-card { background: #fbfafc; border: 1px solid #eee; padding: 15px; border-radius: 12px; margin-bottom: 15px; }
+      
+      /* Coin Styling Badge */
+      .coin-badge { display: inline-flex; align-items: center; gap: 5px; background: #fef08a; color: #854d0e; padding: 2px 8px; border-radius: 12px; font-size: 13px; font-weight: bold; }
+      .coin-icon { color: #f59e0b; }
 
-        /* Profile UI */
-        .profile-header { display: flex; gap: 15px; align-items: center; background: #f8fafc; padding: 15px; border-radius: 12px; margin-bottom: 15px; }
-        .avatar-container { position: relative; width: 70px; height: 70px; border-radius: 50%; overflow: hidden; border: 2px solid #16a34a; cursor: pointer; }
-        .avatar-img { width: 100%; height: 100%; object-fit: cover; }
-        .user-meta { flex: 1; }
-        .uid-badge { font-size: 11px; background: #e0e7ff; color: #3730a3; padding: 2px 6px; border-radius: 4px; display: inline-block; margin-bottom: 4px; }
+      /* Profile UI */
+      .profile-header { display: flex; gap: 15px; align-items: center; background: #f8fafc; padding: 15px; border-radius: 12px; margin-bottom: 15px; border: 1px solid #e2e8f0; }
+      .avatar-container { position: relative; width: 70px; height: 70px; border-radius: 50%; overflow: hidden; border: 2px solid #4f46e5; cursor: pointer; flex-shrink: 0; background: #ddd; }
+      .avatar-container img { width: 100%; height: 100%; object-fit: cover; }
+      .user-meta { flex: 1; }
+      .uid-badge { font-size: 11px; background: #e0e7ff; color: #3730a3; padding: 2px 6px; border-radius: 4px; display: inline-block; margin-bottom: 4px; }
 
-        /* AI Avatar Modal */
-        #avatar-modal, #password-confirm-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; padding: 20px; }
-        .modal-content { background: #fff; width: 90%; max-width: 400px; padding: 20px; border-radius: 12px; text-align: center; }
-        .avatar-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin: 15px 0; }
-        .avatar-option { width: 50px; height: 50px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; }
-        .avatar-option.selected { border-color: #16a34a; transform: scale(1.05); }
+      /* AI Avatar Modal */
+      #avatar-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; justify-content: center; align-items: center; padding: 20px; }
+      .modal-content { background: #fff; width: 90%; max-width: 400px; padding: 20px; border-radius: 12px; text-align: center; }
+      .avatar-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 15px; }
+      .avatar-option { width: 50px; height: 50px; border-radius: 50%; border: 2px solid transparent; cursor: pointer; overflow: hidden; }
+      .avatar-option:hover, .avatar-option.selected { border-color: #4f46e5; transform: scale(1.05); }
 
-        /* Movable Support Popup Button */
-        #floating-support { position: fixed; bottom: 85px; right: 20px; background: #16a34a; color: #fff; width: 50px; height: 50px; border-radius: 50%; cursor: pointer; z-index: 99; display: flex; justify-content: center; align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.2); font-size: 20px; }
-        .profile-bottom-actions { display: flex; gap: 10px; align-items: center; margin-top: 20px; }
-        .profile-bottom-actions .btn { margin-top: 0; flex: 1; }
-        
-        .history-item { background: #f8fafc; border: 1px solid #e2e8f0; padding: 10px; border-radius: 8px; margin-bottom: 8px; font-size: 13px; text-align: left; }
+      /* Movable Support Popup button */
+      .floating-support { position: fixed; bottom: 85px; right: 20px; background: #16a34a; color: #fff; width: 50px; height: 50px; border-radius: 50%; display: flex; justify-content: center; align-items: center; box-shadow: 0 4px 12px rgba(0,0,0,0.2); cursor: pointer; z-index: 99; font-size: 20px; }
+      
+      .profile-bottom-actions { display: flex; gap: 10px; align-items: center; margin-top: 20px; }
+      .profile-bottom-actions .btn { margin-top: 0; flex: 1; }
 
-        /* Top Navigation Header for Sub-screens */
-        .sub-header { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; }
-        .sub-header i { font-size: 20px; cursor: pointer; color: #16a34a; }
-        .sub-header h3 { font-size: 18px; color: #222; }
+      .history-item { background: #f8fafc; border: 1px solid #e2e8f0; padding: 10px; border-radius: 8px; margin-bottom: 8px; font-size: 12px; color: #777; }
+
+      /* Top Navigation Header for Sub-screens */
+      .sub-header { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; }
+      .sub-header i { font-size: 20px; cursor: pointer; color: #4f46e5; }
+      .sub-header h3 { font-size: 18px; color: #222; }
     </style>
-    <!-- Google AdSense Code -->
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5405487813802646" crossorigin="anonymous"></script>
 </head>
 <body>
-
     <!-- 5-SECOND SPLASH SCREEN -->
     <div id="splash-screen">
         <div class="splash-logo-circle">
-            <i class="fa-solid fa-coins" style="font-size: 45px; color: #ffe700;"></i>
+            <i class="fa-solid fa-coins" style="font-size: 45px; color: #16a34a;"></i>
         </div>
         <h1 style="font-size: 26px; font-weight: 900; letter-spacing: 2px;">REWARD ZONE</h1>
-        <p style="font-size: 13px; color: #e2e8f0; margin-top: 5px;">Loading Your Earning Hub...</p>
+        <p style="font-size: 13px; color: #aaa; margin-top: 5px;">Loading Your Earning Hub...</p>
         <div class="spinner-dots">
             <span></span><span></span><span></span>
         </div>
     </div>
 
     <!-- MOVABLE CUSTOMER SUPPORT POPUP BUTTON -->
-    <div id="floating-support" title="Customer Support" onclick="openSupportModal()">
+    <div class="floating-support" id="floating-support" title="Customer Support" onclick="openSupportModal()">
         <i class="fa-solid fa-headset"></i>
     </div>
 
@@ -110,7 +109,7 @@
 
         <!-- 1. SIGNUP SCREEN -->
         <div id="signup-screen" class="screen active">
-            <h2 style="text-align: center; margin-bottom: 15px; color: #16a34a;">Create Account</h2>
+            <h2 style="text-align: center; margin-bottom: 15px; color: #4f46e5;">Create Account</h2>
             
             <div class="input-group">
                 <label>Select Region / Country</label>
@@ -121,10 +120,12 @@
                     <option value="UAE">UAE (+971)</option>
                 </select>
             </div>
+            
             <div class="input-group">
                 <label>Mobile Number</label>
                 <input type="text" id="signup-phone" placeholder="Enter 10-digit mobile number" oninput="clearError(this)">
             </div>
+            
             <div class="input-group">
                 <label>Create Password</label>
                 <div class="password-container">
@@ -132,6 +133,7 @@
                     <i class="fa-solid fa-eye password-toggle-icon" onclick="togglePasswordVisibility('signup-pass', this)"></i>
                 </div>
             </div>
+
             <div class="input-group">
                 <label>Confirm Password</label>
                 <div class="password-container">
@@ -139,6 +141,7 @@
                     <i class="fa-solid fa-eye password-toggle-icon" onclick="togglePasswordVisibility('signup-cpass', this)"></i>
                 </div>
             </div>
+
             <div class="input-group">
                 <label>OTP Verification</label>
                 <div style="display: flex; gap: 8px;">
@@ -149,13 +152,13 @@
 
             <button class="btn" onclick="handleSignup()">Sign Up</button>
             <p style="text-align: center; margin-top: 15px; font-size: 13px; color: #666;">
-                I have an account? <span style="color: #16a34a; text-decoration: underline; cursor: pointer; font-weight: bold;" onclick="showScreen('login-screen')">Login</span>
+                I have an account? <span style="color: #4f46e5; text-decoration: underline; cursor: pointer; font-weight: bold;" onclick="showAuthScreen('login-screen')">Login</span>
             </p>
         </div>
 
         <!-- LOGIN SCREEN -->
         <div id="login-screen" class="screen">
-            <h2 style="text-align: center; margin-bottom: 15px; color: #16a34a;">Welcome Back</h2>
+            <h2 style="text-align: center; margin-bottom: 15px; color: #4f46e5;">Welcome Back</h2>
             
             <div class="input-group">
                 <label>Select Region / Country</label>
@@ -166,28 +169,32 @@
                     <option value="UAE">UAE (+971)</option>
                 </select>
             </div>
+            
             <div class="input-group">
                 <label>Mobile Number</label>
                 <input type="text" id="login-phone" placeholder="Enter mobile number" oninput="clearError(this)">
             </div>
-            <div class="input-group" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
-                <label style="margin-bottom: 0;">Password</label>
-                <span style="font-size: 12px; color: #16a34a; cursor: pointer; font-weight: bold;" onclick="showScreen('forgot-screen')">Forgot?</span>
-            </div>
-            <div class="password-container">
-                <input type="password" id="login-pass" placeholder="Enter password" oninput="clearError(this)">
-                <i class="fa-solid fa-eye password-toggle-icon" onclick="togglePasswordVisibility('login-pass', this)"></i>
+            
+            <div class="input-group">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                    <label style="margin-bottom: 0;">Password</label>
+                    <span style="font-size: 12px; color: #4f46e5; cursor: pointer; font-weight: bold;" onclick="showAuthScreen('forgot-screen')">Forgot?</span>
+                </div>
+                <div class="password-container">
+                    <input type="password" id="login-pass" placeholder="Enter password" oninput="clearError(this)">
+                    <i class="fa-solid fa-eye password-toggle-icon" onclick="togglePasswordVisibility('login-pass', this)"></i>
+                </div>
             </div>
 
-            <button class="btn" onclick="handleLogin()" style="margin-top: 15px;">Login</button>
+            <button class="btn" onclick="handleLogin()">Login</button>
             <p style="text-align: center; margin-top: 15px; font-size: 13px; color: #666;">
-                Don't have an account? <span style="color: #16a34a; text-decoration: underline; cursor: pointer; font-weight: bold;" onclick="showScreen('signup-screen')">Sign Up</span>
+                Don't have an account? <span style="color: #4f46e5; text-decoration: underline; cursor: pointer; font-weight: bold;" onclick="showAuthScreen('signup-screen')">Sign Up</span>
             </p>
         </div>
 
         <!-- FORGOT PASSWORD SCREEN -->
         <div id="forgot-screen" class="screen">
-            <h2 style="text-align: center; margin-bottom: 15px; color: #16a34a;">Reset Password</h2>
+            <h2 style="text-align: center; margin-bottom: 15px; color: #4f46e5;">Reset Password</h2>
             
             <div class="input-group">
                 <label>Select Region / Country</label>
@@ -198,10 +205,12 @@
                     <option value="UAE">UAE (+971)</option>
                 </select>
             </div>
+            
             <div class="input-group">
                 <label>Mobile Number</label>
                 <input type="text" id="forgot-phone" placeholder="Enter registered mobile number" oninput="clearError(this)">
             </div>
+
             <div class="input-group">
                 <label>Create New Password</label>
                 <div class="password-container">
@@ -209,6 +218,7 @@
                     <i class="fa-solid fa-eye password-toggle-icon" onclick="togglePasswordVisibility('forgot-newpass', this)"></i>
                 </div>
             </div>
+
             <div class="input-group">
                 <label>Confirm New Password</label>
                 <div class="password-container">
@@ -216,6 +226,7 @@
                     <i class="fa-solid fa-eye password-toggle-icon" onclick="togglePasswordVisibility('forgot-cnewpass', this)"></i>
                 </div>
             </div>
+
             <div class="input-group">
                 <label>OTP Verification</label>
                 <div style="display: flex; gap: 8px;">
@@ -226,38 +237,38 @@
 
             <button class="btn" onclick="handlePasswordChange()">Change Password</button>
             <p style="text-align: center; margin-top: 15px; font-size: 13px;">
-                <span style="color: #16a34a; text-decoration: underline; cursor: pointer; font-weight: bold;" onclick="showScreen('login-screen')">Back to Login</span>
+                <span style="color: #4f46e5; text-decoration: underline; cursor: pointer; font-weight: bold;" onclick="showAuthScreen('login-screen')">Back to Login</span>
             </p>
         </div>
 
         <!-- MAIN APP SCREENS -->
-        <div id="main-app" style="display: none; flex: 1; flex-direction: column;">
-            
+        <div id="main-app" class="screen">
+
             <!-- HOME SCREEN -->
             <div id="home-screen" class="screen active">
                 <div class="card">
-                    <h3 style="font-size: 14px; opacity: 0.9;">My Wallet Balance</h3>
-                    <div style="font-size: 32px; font-weight: bold; margin-top: 5px; display: flex; align-items: center; justify-content: space-between;">
-                        <div><i class="fa-solid fa-coins" style="color: #ffe700;"></i> <span id="user-points">0</span> Coins</div>
-                    </div>
+                    <h3>My Wallet Balance</h3>
+                    <p style="font-size: 32px; font-weight: bold; margin-top: 5px; display: flex; align-items: center; justify-content: space-between;">
+                        <span><i class="fa-solid fa-coins" style="color: #fde047;"></i> <span id="user-points">0</span> Coins</span>
+                    </p>
                 </div>
 
                 <div class="task-card">
-                    <h4 style="color: #16a34a;">Watch Video Ad & Earn</h4>
+                    <h4>Watch Video Ad & Earn</h4>
                     <p style="font-size: 13px; color: #666;">Watch sponsored video to earn instant coins.</p>
-                    <button class="btn" onclick="watchAd()" style="margin-top: 5px;">Watch Ad Now (+50 Coins)</button>
+                    <button class="btn" onclick="watchAd()">Watch Ad Now (+50 Coins)</button>
                 </div>
 
                 <div class="task-card">
-                    <h4 style="color: #16a34a;">Daily Check-In Bonus</h4>
+                    <h4>Daily Check-in Bonus</h4>
                     <p style="font-size: 13px; color: #666;">Claim your free daily login reward.</p>
-                    <button class="btn" onclick="claimDaily()" style="margin-top: 5px;">Claim Daily Reward (+20 Coins)</button>
+                    <button class="btn" onclick="claimDaily()">Claim Daily Reward (+20 Coins)</button>
                 </div>
 
                 <div class="task-card">
-                    <h4 style="color: #16a34a;">Refer Friends</h4>
-                    <p style="font-size: 13px; color: #666;">Refer friends and earn <b>1000 Coins</b> per referral.</p>
-                    <button class="btn" onclick="shareApp()" style="margin-top: 5px;"><i class="fa-solid fa-share-nodes"></i> Share App</button>
+                    <h4>Refer Friends</h4>
+                    <p style="font-size: 13px; color: #666;">Refer and earn 5000 Coins per referral.</p>
+                    <button class="btn" onclick="shareApp()"><i class="fa-solid fa-share-nodes"></i> Share & Earn</button>
                 </div>
             </div>
 
@@ -265,24 +276,24 @@
             <div id="profile-screen" class="screen">
                 <div class="profile-header">
                     <div class="avatar-container" onclick="openAvatarModal()" title="Change Avatar">
-                        <img id="profile-avatar-img" class="avatar-img" src="" alt="Avatar">
+                        <img id="profile-avatar-img" src="" alt="Avatar">
                     </div>
                     <div class="user-meta">
                         <span class="uid-badge" id="profile-uid">UID: ------</span>
-                        <input type="text" id="profile-username-input" onchange="updateAvatarUsername(this.value)" placeholder="Enter username" style="padding: 4px 8px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 13px; width: 100%;">
+                        <input type="text" id="profile-username-input" onchange="updateUsername(this.value)" placeholder="Enter Name">
                         <p style="font-size: 13px; color: #666; margin-top: 4px;">Coins: <span id="profile-points-display">0</span></p>
                     </div>
                 </div>
 
                 <div style="display: flex; flex-direction: column; gap: 8px;">
-                    <button class="btn" style="margin-top: 0; background: #0ea5e9;" onclick="openWithdrawPage()"><i class="fa-solid fa-wallet"></i> Withdrawal Request</button>
-                    <button class="btn" style="margin-top: 0; background: #8b5cf6;" onclick="openWithdrawHistoryModal()"><i class="fa-solid fa-clock-rotate-left"></i> Withdrawal History</button>
-                    <button class="btn" style="margin-top: 0; background: #6366f1;" onclick="openCoinHistoryModal()"><i class="fa-solid fa-coins"></i> Coin History</button>
+                    <button class="btn" style="background: #0ea5e9;" onclick="openWithdrawPage()"><i class="fa-solid fa-wallet"></i> Withdraw Money</button>
+                    <button class="btn" style="background: #8b5cf6;" onclick="openWithdrawHistoryModal()"><i class="fa-solid fa-clock-rotate-left"></i> Withdrawal History</button>
+                    <button class="btn" style="background: #6366f1;" onclick="openCoinHistoryModal()"><i class="fa-solid fa-coins"></i> Coin History</button>
                 </div>
 
                 <div class="profile-bottom-actions">
-                    <button class="btn" style="background: #16a34a;" onclick="openSupportModal()"><i class="fa-solid fa-headset"></i> Support</button>
-                    <button class="btn" style="background: #ef4444;" onclick="logout()">Logout</button>
+                    <button class="btn" onclick="openSupportModal()" style="background: #16a34a;"><i class="fa-solid fa-headset"></i> Support</button>
+                    <button class="btn" onclick="logout()" style="background: #ef4444;"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
                 </div>
             </div>
 
@@ -294,14 +305,14 @@
                 </div>
 
                 <div class="card" style="padding: 15px; margin-bottom: 15px;">
-                    <p style="font-size: 12px; color: #e0e7ff;">Available Balance</p>
+                    <p style="font-size: 12px; color: #e2e8f0;">Available Balance</p>
                     <h2 style="font-size: 24px;" id="page-withdraw-balance">0 Coins</h2>
                 </div>
 
                 <div class="input-group">
                     <label>Choose Payment Method</label>
                     <select id="page-withdraw-method" onchange="togglePageWithdrawFields()">
-                        <option value="UPI">UPI ID</option>
+                        <option value="UPI">UPI ID / Option</option>
                         <option value="Bank">Bank Account</option>
                     </select>
                 </div>
@@ -319,11 +330,11 @@
                 </div>
 
                 <!-- Bank Specific Fields (With 100 Banks List) -->
-                <div id="page-bank-fields" style="display: none;">
+                <div id="page-bank-fields" style="display:none;">
                     <div class="input-group">
                         <label>Select Bank</label>
                         <select id="page-bank-name">
-                            <option value="">Choose Bank (100+ Banks Available)</option>
+                            <option value="">-- Choose Bank (100+ Banks Available) --</option>
                         </select>
                     </div>
                     <div class="input-group">
@@ -332,7 +343,7 @@
                     </div>
                     <div class="input-group">
                         <label>Account Holder Name</label>
-                        <input type="text" id="page-bank-holder" placeholder="Enter holder name">
+                        <input type="text" id="page-bank-holder" placeholder="Enter account holder name">
                     </div>
                     <div class="input-group">
                         <label>Mobile Number</label>
@@ -345,16 +356,16 @@
                 </div>
 
                 <div class="input-group">
-                    <label>Coins to Withdraw (Min 1000 Coins = ₹100)</label>
-                    <input type="number" id="page-withdraw-amount" placeholder="Min 1000" oninput="calculatePageRupees(this.value)">
+                    <label>Coins to Withdraw (100 Coins = ₹1)</label>
+                    <input type="number" id="page-withdraw-amount" placeholder="Min 1000 Coins" oninput="calculatePageRupees(this.value)">
                     <small id="page-rupees-conversion" style="color: #16a34a; font-weight: bold; display: block; margin-top: 4px;">You will get: ₹0.00</small>
                 </div>
 
-                <button class="btn" style="background: #16a34a;" onclick="triggerPasswordPopup()">Apply Withdrawal</button>
+                <button class="btn" style="background: #0ea5e9;" onclick="triggerPasswordPopup()">Apply Withdrawal</button>
             </div>
 
             <!-- NAVBAR -->
-            <div class="navbar">
+            <div class="navbar" id="main-navbar" style="display: flex;">
                 <div class="nav-item active" onclick="switchTab('home', this)"><i class="fa-solid fa-house"></i>Home</div>
                 <div class="nav-item" onclick="switchTab('profile', this)"><i class="fa-solid fa-user"></i>Profile</div>
             </div>
@@ -364,11 +375,11 @@
     </div>
 
     <!-- CONFIRM PASSWORD POPUP MODAL FOR WITHDRAWAL -->
-    <div id="password-confirm-modal">
+    <div id="password-confirm-modal" style="display:none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; justify-content: center; align-items: center; padding: 20px;">
         <div class="modal-content" style="text-align: left;">
-            <h3 style="color: #16a34a; text-align: center;"><i class="fa-solid fa-lock"></i> Confirm Withdrawal</h3>
-            <p style="font-size: 12px; color: #777; margin: 10px 0; text-align: center;">Enter your account login password to proceed.</p>
-
+            <h3 style="color: #4f46e5; text-align: center;"><i class="fa-solid fa-lock"></i> Confirm Withdrawal</h3>
+            <p style="font-size: 12px; color: #777; margin: 10px 0; text-align: center;">Enter your account login password to authorize payout.</p>
+            
             <div class="input-group">
                 <label>Login Password</label>
                 <div class="password-container">
@@ -377,16 +388,16 @@
                 </div>
             </div>
 
-            <button class="btn" onclick="submitFinalWithdraw()">Confirm & Withdraw</button>
+            <button class="btn" onclick="submitFinalWithdrawal()">Confirm & Withdraw</button>
             <button class="btn" onclick="closePasswordPopup()" style="background: #666; margin-top: 5px;">Cancel</button>
         </div>
     </div>
 
     <!-- WITHDRAWAL HISTORY MODAL -->
-    <div id="withdraw-history-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000; justify-content:center; align-items:center; padding:20px;">
-        <div class="modal-content" style="text-align: left; max-width: 440px;">
-            <h3 style="color: #16a34a;"><i class="fa-solid fa-clock-rotate-left"></i> Withdrawal History</h3>
-            <div id="withdraw-history-list" style="max-height: 250px; overflow-y: auto; margin-top: 10px;">
+    <div id="withdraw-history-modal" style="display:none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; justify-content: center; align-items: center; padding: 20px;">
+        <div class="modal-content" style="text-align: left;">
+            <h3 style="color: #4f46e5;"><i class="fa-solid fa-clock-rotate-left"></i> Withdrawal History</h3>
+            <div id="withdrawal-history-list" style="max-height: 250px; overflow-y: auto; margin-top: 10px;">
                 <p style="font-size: 12px; color: #777;">No withdrawals yet.</p>
             </div>
             <button class="btn" onclick="closeWithdrawHistoryModal()" style="background: #666; margin-top: 15px;">Close</button>
@@ -394,9 +405,9 @@
     </div>
 
     <!-- COIN HISTORY MODAL -->
-    <div id="coin-history-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000; justify-content:center; align-items:center; padding:20px;">
-        <div class="modal-content" style="text-align: left; max-width: 440px;">
-            <h3 style="color: #16a34a;"><i class="fa-solid fa-coins"></i> Coin Earnings History</h3>
+    <div id="coin-history-modal" style="display:none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; justify-content: center; align-items: center; padding: 20px;">
+        <div class="modal-content" style="text-align: left;">
+            <h3 style="color: #4f46e5;"><i class="fa-solid fa-coins"></i> Coin Earnings History</h3>
             <div id="coin-history-list" style="max-height: 250px; overflow-y: auto; margin-top: 10px;">
                 <p style="font-size: 12px; color: #777;">No earnings recorded yet.</p>
             </div>
@@ -405,11 +416,11 @@
     </div>
 
     <!-- CUSTOMER SUPPORT POPUP MODAL -->
-    <div id="support-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000; justify-content:center; align-items:center; padding:20px;">
+    <div id="support-modal" style="display:none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; justify-content: center; align-items: center; padding: 20px;">
         <div class="modal-content" style="text-align: left;">
             <h3 style="color: #16a34a;"><i class="fa-solid fa-headset"></i> Customer Support</h3>
             <p style="font-size: 13px; color: #555; margin: 10px 0;">Facing any issue? Contact us directly via email:</p>
-            <a href="mailto:14sunilsunil13@gmail.com" style="font-size: 14px; color: #2563eb; font-weight: bold; display: block; margin-bottom: 15px;">14sunilsunil13@gmail.com</a>
+            <a href="mailto:14sunilsunil3@gmail.com" style="color: #2563eb; font-weight: bold; display: block; margin-bottom: 15px;">14sunilsunil3@gmail.com</a>
             <button class="btn" onclick="closeSupportModal()" style="background: #666;">Close</button>
         </div>
     </div>
@@ -421,14 +432,14 @@
             <div class="policy-section">
                 <b>1. How to Earn Coins:</b><br>
                 • Claim daily check-in bonus and watch video ads.<br>
-                • Share referral links to earn 1000 Coins per referral.
+                • Share referral links to earn 5000 Coins per referral.
             </div>
             <div class="policy-section">
                 <b>2. Withdrawal Policy & Limits:</b><br>
-                • Minimum withdrawal: 1000 Coins (₹100).<br>
+                • Minimum withdrawal: 1000 Coins (₹10).<br>
                 • Maximum withdrawal: 1,000,000 Coins (₹10,000).<br>
                 • Conversion rate: 100 Coins = 1 Indian Rupee.<br>
-                • If any withdrawal request is rejected by admin, your coins are instantly refunded back to your wallet.
+                • If any withdrawal request is rejected by admin, your coins are instantly refunded back to your wallet!
             </div>
             <button class="btn" onclick="closePolicyModal()">Agree & Continue</button>
         </div>
@@ -456,24 +467,23 @@
             "Jammu & Kashmir Bank", "City Union Bank", "Dhanlaxmi Bank", "Karnataka Bank", "Airtel Payments Bank",
             "Paytm Payments Bank", "India Post Payments Bank", "Fino Payments Bank", "Jio Payments Bank",
             "AU Small Finance Bank", "Equitas Small Finance Bank", "Ujjivan Small Finance Bank", "Jana Small Finance Bank",
-            "ESAF Small Finance Bank", "Suryoday Small Finance Bank", "Utkarsh Small Finance Bank", "North East Small Finance",
+            "ESAF Small Finance Bank", "Suryoday Small Finance Bank", "Utkarsh Small Finance Bank", "North East Small Finance Bank",
             "Andhra Pragathi Grameena Bank", "Kerala Gramin Bank", "Prathama UP Gramin Bank", "Maharashtra Gramin Bank",
-            "Aryavart Bank", "Paschim Banga Gramin Bank", "Karnataka Gramin Bank", "Punjab Gramin Bank", "Madhyanchal Gramin",
-            "Utkal Grameena Bank", "Odisha Gramya Bank", "Assam Gramin Vikash Bank", "Tripura Gramin Bank", "Bangiya Gramin",
-            "Chhattisgarh Rajya Gramin Bank", "Himachal Pradesh Gramin Bank", "Saurashtra Gramin Bank", "Rajasthan Marudhara",
-            "Andhra Pradesh Grameena Vikas Bank", "Puduvai Bharathiar Grama Bank", "Dakshin Bihar Gramin Bank", "Uttar Bihar",
-            "Ellaquai Dehati Bank", "Meghalaya Uttarbank", "Mizoram Rural Bank", "Nagaland Rural Bank", "Manipur Rural Bank",
-            "DBS Bank India", "Standard Chartered Bank", "HSBC Bank", "Citibank", "Deutsche Bank",
+            "Aryavart Bank", "Paschim Banga Gramin Bank", "Karnataka Gramin Bank", "Punjab Gramin Bank", "Bangiya Gramin Vikash Bank",
+            "Utkal Gramin Bank", "Odisha Gramin Bank", "Assam Gramin Vikash Bank", "Tripura Gramin Bank", "Telangana Grameena Bank",
+            "Chhattisgarh Rajya Gramin Bank", "Himachal Pradesh Gramin Bank", "Saurashtra Gramin Bank", "Rajasthan Marudhara Gramin Bank",
+            "Andhra Pradesh Grameena Vikas Bank", "Puduvai Bharathiar Gramin Bank", "Dakshin Bihar Gramin Bank", "Uttar Bihar Gramin Bank",
+            "Ellaquai Dehati Bank", "Meghalaya Rural Bank", "Mizoram Rural Bank", "Nagaland Rural Bank", "Manipur Rural Bank",
             "Barclays Bank", "Bank of America", "JPMorgan Chase Bank", "BNP Paribas", "Societe Generale",
-            "Standard Bank", "ABN AMRO Bank", "Doha Bank", "Qatar National Bank", "Emirates NBD",
-            "Abu Dhabi Commercial Bank", "Mashreq Bank", "Woori Bank", "KEB Hana Bank", "Industrial & Commercial Bank of Ch",
+            "Standard Chartered", "Bank of America", "Doha Bank", "Qatar National Bank", "Emirates NBD",
+            "Abu Dhabi Commercial Bank", "Mashreq Bank", "Noor Bank", "KEB Hana Bank", "Industrial & Commercial Bank of China",
             "Shinhan Bank", "State Bank of Mauritius", "SBM Bank India", "SMBC Bank", "Sumitomo Mitsui Banking Corporation"
         ];
 
         // Populate Banks Options
         window.addEventListener('DOMContentLoaded', () => {
             const selectEl = document.getElementById('page-bank-name');
-            if(selectEl) {
+            if (selectEl) {
                 top100Banks.forEach(bank => {
                     const opt = document.createElement('option');
                     opt.value = bank;
@@ -492,21 +502,21 @@
 
             setTimeout(() => {
                 const splash = document.getElementById('splash-screen');
-                if(splash) {
+                if (splash) {
                     splash.style.opacity = '0';
                     setTimeout(() => {
                         splash.style.display = 'none';
                         if (currentUser && currentUser._id) {
                             initMainApp(false);
                         } else {
-                            showScreen('signup-screen');
+                            showAuthScreen('signup-screen');
                         }
                     }, 500);
                 }
-            }, 5000);
+            }, 3000);
         });
 
-        function saveSession(userData) {
+        function saveUserSession(userData) {
             currentUser = userData;
             localStorage.setItem('reward_zone_user', JSON.stringify(userData));
         }
@@ -546,16 +556,14 @@
         // Draggable Support Button
         const floatingBtn = document.getElementById('floating-support');
         let isDragging = false, startX, startY, initialX, initialY;
-        
         floatingBtn.addEventListener('pointerdown', (e) => {
             isDragging = false; startX = e.clientX; startY = e.clientY;
             const rect = floatingBtn.getBoundingClientRect();
             initialX = rect.left; initialY = rect.top;
             floatingBtn.setPointerCapture(e.pointerId);
         });
-        
         floatingBtn.addEventListener('pointermove', (e) => {
-            if (Math.abs(e.clientX - startX) > 5 || Math.abs(e.clientY - startY) > 5) {
+            if (!isDragging && (Math.abs(e.clientX - startX) > 5 || Math.abs(e.clientY - startY) > 5)) {
                 isDragging = true;
             }
             if (!isDragging) return;
@@ -563,11 +571,13 @@
             floatingBtn.style.top = (initialY + (e.clientY - startY)) + 'px';
             floatingBtn.style.bottom = 'auto'; floatingBtn.style.right = 'auto';
         });
-        
-        floatingBtn.addEventListener('pointerup', (e) => { isDragging = false; });
+        floatingBtn.addEventListener('pointerup', () => { isDragging = false; });
 
-        function showScreen(screenId) {
-            document.querySelectorAll('.app-container > .screen').forEach(s => s.classList.remove('active'));
+        function showAuthScreen(screenId) {
+            document.getElementById('signup-screen').classList.remove('active');
+            document.getElementById('login-screen').classList.remove('active');
+            document.getElementById('forgot-screen').classList.remove('active');
+            document.getElementById('main-app').classList.remove('active');
             document.getElementById(screenId).classList.add('active');
         }
 
@@ -575,13 +585,12 @@
         const avatars = [
             "https://api.dicebear.com/7.x/bottts/svg?seed=avatar1",
             "https://api.dicebear.com/7.x/bottts/svg?seed=avatar2",
-            "https://api.dicebear.com/7.x/avatars/svg?seed=avatar3",
-            "https://api.dicebear.com/7.x/micah/svg?seed=avatar4",
-            "https://api.dicebear.com/7.x/identicon/svg?seed=avatar5"
+            "https://api.dicebear.com/7.x/bottts/svg?seed=avatar3",
+            "https://api.dicebear.com/7.x/bottts/svg?seed=avatar4",
+            "https://api.dicebear.com/7.x/bottts/svg?seed=avatar5"
         ];
-        
         const gridEl = document.getElementById('avatar-grid-list');
-        if(gridEl) {
+        if (gridEl) {
             avatars.forEach(url => {
                 const img = document.createElement('img');
                 img.src = url; img.className = 'avatar-option';
@@ -592,19 +601,18 @@
 
         function openAvatarModal() { document.getElementById('avatar-modal').style.display = 'flex'; }
         function closeAvatarModal() { document.getElementById('avatar-modal').style.display = 'none'; }
-        
         async function selectAvatar(url) {
             currentUser.profilePic = url;
             document.getElementById('profile-avatar-img').src = url;
-            saveSession(currentUser);
+            saveUserSession(currentUser);
             closeAvatarModal();
             await saveProfileToServer({ profilePic: url });
         }
 
-        async function updateAvatarUsername(newVal) {
-            if(!newVal) return;
+        async function updateUsername(newVal) {
+            if (!newVal.trim()) return;
             currentUser.username = newVal;
-            saveSession(currentUser);
+            saveUserSession(currentUser);
             await saveProfileToServer({ username: newVal });
         }
 
@@ -615,7 +623,7 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ userId: currentUser._id, ...data })
                 });
-            } catch(e) { console.error(e); }
+            } catch (e) { console.error(e); }
         }
 
         function openSupportModal() { document.getElementById('support-modal').style.display = 'flex'; }
@@ -642,32 +650,29 @@
             const cpassEl = document.getElementById('signup-cpass');
             const otpEl = document.getElementById('signup-otp');
 
-            if(!phoneEl.value || !passEl.value || !cpassEl.value || !otpEl.value) { alert('Please fill all fields!'); return; }
-            if(passEl.value !== cpassEl.value) {
-                passEl.classList.add('input-error'); cpassEl.classList.add('input-error');
-                alert('Passwords do not match!'); return;
-            }
+            if(!phoneEl.value || !passEl.value || !cpassEl.value || !otpEl.value) { alert('Please fill all fields'); return; }
+            if(passEl.value !== cpassEl.value) { passEl.classList.add('input-error'); cpassEl.classList.add('input-error'); alert('Passwords do not match!'); return; }
 
             let res = await fetch('/api/register', {
                 method: 'POST', headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ region, phone: phoneEl.value, password: passEl.value, otp: otpEl.value })
             });
             let data = await res.json();
-            if(res.ok) { saveSession(data.user); initMainApp(true); }
-            else { alert(data.error || 'Registration failed!'); }
+            if(res.ok) { currentUser = data.user; saveUserSession(currentUser); initMainApp(true); }
+            else { alert(data.error || 'Registration failed'); }
         }
 
         async function handleLogin() {
             const phoneEl = document.getElementById('login-phone');
             const passEl = document.getElementById('login-pass');
-            if(!phoneEl.value || !passEl.value) { alert('Please fill all fields!'); return; }
+            if(!phoneEl.value || !passEl.value) { alert('Please fill all fields'); return; }
 
             let res = await fetch('/api/login', {
                 method: 'POST', headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ phone: phoneEl.value, password: passEl.value })
             });
             let data = await res.json();
-            if(res.ok) { saveSession(data.user); initMainApp(true); }
+            if(res.ok) { currentUser = data.user; saveUserSession(currentUser); initMainApp(true); }
             else { alert(data.error || 'Login failed!'); }
         }
 
@@ -677,7 +682,7 @@
             const cnewpassEl = document.getElementById('forgot-cnewpass');
             const otpEl = document.getElementById('forgot-otp');
 
-            if(!phoneEl.value || !newpassEl.value || !cnewpassEl.value || !otpEl.value) { alert('Please fill all fields!'); return; }
+            if(!phoneEl.value || !newpassEl.value || !cnewpassEl.value || !otpEl.value) { alert('Please fill all fields'); return; }
             if(newpassEl.value !== cnewpassEl.value) { alert('New passwords do not match!'); return; }
 
             let res = await fetch('/api/change-password', {
@@ -685,57 +690,67 @@
                 body: JSON.stringify({ phone: phoneEl.value, newpass: newpassEl.value, otp: otpEl.value })
             });
             let data = await res.json();
-            if(res.ok) { alert('Password changed successfully!'); showScreen('login-screen'); }
-            else { alert(data.error || 'Failed to update password!'); }
+            if(res.ok) { alert('Password changed successfully!'); showAuthScreen('login-screen'); }
+            else { alert(data.error || 'Failed to update password'); }
         }
 
         function initMainApp(showPolicy = true) {
-            document.getElementById('signup-screen').style.display = 'none';
-            document.getElementById('login-screen').style.display = 'none';
-            document.getElementById('forgot-screen').style.display = 'none';
-            document.getElementById('main-app').style.display = 'flex';
+            document.getElementById('signup-screen').classList.remove('active');
+            document.getElementById('login-screen').classList.remove('active');
+            document.getElementById('forgot-screen').classList.remove('active');
+            
+            const mainApp = document.getElementById('main-app');
+            mainApp.classList.add('active');
+            
+            switchTab('home', document.querySelectorAll('.navbar .nav-item')[0]);
             updateUI();
-            if(showPolicy) { document.getElementById('policy-modal').style.display = 'flex'; }
+            if(showPolicy) document.getElementById('policy-modal').style.display = 'flex';
         }
 
         function closePolicyModal() { document.getElementById('policy-modal').style.display = 'none'; }
 
         function updateUI() {
-            const pts = currentUser.points !== undefined ? currentUser.points : (currentUser.coins || 0);
-            document.getElementById('user-points').innerText = pts;
-            document.getElementById('profile-points-display').innerText = pts;
-            document.getElementById('profile-uid').innerText = 'UID: ' + (currentUser._id ? currentUser._id.slice(-6) : 'N/A');
+            if (!currentUser) return;
+            document.getElementById('user-points').innerText = currentUser.points || 0;
+            document.getElementById('profile-points-display').innerText = currentUser.points || 0;
+            document.getElementById('profile-uid').innerText = 'UID: ' + (currentUser.uid || 'N/A');
             document.getElementById('profile-username-input').value = currentUser.username || '';
             document.getElementById('profile-avatar-img').src = currentUser.profilePic || avatars[0];
-            document.getElementById('page-withdraw-balance').innerText = pts + ' Coins';
+            document.getElementById('page-withdraw-balance').innerText = (currentUser.points || 0) + ' Coins';
         }
 
         function switchTab(tabName, el) {
-            document.querySelectorAll('#main-app > .screen').forEach(s => s.classList.remove('active'));
+            document.getElementById('home-screen').classList.remove('active');
+            document.getElementById('profile-screen').classList.remove('active');
+            document.getElementById('withdraw-page-screen').classList.remove('active');
+            
             document.querySelectorAll('.navbar .nav-item').forEach(n => n.classList.remove('active'));
-            if(tabName === 'home') document.getElementById('home-screen').classList.add('active');
-            if(tabName === 'profile') document.getElementById('profile-screen').classList.add('active');
+
+            if(tabName === 'home') {
+                document.getElementById('home-screen').classList.add('active');
+                document.getElementById('main-navbar').style.display = 'flex';
+            }
+            if(tabName === 'profile') {
+                document.getElementById('profile-screen').classList.add('active');
+                document.getElementById('main-navbar').style.display = 'flex';
+            }
             if(el) el.classList.add('active');
         }
 
         async function shareApp() {
             let res = await fetch('/api/points', {
                 method: 'POST', headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ userId: currentUser._id, pointsToAdd: 1000, source: 'Referral Bonus' })
+                body: JSON.stringify({ userId: currentUser._id, pointsToAdd: 5000, source: 'Referral Bonus' })
             });
             let data = await res.json();
-            if(res.ok) { 
-                currentUser.points = data.points !== undefined ? data.points : data.totalCoins; 
-                saveSession(currentUser); 
-                updateUI(); 
-            }
-
+            if(res.ok) { currentUser.points = data.points; saveUserSession(currentUser); updateUI(); }
+            
             if (navigator.share) {
-                try { await navigator.share({ title: 'Reward Zone', text: 'Earn 1000 coins per referral!', url: window.location.href }); }
-                catch(e) {}
+                try { await navigator.share({ title: 'Reward Zone', text: 'Earn 5000 coins per referral!', url: window.location.href }); }
+                catch (e) {}
             } else {
                 navigator.clipboard.writeText(window.location.href);
-                alert('Referral link copied! 1000 Coins added.');
+                alert('Referral link copied! 5000 Coins added.');
             }
         }
 
@@ -745,32 +760,25 @@
                 body: JSON.stringify({ userId: currentUser._id })
             });
             let data = await res.json();
-            if(res.ok) { 
-                currentUser.points = data.points !== undefined ? data.points : data.totalCoins; 
-                saveSession(currentUser); 
-                updateUI(); 
-                alert(data.message || 'Daily bonus claimed (+20 Coins)!'); 
-            } else { alert(data.error || 'Already claimed today'); }
+            if(res.ok) { currentUser.points = data.points; saveUserSession(currentUser); updateUI(); alert(data.message); }
+            else { alert(data.error); }
         }
 
         async function watchAd() {
             let res = await fetch('/api/points', {
                 method: 'POST', headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ userId: currentUser._id, pointsToAdd: 50, source: 'Watch Ad' })
+                body: JSON.stringify({ userId: currentUser._id, pointsToAdd: 50, source: 'Watched Ad' })
             });
             let data = await res.json();
-            if(res.ok) { 
-                currentUser.points = data.points !== undefined ? data.points : data.totalCoins; 
-                saveSession(currentUser); 
-                updateUI(); 
-                alert('Ad watched! +50 Coins'); 
-            } else { alert(data.error || 'Failed to reward coins'); }
+            if(res.ok) { currentUser.points = data.points; saveUserSession(currentUser); updateUI(); alert('Ad watched! +50 Coins'); }
         }
 
         // SEPARATE WITHDRAWAL PAGE LOGIC
         function openWithdrawPage() {
-            document.querySelectorAll('#main-app > .screen').forEach(s => s.classList.remove('active'));
+            document.getElementById('home-screen').classList.remove('active');
+            document.getElementById('profile-screen').classList.remove('active');
             document.getElementById('withdraw-page-screen').classList.add('active');
+            document.getElementById('main-navbar').style.display = 'none';
             updateUI();
         }
 
@@ -794,10 +802,9 @@
         function triggerPasswordPopup() {
             const method = document.getElementById('page-withdraw-method').value;
             const amount = Number(document.getElementById('page-withdraw-amount').value);
-            const currentPts = currentUser.points !== undefined ? currentUser.points : (currentUser.coins || 0);
 
-            if(!amount || amount < 1000) { alert('Minimum withdrawal limit is 1000 coins (₹100)!'); return; }
-            if(amount > currentPts) { alert('Insufficient coin balance!'); return; }
+            if(!amount || amount < 1000) { alert('Minimum withdrawal is 1000 coins!'); return; }
+            if(amount > currentUser.points) { alert('Insufficient coin balance!'); return; }
 
             if(method === 'UPI') {
                 const upiId = document.getElementById('page-upi-id').value;
@@ -822,9 +829,9 @@
             document.getElementById('confirm-login-pass').value = '';
         }
 
-        async function submitFinalWithdraw() {
+        async function submitFinalWithdrawal() {
             const password = document.getElementById('confirm-login-pass').value;
-            if(!password) { alert('Please enter your login password!'); return; }
+            if(!password) { alert('Please enter your login password'); return; }
 
             const method = document.getElementById('page-withdraw-method').value;
             const amount = Number(document.getElementById('page-withdraw-amount').value);
@@ -840,27 +847,21 @@
                 ifsc: document.getElementById('page-bank-ifsc').value
             };
 
-            try {
-                let res = await fetch('/api/withdraw', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ userId: currentUser._id, method, details, amount, password })
-                });
-                let data = await res.json();
+            let res = await fetch('/api/withdraw', {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userId: currentUser._id, method, details, amount, password })
+            });
+            let data = await res.json();
 
-                if(res.ok) {
-                    currentUser = data.user || currentUser;
-                    if(data.remainingCoins !== undefined) currentUser.points = data.remainingCoins;
-                    saveSession(currentUser);
-                    updateUI();
-                    closePasswordPopup();
-                    alert('Withdrawal request applied successfully!');
-                    switchTab('profile', document.querySelectorAll('.nav-item')[1]);
-                } else {
-                    alert(data.error || data.message || 'Failed to apply withdrawal');
-                }
-            } catch(e) {
-                alert('Network error during withdrawal');
+            if(res.ok) {
+                currentUser = data.user;
+                saveUserSession(currentUser);
+                updateUI();
+                closePasswordPopup();
+                alert('Withdrawal request applied successfully!');
+                switchTab('profile', document.querySelectorAll('.nav-item')[1]);
+            } else {
+                alert(data.error || 'Failed to apply withdrawal!');
             }
         }
 
@@ -868,35 +869,31 @@
         async function openWithdrawHistoryModal() {
             document.getElementById('withdraw-history-modal').style.display = 'flex';
             try {
-                const res = await fetch(`/api/history/withdraw?userId=${currentUser._id}`);
-                const data = await res.json();
-                const vList = document.getElementById('withdraw-history-list');
-                vList.innerHTML = data.withdrawals && data.withdrawals.length ? '' : '<p style="font-size: 12px; color: #777;">No withdrawals yet.</p>';
-                if(data.withdrawals) {
-                    data.withdrawals.forEach(w => {
-                        vList.innerHTML += `<div class="history-item"><b>${w.amount} Coins</b> (${w.method})<br><small>${w.date || ''}</small></div>`;
-                    });
+                let res = await fetch(`/api/history?userId=${currentUser._id}`);
+                let data = await res.json();
+                let vList = document.getElementById('withdrawal-history-list');
+                if(!data.withdrawals || data.withdrawals.length === 0) {
+                    vList.innerHTML = '<p style="font-size: 12px; color: #777;">No withdrawals yet.</p>';
+                    return;
                 }
+                vList.innerHTML = data.withdrawals.map(w => `<div class="history-item"><b>${w.amount} Coins</b> - ${w.method} (${w.status})<br><small>${new Date(w.date).toLocaleString()}</small></div>`).join('');
             } catch(e) { console.error(e); }
         }
-
         function closeWithdrawHistoryModal() { document.getElementById('withdraw-history-modal').style.display = 'none'; }
 
         async function openCoinHistoryModal() {
             document.getElementById('coin-history-modal').style.display = 'flex';
             try {
-                const res = await fetch(`/api/history/coins?userId=${currentUser._id}`);
-                const data = await res.json();
-                const cList = document.getElementById('coin-history-list');
-                cList.innerHTML = data.coinLogs && data.coinLogs.length ? '' : '<p style="font-size: 12px; color: #777;">No earnings recorded yet.</p>';
-                if(data.coinLogs) {
-                    data.coinLogs.forEach(r => {
-                        cList.innerHTML += `<div class="history-item"><b>+${r.coins} Coins</b> - ${r.source || r.reason}<br><small>${r.date || ''}</small></div>`;
-                    });
+                let res = await fetch(`/api/history?userId=${currentUser._id}`);
+                let data = await res.json();
+                let cList = document.getElementById('coin-history-list');
+                if(!data.coinLogs || data.coinLogs.length === 0) {
+                    cList.innerHTML = '<p style="font-size: 12px; color: #777;">No earnings recorded yet.</p>';
+                    return;
                 }
+                cList.innerHTML = data.coinLogs.map(c => `<div class="history-item"><b>+${c.coins} Coins</b> - ${c.source}<br><small>${new Date(c.date).toLocaleString()}</small></div>`).join('');
             } catch(e) { console.error(e); }
         }
-
         function closeCoinHistoryModal() { document.getElementById('coin-history-modal').style.display = 'none'; }
 
         function logout() {
