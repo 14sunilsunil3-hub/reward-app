@@ -1,13 +1,17 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const path = require('path');
 
 const app = express();
 app.use(express.json());
 app.use(cors());
-app.use(express.static('.'));
 
-const MONGO_URI = "mongodb+srv://14sunilsunil3_db_user:YYKnpJ6cUOxedvyW@cluster0.xawbrm2.mongodb.net/?appName=Cluster0";
+// Serve frontend from 'public' folder correctly
+app.use(express.static(path.join(__dirname, 'public')));
+
+// MongoDB Connection URI with proper database name and environment support
+const MONGO_URI = process.env.MONGO_URI || "mongodb+srv://14sunilsunil3_db_user:YYKnpJ6cUOxedvyW@cluster0.xawbrm2.mongodb.net/rewardApp?retryWrites=true&w=majority";
 
 mongoose.connect(MONGO_URI)
 .then(() => console.log('MongoDB Cloud Connected!'))
@@ -131,14 +135,13 @@ app.post('/api/daily-login', async (req, res) => {
     }
 });
 
-// Spin Wheel (No time/referral limit, rewards 50 to 200 points based on luck)
+// Spin Wheel
 app.post('/api/spin-wheel', async (req, res) => {
     try {
         const { userId } = req.body;
         const user = await User.findById(userId);
         if (!user) return res.status(404).json({ error: 'User not found' });
 
-        // Random points between 50 and 200
         const wonPoints = Math.floor(Math.random() * (200 - 50 + 1)) + 50;
         user.points += wonPoints;
         await user.save();
@@ -164,7 +167,7 @@ app.post('/api/points', async (req, res) => {
     }
 });
 
-// Withdrawal with Same Account Holder Name Restriction & Multiple Accounts Support
+// Withdrawal with Same Account Holder Name Restriction
 app.post('/api/withdraw', async (req, res) => {
     try {
         const { userId, method, details, amount } = req.body;
@@ -180,7 +183,6 @@ app.post('/api/withdraw', async (req, res) => {
             return res.status(400).json({ error: 'Account holder name is required!' });
         }
 
-        // Check if user has previous withdrawals to enforce same account holder name policy
         if (user.withdrawals.length > 0) {
             const firstWithdrawal = user.withdrawals[0];
             const existingHolderName = (firstWithdrawal.details.holderName || '').trim().toLowerCase();
