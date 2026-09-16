@@ -67,7 +67,7 @@
         .uid-badge { font-size: 11px; background: #e0e7ff; color: #3730a3; padding: 2px 6px; border-radius: 4px; display: inline-block; margin-bottom: 4px; font-weight: bold; }
         
         /* AI Avatar Modal */
-        #avatar-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; justify-content: center; align-items: center; }
+        #avatar-modal, #password-confirm-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 3000; justify-content: center; align-items: center; }
         .modal-content { background: #fff; width: 90%; max-width: 400px; padding: 20px; border-radius: 12px; text-align: center; max-height: 80vh; overflow-y: auto; }
         .avatar-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 15px; }
         .avatar-option { width: 50px; height: 50px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; }
@@ -80,11 +80,15 @@
         .profile-bottom-actions .btn { margin-top: 0; flex: 1; }
 
         .history-item { background: #f8fafc; border: 1px solid #e2e8f0; padding: 10px; border-radius: 8px; margin-bottom: 8px; font-size: 12px; display: flex; justify-content: space-between; align-items: center; }
+        
+        /* Top Navigation Header for Sub-screens */
+        .sub-header { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; }
+        .sub-header i { font-size: 20px; cursor: pointer; color: #4f46e5; }
+        .sub-header h3 { font-size: 18px; color: #222; }
     </style>
 
     <!-- Google AdSense Code -->
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5405487813802646"
-         crossorigin="anonymous"></script>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5405487813802646" crossorigin="anonymous"></script>
 </head>
 <body>
 
@@ -276,7 +280,8 @@
             </div>
 
             <div style="display: flex; flex-direction: column; gap: 8px;">
-                <button class="btn" style="margin-top:0; background:#0ea5e9;" onclick="openWithdrawModal()"><i class="fa-solid fa-wallet"></i> Withdraw</button>
+                <!-- NAVIGATES TO SEPARATE WITHDRAWAL PAGE -->
+                <button class="btn" style="margin-top:0; background:#0ea5e9;" onclick="openWithdrawPage()"><i class="fa-solid fa-wallet"></i> Withdraw</button>
                 <button class="btn" style="margin-top:0; background:#8b5cf6;" onclick="openWithdrawHistoryModal()"><i class="fa-solid fa-clock-rotate-left"></i> Withdrawal History</button>
                 <button class="btn" style="margin-top:0; background:#6366f1;" onclick="openCoinHistoryModal()"><i class="fa-solid fa-coins"></i> Coin History</button>
             </div>
@@ -285,6 +290,73 @@
                 <button class="btn" onclick="openSupportModal()" style="background:#16a34a;"><i class="fa-solid fa-headset"></i> Support</button>
                 <button class="btn" onclick="logout()" style="background:#ef4444;">Logout</button>
             </div>
+        </div>
+
+        <!-- SEPARATE WITHDRAWAL PAGE SCREEN -->
+        <div id="withdraw-page-screen" class="screen">
+            <div class="sub-header">
+                <i class="fa-solid fa-arrow-left" onclick="switchTab('profile', document.querySelectorAll('.nav-item')[1])"></i>
+                <h3>Withdrawal Request</h3>
+            </div>
+
+            <div class="card" style="padding:15px; margin-bottom:15px;">
+                <p style="font-size: 12px; color: #e0e7ff;">Available Balance</p>
+                <h2 style="font-size: 24px;" id="page-withdraw-balance">0 Coins</h2>
+            </div>
+
+            <div class="input-group">
+                <label>Choose Payment Method</label>
+                <select id="page-withdraw-method" onchange="togglePageWithdrawFields()">
+                    <option value="UPI">UPI ID</option>
+                    <option value="Bank">Bank Account</option>
+                </select>
+            </div>
+
+            <!-- UPI Specific Fields -->
+            <div id="page-upi-fields">
+                <div class="input-group">
+                    <label>UPI ID</label>
+                    <input type="text" id="page-upi-id" placeholder="example@upi">
+                </div>
+                <div class="input-group">
+                    <label>Mobile Number</label>
+                    <input type="text" id="page-upi-phone" placeholder="Enter mobile number">
+                </div>
+            </div>
+
+            <!-- Bank Specific Fields (With 100 Banks List) -->
+            <div id="page-bank-fields" style="display:none;">
+                <div class="input-group">
+                    <label>Select Bank</label>
+                    <select id="page-bank-name">
+                        <option value="">-- Choose Bank (100+ Banks Available) --</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Account Number</label>
+                    <input type="text" id="page-bank-acc" placeholder="Enter bank account number">
+                </div>
+                <div class="input-group">
+                    <label>Account Holder Name</label>
+                    <input type="text" id="page-bank-holder" placeholder="Enter holder name">
+                </div>
+                <div class="input-group">
+                    <label>Mobile Number</label>
+                    <input type="text" id="page-bank-phone" placeholder="Enter mobile number">
+                </div>
+                <div class="input-group">
+                    <label>IFSC Code</label>
+                    <input type="text" id="page-bank-ifsc" placeholder="e.g. SBIN0001234">
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>Coins to Withdraw (100 Coins = ₹1)</label>
+                <input type="number" id="page-withdraw-amount" placeholder="Min 100 Coins" oninput="calculatePageRupees(this.value)">
+                <small id="page-rupees-conversion" style="color: #16a34a; font-weight: bold; display: block; margin-top: 4px;">You will get: ₹0.00</small>
+            </div>
+
+            <button class="btn" style="background:#0ea5e9;" onclick="triggerPasswordPopup()">Apply Withdrawal</button>
         </div>
 
         <!-- NAVBAR -->
@@ -297,44 +369,22 @@
 
 </div>
 
-<!-- WITHDRAWAL MODAL -->
-<div id="withdraw-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:2500; justify-content:center; align-items:center;">
+<!-- CONFIRM PASSWORD POPUP MODAL FOR WITHDRAWAL -->
+<div id="password-confirm-modal">
     <div class="modal-content" style="text-align:left;">
-        <h3><i class="fa-solid fa-wallet"></i> Request Withdrawal</h3>
-        <p style="font-size: 11px; color: #666; margin-top: 4px;">Min: 100 Coins (₹1) | Max: 1,000,000 Coins (₹10,000)</p>
+        <h3 style="color:#4f46e5; text-align:center;"><i class="fa-solid fa-lock"></i> Confirm Withdrawal</h3>
+        <p style="font-size:12px; color:#666; margin: 10px 0; text-align:center;">Enter your account login password to confirm the order.</p>
         
-        <div class="input-group" style="margin-top:10px;">
-            <label>Withdrawal Method</label>
-            <select id="withdraw-method" onchange="toggleWithdrawalFields()">
-                <option value="UPI">UPI ID</option>
-                <option value="Bank">Bank Account</option>
-            </select>
-        </div>
-
-        <div id="upi-fields" class="input-group">
-            <label>UPI ID</label>
-            <input type="text" id="upi-id" placeholder="username@oksbi">
-            <label style="margin-top: 8px;">Account Holder Name</label>
-            <input type="text" id="upi-holder" placeholder="Name as per UPI">
-        </div>
-
-        <div id="bank-fields" class="input-group" style="display:none;">
-            <label>Bank Name & IFSC</label>
-            <input type="text" id="bank-name" placeholder="Bank Name & IFSC">
-            <label style="margin-top: 8px;">Account Number</label>
-            <input type="text" id="bank-acc" placeholder="Account Number">
-            <label style="margin-top: 8px;">Holder Name</label>
-            <input type="text" id="bank-holder" placeholder="Account Holder Name">
-        </div>
-
         <div class="input-group">
-            <label>Coins to Withdraw (100 Coins = ₹1)</label>
-            <input type="number" id="withdraw-amount" placeholder="Enter coins (Min 100)" oninput="calculateRupees(this.value)">
-            <small id="rupees-conversion-text" style="color: #16a34a; font-weight: bold; display: block; margin-top: 4px;">You will get: ₹0.00</small>
+            <label>Login Password</label>
+            <div class="password-container">
+                <input type="password" id="confirm-login-pass" placeholder="Enter login password" oninput="clearError(this)">
+                <i class="fa-solid fa-eye password-toggle-icon" onclick="togglePasswordVisibility('confirm-login-pass', this)"></i>
+            </div>
         </div>
 
-        <button class="btn" onclick="submitWithdrawal()">Submit Request</button>
-        <button class="btn" onclick="closeWithdrawModal()" style="background:#666; margin-top:5px;">Cancel</button>
+        <button class="btn" onclick="submitFinalWithdrawal()">Confirm & Withdraw</button>
+        <button class="btn" onclick="closePasswordPopup()" style="background:#666; margin-top:5px;">Cancel</button>
     </div>
 </div>
 
@@ -402,15 +452,46 @@
 <script>
     let currentUser = null;
 
-    // Check for saved user login session in Local Storage
+    // 100 Indian Banks List
+    const top100Banks = [
+        "State Bank of India (SBI)", "HDFC Bank", "ICICI Bank", "Axis Bank", "Punjab National Bank (PNB)",
+        "Bank of Baroda", "Canara Bank", "Union Bank of India", "Bank of India", "IndusInd Bank",
+        "Kotak Mahindra Bank", "IDBI Bank", "Indian Bank", "Central Bank of India", "UCO Bank",
+        "Bank of Maharashtra", "Punjab & Sind Bank", "Federal Bank", "IDFC FIRST Bank", "Yes Bank",
+        "South Indian Bank", "Karur Vysya Bank", "Tamilnad Mercantile Bank", "RBL Bank", "Bandhan Bank",
+        "Jammu & Kashmir Bank", "City Union Bank", "Dhanlaxmi Bank", "Karnataka Bank", "DCB Bank",
+        "Airtel Payments Bank", "Paytm Payments Bank", "India Post Payments Bank", "FINO Payments Bank", "Jio Payments Bank",
+        "AU Small Finance Bank", "Equitas Small Finance Bank", "Ujjivan Small Finance Bank", "Jana Small Finance Bank", "Capital Small Finance Bank",
+        "ESAF Small Finance Bank", "Suryoday Small Finance Bank", "Utkarsh Small Finance Bank", "North East Small Finance Bank", "Shivalik Small Finance Bank",
+        "Andhra Pragathi Grameena Bank", "Kerala Gramin Bank", "Prathama UP Gramin Bank", "Maharashtra Gramin Bank", "Baroda Rajasthan Kshetriya Gramin Bank",
+        "Aryavart Bank", "Paschim Banga Gramin Bank", "Karnataka Gramin Bank", "Punjab Gramin Bank", "Madhyanchal Gramin Bank",
+        "Utkal Grameen Bank", "Odisha Gramya Bank", "Assam Gramin Vikash Bank", "Tripura Gramin Bank", "Bangiya Gramin Vikash Bank",
+        "Chhattisgarh Rajya Gramin Bank", "Himachal Pradesh Gramin Bank", "Saurashtra Gramin Bank", "Rajasthan Marudhara Gramin Bank", "Telangana Grameena Bank",
+        "Andhra Pradesh Grameena Vikas Bank", "Puduvai Bharathiar Grama Bank", "Dakshin Bihar Gramin Bank", "Uttar Bihar Gramin Bank", "Jharkhand Rajya Gramin Bank",
+        "Ellaquai Dehati Bank", "Meghalaya Uttarbank", "Mizoram Rural Bank", "Nagaland Rural Bank", "Manipur Rural Bank",
+        "DBS Bank India", "Standard Chartered Bank", "HSBC Bank", "Citibank", "Deutsche Bank",
+        "Barclays Bank", "Bank of America", "JPMorgan Chase Bank", "BNP Paribas", "Societe Generale",
+        "Standard Bank", "ABN AMRO Bank", "Doha Bank", "Qatar National Bank", "Emirates NBD",
+        "Abu Dhabi Commercial Bank", "Mashreq Bank", "Woori Bank", "KEB Hana Bank", "Industrial & Commercial Bank of China",
+        "Shinhan Bank", "State Bank of Mauritius", "SBM Bank India", "MUFG Bank", "Sumitomo Mitsui Banking Corporation"
+    ];
+
+    // Populate Banks Options
+    window.addEventListener('DOMContentLoaded', () => {
+        const selectEl = document.getElementById('page-bank-name');
+        top100Banks.forEach(bank => {
+            const opt = document.createElement('option');
+            opt.value = bank;
+            opt.innerText = bank;
+            selectEl.appendChild(opt);
+        });
+    });
+
+    // Check saved login
     window.addEventListener('load', () => {
         const savedUser = localStorage.getItem('reward_zone_user');
         if (savedUser) {
-            try {
-                currentUser = JSON.parse(savedUser);
-            } catch (e) {
-                console.error("Error parsing saved session", e);
-            }
+            try { currentUser = JSON.parse(savedUser); } catch (e) { console.error(e); }
         }
 
         setTimeout(() => {
@@ -418,7 +499,6 @@
             splash.style.opacity = '0';
             setTimeout(() => { 
                 splash.style.display = 'none'; 
-                // If user session exists, go directly to Home Screen
                 if (currentUser && currentUser._id) {
                     initMainApp(false); 
                 }
@@ -426,13 +506,11 @@
         }, 5000);
     });
 
-    // Helper to update local storage user data
     function saveUserSession(userData) {
         currentUser = userData;
         localStorage.setItem('reward_zone_user', JSON.stringify(userData));
     }
 
-    // Password See/Hide Toggle Function
     function togglePasswordVisibility(fieldId, iconEl) {
         const passwordInput = document.getElementById(fieldId);
         if (passwordInput.type === 'password') {
@@ -446,54 +524,36 @@
         }
     }
 
-    function clearError(el) {
-        el.classList.remove('input-error');
-    }
+    function clearError(el) { el.classList.remove('input-error'); }
 
-    // 60 Seconds Timer Helper for OTP Buttons
     function startOtpTimer(btnId) {
         const btn = document.getElementById(btnId);
         btn.disabled = true;
         let timeLeft = 60;
         btn.innerText = `Resend (${timeLeft}s)`;
-        
         const timerInterval = setInterval(() => {
             timeLeft--;
-            if (timeLeft > 0) {
-                btn.innerText = `Resend (${timeLeft}s)`;
-            } else {
-                clearInterval(timerInterval);
-                btn.disabled = false;
-                btn.innerText = 'Send OTP';
-            }
+            if (timeLeft > 0) { btn.innerText = `Resend (${timeLeft}s)`; } 
+            else { clearInterval(timerInterval); btn.disabled = false; btn.innerText = 'Send OTP'; }
         }, 1000);
     }
 
-    // Draggable Movable Support Button Logic
+    // Draggable Support Button
     const floatingBtn = document.getElementById('floating-support');
     let isDragging = false, startX, startY, initialX, initialY;
-
     floatingBtn.addEventListener('pointerdown', (e) => {
-        isDragging = true;
-        startX = e.clientX;
-        startY = e.clientY;
+        isDragging = true; startX = e.clientX; startY = e.clientY;
         const rect = floatingBtn.getBoundingClientRect();
-        initialX = rect.left;
-        initialY = rect.top;
+        initialX = rect.left; initialY = rect.top;
         floatingBtn.setPointerCapture(e.pointerId);
     });
-
     floatingBtn.addEventListener('pointermove', (e) => {
         if (!isDragging) return;
-        const dx = e.clientX - startX;
-        const dy = e.clientY - startY;
-        floatingBtn.style.left = (initialX + dx) + 'px';
-        floatingBtn.style.top = (initialY + dy) + 'px';
-        floatingBtn.style.bottom = 'auto';
-        floatingBtn.style.right = 'auto';
+        floatingBtn.style.left = (initialX + (e.clientX - startX)) + 'px';
+        floatingBtn.style.top = (initialY + (e.clientY - startY)) + 'px';
+        floatingBtn.style.bottom = 'auto'; floatingBtn.style.right = 'auto';
     });
-
-    floatingBtn.addEventListener('pointerup', (e) => { isDragging = false; });
+    floatingBtn.addEventListener('pointerup', () => { isDragging = false; });
 
     function showScreen(screenId) {
         document.querySelectorAll('.app-container > .screen').forEach(s => s.classList.remove('active'));
@@ -511,8 +571,7 @@
     const gridEl = document.getElementById('avatar-grid-list');
     avatars.forEach(url => {
         const img = document.createElement('img');
-        img.src = url;
-        img.className = 'avatar-option';
+        img.src = url; img.className = 'avatar-option';
         img.onclick = () => selectAvatar(url);
         gridEl.appendChild(img);
     });
@@ -544,29 +603,19 @@
         } catch(e) { console.error(e); }
     }
 
-    // Support Modal
     function openSupportModal() { document.getElementById('support-modal').style.display = 'flex'; }
     function closeSupportModal() { document.getElementById('support-modal').style.display = 'none'; }
 
-    // OTP Handlers with 60s timer
     function sendSignupOtp() {
         const phone = document.getElementById('signup-phone');
-        if(!phone.value || phone.value.length < 10) {
-            phone.classList.add('input-error');
-            alert('Enter valid 10-digit mobile number');
-            return;
-        }
+        if(!phone.value || phone.value.length < 10) { phone.classList.add('input-error'); alert('Enter valid 10-digit mobile number'); return; }
         startOtpTimer('signup-otp-btn');
         alert('OTP sent successfully! (Mock OTP: 123456)');
     }
 
     function sendForgotOtp() {
         const phone = document.getElementById('forgot-phone');
-        if(!phone.value || phone.value.length < 10) {
-            phone.classList.add('input-error');
-            alert('Enter valid registered mobile number');
-            return;
-        }
+        if(!phone.value || phone.value.length < 10) { phone.classList.add('input-error'); alert('Enter valid registered mobile number'); return; }
         startOtpTimer('forgot-otp-btn');
         alert('Password Reset OTP sent! (Mock OTP: 123456)');
     }
@@ -578,69 +627,33 @@
         const cpassEl = document.getElementById('signup-cpass');
         const otpEl = document.getElementById('signup-otp');
 
-        if(!phoneEl.value || !passEl.value || !cpassEl.value || !otpEl.value) {
-            alert('Please fill all fields');
-            return;
-        }
-
+        if(!phoneEl.value || !passEl.value || !cpassEl.value || !otpEl.value) { alert('Please fill all fields'); return; }
         if(passEl.value !== cpassEl.value) {
-            passEl.classList.add('input-error');
-            cpassEl.classList.add('input-error');
-            passEl.value = '';
-            cpassEl.value = '';
-            alert('Passwords do not match!');
-            return;
+            passEl.classList.add('input-error'); cpassEl.classList.add('input-error');
+            alert('Passwords do not match!'); return;
         }
 
         let res = await fetch('/api/register', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ region, phone: phoneEl.value, password: passEl.value, otp: otpEl.value })
         });
         let data = await res.json();
-        if(res.ok) {
-            saveUserSession(data.user);
-            initMainApp(true);
-        } else {
-            if(data.error && data.error.toLowerCase().includes('otp')) {
-                otpEl.classList.add('input-error');
-                otpEl.value = '';
-            } else {
-                phoneEl.classList.add('input-error');
-            }
-            alert(data.error || 'Registration failed!');
-        }
+        if(res.ok) { saveUserSession(data.user); initMainApp(true); } 
+        else { alert(data.error || 'Registration failed!'); }
     }
 
     async function handleLogin() {
         const phoneEl = document.getElementById('login-phone');
         const passEl = document.getElementById('login-pass');
-
-        if(!phoneEl.value || !passEl.value) {
-            alert('Please fill all fields');
-            return;
-        }
+        if(!phoneEl.value || !passEl.value) { alert('Please fill all fields'); return; }
 
         let res = await fetch('/api/login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ phone: phoneEl.value, password: passEl.value })
         });
         let data = await res.json();
-        if(res.ok) {
-            saveUserSession(data.user);
-            initMainApp(true);
-        } else {
-            const errText = (data.error || '').toLowerCase();
-            if(errText.includes('not register') || errText.includes('not found')) {
-                phoneEl.classList.add('input-error');
-                alert('Not registered mobile number!');
-            } else {
-                passEl.classList.add('input-error');
-                passEl.value = '';
-                alert('Wrong password!');
-            }
-        }
+        if(res.ok) { saveUserSession(data.user); initMainApp(true); } 
+        else { alert(data.error || 'Login failed!'); }
     }
 
     async function handlePasswordChange() {
@@ -649,38 +662,16 @@
         const cnewpassEl = document.getElementById('forgot-cnewpass');
         const otpEl = document.getElementById('forgot-otp');
 
-        if(!phoneEl.value || !newpassEl.value || !cnewpassEl.value || !otpEl.value) {
-            alert('Please fill all fields');
-            return;
-        }
-
-        if(newpassEl.value !== cnewpassEl.value) {
-            newpassEl.classList.add('input-error');
-            cnewpassEl.classList.add('input-error');
-            newpassEl.value = '';
-            cnewpassEl.value = '';
-            alert('New passwords do not match!');
-            return;
-        }
+        if(!phoneEl.value || !newpassEl.value || !cnewpassEl.value || !otpEl.value) { alert('Please fill all fields'); return; }
+        if(newpassEl.value !== cnewpassEl.value) { alert('New passwords do not match!'); return; }
 
         let res = await fetch('/api/change-password', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ phone: phoneEl.value, newpass: newpassEl.value, otp: otpEl.value })
         });
         let data = await res.json();
-        if(res.ok) {
-            alert('Password changed successfully! Please login.');
-            showScreen('login-screen');
-        } else {
-            if(data.error && data.error.toLowerCase().includes('otp')) {
-                otpEl.classList.add('input-error');
-                otpEl.value = '';
-            } else {
-                phoneEl.classList.add('input-error');
-            }
-            alert(data.error || 'Failed to update password');
-        }
+        if(res.ok) { alert('Password changed successfully!'); showScreen('login-screen'); } 
+        else { alert(data.error || 'Failed to update password'); }
     }
 
     function initMainApp(showPolicy = true) {
@@ -689,9 +680,7 @@
         document.getElementById('forgot-screen').style.display = 'none';
         document.getElementById('main-app').style.display = 'flex';
         updateUI();
-        if (showPolicy) {
-            document.getElementById('policy-modal').style.display = 'flex';
-        }
+        if (showPolicy) { document.getElementById('policy-modal').style.display = 'flex'; }
     }
 
     function closePolicyModal() { document.getElementById('policy-modal').style.display = 'none'; }
@@ -702,127 +691,142 @@
         document.getElementById('profile-uid').innerText = 'UID: ' + (currentUser.uid || 'N/A');
         document.getElementById('profile-username-input').value = currentUser.username || '';
         document.getElementById('profile-avatar-img').src = currentUser.profilePic || avatars[0];
+        document.getElementById('page-withdraw-balance').innerText = (currentUser.points || 0) + ' Coins';
     }
 
     function switchTab(tabName, el) {
         document.querySelectorAll('#main-app > .screen').forEach(s => s.classList.remove('active'));
         document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-        
         if(tabName === 'home') document.getElementById('home-screen').classList.add('active');
         if(tabName === 'profile') document.getElementById('profile-screen').classList.add('active');
-        
-        el.classList.add('active');
+        if(el) el.classList.add('active');
     }
 
     async function shareApp() {
-        // Referral awards 5000 coins upon successful share / referral mock logic
         const res = await fetch('/api/points', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ userId: currentUser._id, pointsToAdd: 5000, source: 'Referral Bonus' })
         });
         const data = await res.json();
-        if(res.ok) {
-            currentUser.points = data.points;
-            saveUserSession(currentUser);
-            updateUI();
-        }
+        if(res.ok) { currentUser.points = data.points; saveUserSession(currentUser); updateUI(); }
 
         if (navigator.share) {
             try { await navigator.share({ title: 'Reward Zone', text: 'Earn 5000 coins per referral!', url: window.location.href }); } catch(e){}
         } else {
             navigator.clipboard.writeText(window.location.href);
-            alert('Referral link copied! 5000 Coins added to your account.');
+            alert('Referral link copied! 5000 Coins added.');
         }
     }
 
     async function claimDaily() {
         const res = await fetch('/api/daily-login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ userId: currentUser._id })
         });
         const data = await res.json();
-        if(res.ok) {
-            currentUser.points = data.points;
-            saveUserSession(currentUser);
-            updateUI();
-            alert(data.message);
-        } else { alert(data.error); }
+        if(res.ok) { currentUser.points = data.points; saveUserSession(currentUser); updateUI(); alert(data.message); } 
+        else { alert(data.error); }
     }
 
     async function watchAd() {
         const res = await fetch('/api/points', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ userId: currentUser._id, pointsToAdd: 50, source: 'Watch Ad' })
         });
         const data = await res.json();
-        if(res.ok) {
-            currentUser.points = data.points;
-            saveUserSession(currentUser);
-            updateUI();
-            alert('Ad watched successfully! +50 Coins added.');
-        }
+        if(res.ok) { currentUser.points = data.points; saveUserSession(currentUser); updateUI(); alert('Ad watched! +50 Coins.'); }
     }
 
-    // Withdrawal Modals & Validation Logic (Min 100, Max 1000000)
-    function openWithdrawModal() { document.getElementById('withdraw-modal').style.display = 'flex'; }
-    function closeWithdrawModal() { document.getElementById('withdraw-modal').style.display = 'none'; }
-    
-    function calculateRupees(val) {
-        const amt = Number(val);
-        const rupees = amt / 100;
-        document.getElementById('rupees-conversion-text').innerText = `You will get: ₹${rupees.toFixed(2)}`;
+    // --- SEPARATE WITHDRAWAL PAGE LOGIC ---
+    function openWithdrawPage() {
+        document.querySelectorAll('#main-app > .screen').forEach(s => s.classList.remove('active'));
+        document.getElementById('withdraw-page-screen').classList.add('active');
+        updateUI();
     }
 
-    function toggleWithdrawalFields() {
-        const method = document.getElementById('withdraw-method').value;
+    function calculatePageRupees(val) {
+        const rupees = Number(val) / 100;
+        document.getElementById('page-rupees-conversion').innerText = `You will get: ₹${rupees.toFixed(2)}`;
+    }
+
+    function togglePageWithdrawFields() {
+        const method = document.getElementById('page-withdraw-method').value;
         if(method === 'UPI') {
-            document.getElementById('upi-fields').style.display = 'block';
-            document.getElementById('bank-fields').style.display = 'none';
+            document.getElementById('page-upi-fields').style.display = 'block';
+            document.getElementById('page-bank-fields').style.display = 'none';
         } else {
-            document.getElementById('upi-fields').style.display = 'none';
-            document.getElementById('bank-fields').style.display = 'block';
+            document.getElementById('page-upi-fields').style.display = 'none';
+            document.getElementById('page-bank-fields').style.display = 'block';
         }
     }
 
-    async function submitWithdrawal() {
-        const method = document.getElementById('withdraw-method').value;
-        const amount = Number(document.getElementById('withdraw-amount').value);
+    // Password Confirmation Popup Logic
+    function triggerPasswordPopup() {
+        const method = document.getElementById('page-withdraw-method').value;
+        const amount = Number(document.getElementById('page-withdraw-amount').value);
 
-        // Validation limits
-        if(amount < 100) {
-            alert('Minimum withdrawal amount is 100 coins!');
-            return;
+        if(!amount || amount < 100) { alert('Minimum withdrawal is 100 coins!'); return; }
+        if(amount > (currentUser.points || 0)) { alert('Insufficient coin balance!'); return; }
+
+        if(method === 'UPI') {
+            const upiId = document.getElementById('page-upi-id').value;
+            const phone = document.getElementById('page-upi-phone').value;
+            if(!upiId || !phone) { alert('Please fill UPI ID and Mobile Number'); return; }
+        } else {
+            const bankName = document.getElementById('page-bank-name').value;
+            const bankAcc = document.getElementById('page-bank-acc').value;
+            const bankHolder = document.getElementById('page-bank-holder').value;
+            const bankPhone = document.getElementById('page-bank-phone').value;
+            const bankIfsc = document.getElementById('page-bank-ifsc').value;
+            if(!bankName || !bankAcc || !bankHolder || !bankPhone || !bankIfsc) {
+                alert('Please fill all bank account details!'); return;
+            }
         }
-        if(amount > 1000000) {
-            alert('Maximum withdrawal amount is 1,000,000 coins!');
-            return;
-        }
+
+        // Open Password Confirmation Modal
+        document.getElementById('password-confirm-modal').style.display = 'flex';
+    }
+
+    function closePasswordPopup() {
+        document.getElementById('password-confirm-modal').style.display = 'none';
+        document.getElementById('confirm-login-pass').value = '';
+    }
+
+    async function submitFinalWithdrawal() {
+        const password = document.getElementById('confirm-login-pass').value;
+        if(!password) { alert('Please enter your login password'); return; }
+
+        const method = document.getElementById('page-withdraw-method').value;
+        const amount = Number(document.getElementById('page-withdraw-amount').value);
 
         let details = method === 'UPI' ? {
-            upiId: document.getElementById('upi-id').value,
-            holderName: document.getElementById('upi-holder').value
+            upiId: document.getElementById('page-upi-id').value,
+            phone: document.getElementById('page-upi-phone').value
         } : {
-            bankDetails: document.getElementById('bank-name').value,
-            accountNumber: document.getElementById('bank-acc').value,
-            holderName: document.getElementById('bank-holder').value
+            bankName: document.getElementById('page-bank-name').value,
+            accountNumber: document.getElementById('page-bank-acc').value,
+            holderName: document.getElementById('page-bank-holder').value,
+            phone: document.getElementById('page-bank-phone').value,
+            ifsc: document.getElementById('page-bank-ifsc').value
         };
 
         const res = await fetch('/api/withdraw', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ userId: currentUser._id, method, details, amount })
+            body: JSON.stringify({ userId: currentUser._id, method, details, amount, password })
         });
         const data = await res.json();
+        
         if(res.ok) {
             currentUser = data.user;
             saveUserSession(currentUser);
             updateUI();
-            closeWithdrawModal();
-            alert('Withdrawal request submitted successfully!');
-        } else { alert(data.error); }
+            closePasswordPopup();
+            alert('Withdrawal request applied successfully!');
+            switchTab('profile', document.querySelectorAll('.nav-item')[1]);
+        } else {
+            alert(data.error || 'Failed to apply withdrawal');
+        }
     }
 
     // History Modals
