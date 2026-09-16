@@ -41,7 +41,7 @@ const userSchema = new mongoose.Schema({
 
 const User = mongoose.model('User', userSchema);
 
-// Send OTP (Strictly checks if mobile number already registered for signup)
+// Send OTP (Strictly checks if mobile number already registered for signup or exists for reset)
 app.post('/api/send-otp', async (req, res) => {
   try {
     const { phone, isSignup } = req.body;
@@ -107,6 +107,23 @@ app.post('/api/login', async (req, res) => {
       return res.status(401).json({ error: 'Invalid mobile number or password' });
     }
     res.status(200).json({ message: 'Login successful!', user });
+  } catch (err) {
+    res.status(500).json({ error: 'Server error', details: err.message });
+  }
+});
+
+// Reset Password Endpoint (For Forgot Password screen)
+app.post('/api/reset-password', async (req, res) => {
+  try {
+    const { phone, otp, newPassword } = req.body;
+    const user = await User.findOne({ phone });
+    if (!user || user.otp !== otp) {
+      return res.status(400).json({ error: 'Invalid OTP or mobile number' });
+    }
+    user.password = newPassword;
+    user.otp = undefined;
+    await user.save();
+    res.status(200).json({ message: 'Password reset successful!' });
   } catch (err) {
     res.status(500).json({ error: 'Server error', details: err.message });
   }
