@@ -7,7 +7,7 @@ app.use(express.json());
 app.use(cors());
 app.use(express.static('public'));
 
-const MONGO_URI = "mongodb+srv://14sunilsunil3_db_user:YYKnpJ6cUXedxyw@cluster0.xawhra2.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
+const MONGO_URI = "mongodb://14sunilsunil3_db_user:LgoML5CjYXA5TF4@cluster0-shard-00-00.xawhra2.mongodb.net:27017,cluster0-shard-00-01.xawhra2.mongodb.net:27017,cluster0-shard-00-02.xawhra2.mongodb.net:27017/?ssl=true&replicaSet=atlas-xawhra2-shard-0&authSource=admin&retryWrites=true&w=majority";
 
 mongoose.connect(MONGO_URI)
   .then(() => console.log('MongoDB Cloud Connected!'))
