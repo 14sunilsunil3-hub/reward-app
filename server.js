@@ -7,7 +7,8 @@ app.use(express.json());
 app.use(cors());
 app.use(express.static('.'));
 
-const MONGO_URI = 'mongodb+srv://14sunilsunil3_db_user:YYKrpJ6cU0xedywQ@cluster0.xawhra2.mongodb.net/?appName=Cluster0';
+// Updated with your correct MongoDB Atlas password
+const MONGO_URI = 'mongodb+srv://14sunilsunil3_db_user:G2tvsEmVz3A8QCo7@cluster0.xawhra2.mongodb.net/?appName=Cluster0';
 
 mongoose.connect(MONGO_URI)
   .then(() => console.log('MongoDB Cloud Connected!'))
