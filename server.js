@@ -5,15 +5,15 @@ const cors = require('cors');
 const app = express();
 app.use(express.json());
 app.use(cors());
-app.use(express.static('public'));
+app.use(express.static('.'));
 
-const MONGO_URI = "mongodb://14sunilsunil3_db_user:LgoML5CjYXA5TF4@cluster0-shard-00-00.xawhra2.mongodb.net:27017,cluster0-shard-00-01.xawhra2.mongodb.net:27017,cluster0-shard-00-02.xawhra2.mongodb.net:27017/?ssl=true&replicaSet=atlas-xawhra2-shard-0&authSource=admin&retryWrites=true&w=majority";
+const MONGO_URI = 'mongodb+srv://14sunilsunil3_db_user:YYKrpJ6cU0xedywQ@cluster0.xawhra2.mongodb.net/?appName=Cluster0';
 
 mongoose.connect(MONGO_URI)
   .then(() => console.log('MongoDB Cloud Connected!'))
   .catch(err => console.log('MongoDB Connection Error:', err));
 
-// Unique Unique ID generator helper
+// Unique ID generator helper
 function generateUID() {
   return 'UID' + Math.floor(100000 + Math.random() * 900000);
 }
@@ -24,33 +24,42 @@ const userSchema = new mongoose.Schema({
   username: { type: String, default: 'User' },
   profilePic: { type: String, default: 'https://api.dicebear.com/7.x/bottts/svg?seed=avatar1' },
   password: { type: String, default: '' },
-  points: { type: Number, default: 0 },
-  otp: { type: String },
+  points: { type: Number, default: 10 },
+  otp: { type: String, default: '' },
   lastDailyLogin: { type: String, default: '' },
-  referralCount: { type: Number, default: 0 },
-  withdrawals: [{
-    method: String, // 'UPI' or 'Bank'
-    details: Object, // UPI ID / Bank details with account holder name
-    amount: Number,
-    status: { type: String, default: 'Pending' },
-    date: { type: Date, default: Date.now }
-  }]
+  referredBy: { type: String, default: '' },
+  withdrawals: [
+    {
+      method: String, // 'UPI' or 'Bank'
+      details: Object, // UPI ID / Bank details with account holder name
+      amount: Number,
+      status: { type: String, default: 'Pending' },
+      date: { type: Date, default: Date.now }
+    }
+  ]
 });
 
 const User = mongoose.model('User', userSchema);
 
-// Send OTP
+// Send OTP (Strictly checks if mobile number already registered for signup)
 app.post('/api/send-otp', async (req, res) => {
   try {
-    const { phone } = req.body;
+    const { phone, isSignup } = req.body;
     if (!phone) return res.status(400).json({ error: 'Phone number is required' });
 
-    const mockOtp = Math.floor(100000 + Math.random() * 900000).toString();
     let user = await User.findOne({ phone });
-    if (user) {
-      user.otp = mockOtp;
-    } else {
+    if (isSignup && user) {
+      return res.status(400).json({ error: 'This mobile number is already registered! Only one ID per number is allowed.' });
+    }
+    if (!isSignup && !user) {
+      return res.status(404).json({ error: 'Mobile number not found. Please register first.' });
+    }
+
+    const mockOtp = Math.floor(100000 + Math.random() * 900000).toString();
+    if (!user) {
       user = new User({ phone, otp: mockOtp, username: 'User_' + phone.slice(-4) });
+    } else {
+      user.otp = mockOtp;
     }
     await user.save();
     res.status(200).json({ message: 'OTP sent successfully!', otp: mockOtp });
@@ -62,14 +71,26 @@ app.post('/api/send-otp', async (req, res) => {
 // Register
 app.post('/api/register', async (req, res) => {
   try {
-    const { phone, password, otp } = req.body;
+    const { phone, password, otp, refCode } = req.body;
     let user = await User.findOne({ phone });
     if (!user || user.otp !== otp) {
       return res.status(400).json({ error: 'Invalid OTP or phone number' });
     }
+
     user.password = password;
     user.otp = undefined;
-    user.points = 10; // Signup bonus
+    user.points = 10; // Initial signup bonus
+
+    // Handle Referral logic (+1000 coins if valid referrer found)
+    if (refCode) {
+      const referrer = await User.findOne({ uid: refCode });
+      if (referrer && referrer.phone !== phone) {
+        referrer.points += 1000; 
+        await referrer.save();
+        user.referredBy = refCode;
+      }
+    }
+
     await user.save();
     res.status(201).json({ message: 'Registered successfully!', user });
   } catch (err) {
@@ -83,7 +104,7 @@ app.post('/api/login', async (req, res) => {
     const { phone, password } = req.body;
     const user = await User.findOne({ phone });
     if (!user || user.password !== password) {
-      return res.status(401).json({ error: 'Invalid mobile or password' });
+      return res.status(401).json({ error: 'Invalid mobile number or password' });
     }
     res.status(200).json({ message: 'Login successful!', user });
   } catch (err) {
@@ -102,13 +123,13 @@ app.post('/api/update-profile', async (req, res) => {
     if (profilePic) user.profilePic = profilePic;
     await user.save();
 
-    res.status(200).json({ message: 'Profile updated!', user });
+    res.status(200).json({ message: 'Profile updated', user });
   } catch (err) {
     res.status(500).json({ error: 'Failed to update profile', details: err.message });
   }
 });
 
-// Daily Login
+// Daily Login Bonus (+20 coins)
 app.post('/api/daily-login', async (req, res) => {
   try {
     const { userId } = req.body;
@@ -117,19 +138,19 @@ app.post('/api/daily-login', async (req, res) => {
 
     const today = new Date().toISOString().slice(0, 10);
     if (user.lastDailyLogin === today) {
-      return res.status(400).json({ error: 'Already claimed today!' });
+      return res.status(400).json({ error: 'Already claimed today! Try again tomorrow.' });
     }
 
     user.lastDailyLogin = today;
     user.points += 20;
     await user.save();
-    res.status(200).json({ message: 'Daily bonus claimed!', points: user.points });
+    res.status(200).json({ message: 'Daily bonus claimed successfully!', points: user.points });
   } catch (err) {
     res.status(500).json({ error: 'Server error', details: err.message });
   }
 });
 
-// Points Update (Ads)
+// Points Update (For Tasks like Watching Ads, e.g., +50 coins)
 app.post('/api/points', async (req, res) => {
   try {
     const { userId, pointsToAdd } = req.body;
@@ -140,19 +161,28 @@ app.post('/api/points', async (req, res) => {
     await user.save();
     res.status(200).json({ message: 'Points updated', points: user.points });
   } catch (err) {
-    res.status(500).json({ error: 'Failed', details: err.message });
+    res.status(500).json({ error: 'Failed to update points', details: err.message });
   }
 });
 
-// Withdrawal with Same Account Holder Name Restriction
+// Withdrawal with Same Account Holder Name Restriction & Updated Limits
+// Min: 10,000 Coins (₹100) | Max: 1,000,000 Coins (₹10,000) | Rate: 100 Coins = ₹1
 app.post('/api/withdraw', async (req, res) => {
   try {
     const { userId, method, details, amount } = req.body;
     const user = await User.findById(userId);
     if (!user) return res.status(404).json({ error: 'User not found' });
 
+    // Validate limits
+    if (amount < 10000) {
+      return res.status(400).json({ error: 'Minimum withdrawal is 10,000 Coins (₹100)!' });
+    }
+    if (amount > 1000000) {
+      return res.status(400).json({ error: 'Maximum withdrawal is 1,000,000 Coins (₹10,000)!' });
+    }
+
     if (user.points < amount) {
-      return res.status(400).json({ error: 'Insufficient points!' });
+      return res.status(400).json({ error: 'Insufficient coin balance!' });
     }
 
     const newHolderName = (details.holderName || '').trim().toLowerCase();
@@ -160,12 +190,13 @@ app.post('/api/withdraw', async (req, res) => {
       return res.status(400).json({ error: 'Account holder name is required!' });
     }
 
+    // Enforce same account holder name policy for subsequent withdrawals
     if (user.withdrawals.length > 0) {
       const firstWithdrawal = user.withdrawals[0];
       const existingHolderName = (firstWithdrawal.details.holderName || '').trim().toLowerCase();
       if (existingHolderName && existingHolderName !== newHolderName) {
         return res.status(400).json({
-          error: `Security Error: You can only withdraw to accounts held by "${firstWithdrawal.details.holderName}". Name mismatch!`
+          error: `Security Error: You can only withdraw to accounts held by '${firstWithdrawal.details.holderName}'. Name mismatch!`
         });
       }
     }
