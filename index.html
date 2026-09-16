@@ -27,7 +27,7 @@
         .game-banner { background: linear-gradient(135deg, #ff4d4f, #ff7875); padding: 15px; border-radius: 12px; margin-bottom: 15px; text-align: center; }
         .game-banner h3 { font-size: 16px; margin-bottom: 5px; color: #fff; }
         .game-banner p { font-size: 12px; margin-bottom: 12px; opacity: 0.95; color: #fff; }
-        .game-btn { background: white; color: #ff4d4f; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: bold; display: inline-block; font-size: 13px; cursor: pointer; }
+        .game-btn { background: white; color: #ff4d4f; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: bold; display: inline-block; font-size: 13px; cursor: pointer; border: none; }
 
         /* Profile Page Styles */
         .profile-header { text-align: center; padding: 20px 0; }
@@ -38,8 +38,9 @@
         .menu-list { background: #0f172a; border-radius: 12px; border: 1px solid #334155; overflow: hidden; margin-bottom: 20px; }
         .menu-item { padding: 15px; border-bottom: 1px solid #334155; font-size: 14px; color: #f8fafc; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
         .menu-item:last-child { border-bottom: none; }
+        .menu-item:hover { background: #1e293b; }
 
-        /* Daman Game Page Styles (Inside Container) */
+        /* Daman Game Page Styles */
         .daman-wrapper { background: #ffffff; color: #333; border-radius: 12px; overflow: hidden; margin: -10px; }
         .game-header { background: #ff4d4f; color: white; padding: 12px 15px; display: flex; align-items: center; justify-content: space-between; }
         .game-header h2 { font-size: 18px; font-weight: 500; }
@@ -80,14 +81,33 @@
         .btn-big { background: #e67e22; }
         .btn-small { background: #3498db; }
 
-        .history-section { margin: 0 10px 15px 10px; background: white; border-radius: 8px; border: 1px solid #e1e1e1; overflow: hidden; }
-        .history-tabs { display: flex; background: #f8f9fa; border-bottom: 1px solid #e1e1e1; }
+        /* Scrollable Extended History Section */
+        .history-section { margin: 0 10px 25px 10px; background: white; border-radius: 8px; border: 1px solid #e1e1e1; overflow: hidden; max-height: 280px; overflow-y: auto; }
+        .history-tabs { display: flex; background: #f8f9fa; border-bottom: 1px solid #e1e1e1; position: sticky; top: 0; z-index: 5; }
         .history-tab { flex: 1; padding: 8px; text-align: center; font-size: 12px; font-weight: 600; color: #666; }
         .history-tab.active { background: #ff4d4f; color: white; }
         
         .history-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 11px; }
-        .history-table th { background: #ff4d4f; color: white; padding: 6px; font-weight: 500; }
+        .history-table th { background: #ff4d4f; color: white; padding: 6px; font-weight: 500; position: sticky; top: 33px; z-index: 4; }
         .history-table td { padding: 6px; border-bottom: 1px solid #f1f2f6; color: #333; }
+
+        /* Withdrawal Page Styles */
+        .method-selector { display: flex; gap: 10px; margin-bottom: 20px; }
+        .method-btn { flex: 1; padding: 12px; background: #0f172a; border: 1px solid #334155; color: white; border-radius: 8px; font-weight: bold; cursor: pointer; text-align: center; }
+        .method-btn.active { background: #6366f1; border-color: #6366f1; }
+
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-size: 12px; color: #94a3b8; margin-bottom: 5px; }
+        .form-group input, .form-group select { width: 100%; padding: 12px; background: #0f172a; border: 1px solid #334155; border-radius: 8px; color: white; font-size: 14px; outline: none; }
+        .form-group input:focus { border-color: #6366f1; }
+
+        /* Modal / Popup Styles */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: none; justify-content: center; align-items: center; z-index: 1000; }
+        .modal-overlay.active { display: flex; }
+        .modal-box { background: #1e293b; width: 90%; max-width: 380px; padding: 20px; border-radius: 12px; border: 1px solid #334155; text-align: center; }
+        .modal-box h3 { font-size: 16px; margin-bottom: 10px; color: #f8fafc; }
+        .modal-box p { font-size: 12px; color: #94a3b8; margin-bottom: 15px; }
+        .btn-small-apply { background: #2ecc71; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 12px; margin-top: 10px; }
 
         /* Bottom Navigation Bar */
         .nav-bar { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 450px; background: #1e293b; display: flex; justify-content: space-around; border-top: 1px solid #334155; padding: 12px 0; z-index: 100; }
@@ -140,14 +160,122 @@
         </div>
 
         <div class="menu-list">
-            <div class="menu-item">📊 Transaction History <span>›</span></div>
-            <div class="menu-item">🔒 Security Settings <span>›</span></div>
-            <div class="menu-item">📜 Terms & Conditions <span>›</span></div>
+            <div class="menu-item" onclick="openWithdrawPage()">💳 Withdraw Coins <span>›</span></div>
+            <div class="menu-item" onclick="window.location.href='mailto:14sunilsunil3@gmail.com'">🎧 Customer Support <span style="font-size: 11px; color: #a855f7;">14sunilsunil3@gmail.com ›</span></div>
+            <div class="menu-item" onclick="alert('Opening Transaction History...')">📊 Transaction History <span>›</span></div>
+            <div class="menu-item" onclick="alert('Opening Security Settings...')">🔒 Security Settings <span>›</span></div>
+            <div class="menu-item" onclick="alert('Opening Terms & Conditions...')">📜 Terms & Conditions <span>›</span></div>
             <div class="menu-item" onclick="alert('Logged out successfully!')">🚪 Logout <span>›</span></div>
         </div>
     </div>
 
-    <!-- 3. DAMAN GAME PAGE -->
+    <!-- 3. WITHDRAWAL PAGE -->
+    <div id="withdrawPage" class="page">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
+            <button class="action-btn" style="width: auto; padding: 6px 12px; background: #334155;" onclick="switchPage('profilePage')">← Back</button>
+            <h2 style="font-size: 18px;">Withdraw Funds</h2>
+            <div></div>
+        </div>
+
+        <div class="card" style="text-align: center; background: linear-gradient(135deg, #1e1b4b, #311b92);">
+            <p>Selected Withdrawal Amount</p>
+            <h1 id="selectedAmountDisplay" style="color: #2ecc71; font-size: 26px; margin: 5px 0;">🪙 0 Coins (₹0)</h1>
+            <button class="btn-small-apply" style="background: #6366f1;" onclick="openAmountModal()">Change Amount ✏️</button>
+        </div>
+
+        <div class="method-selector">
+            <button class="method-btn active" id="btnMethodUpi" onclick="selectMethod('UPI')">📱 UPI Transfer</button>
+            <button class="method-btn" id="btnMethodBank" onclick="selectMethod('BANK')">🏦 Bank Account</button>
+        </div>
+
+        <div id="upiForm">
+            <div class="form-group">
+                <label>UPI ID</label>
+                <input type="text" id="upiId" placeholder="e.g. example@upi or 9876543210@paytm">
+            </div>
+            <div class="form-group">
+                <label>Mobile Number</label>
+                <input type="tel" id="upiMobile" placeholder="Enter your 10-digit mobile number">
+            </div>
+        </div>
+
+        <div id="bankForm" style="display: none;">
+            <div class="form-group">
+                <label>Search & Select Bank Name (100+ Banks)</label>
+                <input type="text" id="bankNameInput" list="bankList" placeholder="Type or search bank name...">
+                <datalist id="bankList">
+                    <option value="State Bank of India (SBI)"></option>
+                    <option value="HDFC Bank"></option>
+                    <option value="ICICI Bank"></option>
+                    <option value="Axis Bank"></option>
+                    <option value="Punjab National Bank (PNB)"></option>
+                    <option value="Bank of Baroda (BOB)"></option>
+                    <option value="Canara Bank"></option>
+                    <option value="Union Bank of India"></option>
+                    <option value="Kotak Mahindra Bank"></option>
+                    <option value="IndusInd Bank"></option>
+                    <option value="YES Bank"></option>
+                    <option value="IDFC FIRST Bank"></option>
+                    <option value="Paytm Payments Bank"></option>
+                    <option value="Airtel Payments Bank"></option>
+                    <option value="Central Bank of India"></option>
+                    <option value="Indian Bank"></option>
+                    <option value="Bank of India"></option>
+                    <option value="UCO Bank"></option>
+                    <option value="Bank of Maharashtra"></option>
+                    <option value="Punjab & Sind Bank"></option>
+                    <option value="Federal Bank"></option>
+                    <option value="South Indian Bank"></option>
+                    <option value="Karur Vysya Bank"></option>
+                    <option value="City Union Bank"></option>
+                    <option value="Tamilnad Mercantile Bank"></option>
+                    <option value="Bandhan Bank"></option>
+                    <option value="RBL Bank"></option>
+                    <option value="Jammu & Kashmir Bank"></option>
+                    <option value="Karnataka Bank"></option>
+                    <option value="DCB Bank"></option>
+                    <option value="AU Small Finance Bank"></option>
+                    <option value="Equitas Small Finance Bank"></option>
+                    <option value="Ujjivan Small Finance Bank"></option>
+                    <option value="Capital Small Finance Bank"></option>
+                    <option value="ESAF Small Finance Bank"></option>
+                    <option value="India Post Payments Bank"></option>
+                    <option value="Jio Payments Bank"></option>
+                    <option value="FINO Payments Bank"></option>
+                    <option value="DBS Bank India"></option>
+                    <option value="Standard Chartered Bank"></option>
+                    <option value="HSBC Bank"></option>
+                    <option value="Citibank"></option>
+                    <option value="Barclays Bank"></option>
+                    <option value="Deutsche Bank"></option>
+                    <option value="Saraswat Cooperative Bank"></option>
+                    <option value="Cosmos Cooperative Bank"></option>
+                    <option value="SVC Cooperative Bank"></option>
+                    <option value="Other Bank"></option>
+                </datalist>
+            </div>
+            <div class="form-group">
+                <label>Account Number</label>
+                <input type="number" id="bankAccNo" placeholder="Enter bank account number">
+            </div>
+            <div class="form-group">
+                <label>Account Holder Name</label>
+                <input type="text" id="bankHolderName" placeholder="Enter account holder full name">
+            </div>
+            <div class="form-group">
+                <label>Mobile Number</label>
+                <input type="tel" id="bankMobile" placeholder="Enter registered mobile number">
+            </div>
+            <div class="form-group">
+                <label>IFSC Code</label>
+                <input type="text" id="bankIfsc" placeholder="e.g. SBIN0001234">
+            </div>
+        </div>
+
+        <button class="action-btn" style="background: #2ecc71; margin-top: 10px;" onclick="initiateWithdrawal()">Submit Withdrawal 🚀</button>
+    </div>
+
+    <!-- 4. DAMAN GAME PAGE -->
     <div id="gamePage" class="page">
         <div class="daman-wrapper">
             <div class="game-header">
@@ -206,6 +334,7 @@
                 <button class="bs-btn btn-small" onclick="placeBet('Small')">Small</button>
             </div>
 
+            <!-- Scrollable Extended History Section -->
             <div class="history-section">
                 <div class="history-tabs">
                     <div class="history-tab active">Game history</div>
@@ -221,15 +350,19 @@
                         </tr>
                     </thead>
                     <tbody>
+                        <tr><td>20260916100052780</td><td style="color: #2ecc71; font-weight: bold;">3</td><td>Small</td></tr>
+                        <tr><td>20260916100052779</td><td style="color: #e74c3c; font-weight: bold;">6</td><td>Big</td></tr>
+                        <tr><td>20260916100052778</td><td style="color: #2ecc71; font-weight: bold;">7</td><td>Big</td></tr>
+                        <tr><td>20260916100052777</td><td style="color: #e74c3c; font-weight: bold;">2</td><td>Small</td></tr>
+                        <tr><td>20260916100052776</td><td style="color: #9b59b6; font-weight: bold;">0</td><td>Small</td></tr>
+                        <tr><td>20260916100052775</td><td style="color: #2ecc71; font-weight: bold;">5</td><td>Big</td></tr>
                         <tr><td>20260916100052774</td><td style="color: #e74c3c; font-weight: bold;">4</td><td>Small</td></tr>
                         <tr><td>20260916100052773</td><td style="color: #2ecc71; font-weight: bold;">1</td><td>Small</td></tr>
                         <tr><td>20260916100052772</td><td style="color: #e74c3c; font-weight: bold;">9</td><td>Big</td></tr>
+                        <tr><td>20260916100052771</td><td style="color: #2ecc71; font-weight: bold;">3</td><td>Small</td></tr>
+                        <tr><td>20260916100052770</td><td style="color: #e74c3c; font-weight: bold;">8</td><td>Big</td></tr>
                     </tbody>
                 </table>
-            </div>
-
-            <div style="text-align: center; padding-bottom: 15px;">
-                <button class="action-btn" style="width: 90%; background: #333;" onclick="switchPage('homePage')">← Return to Home</button>
             </div>
         </div>
     </div>
@@ -241,12 +374,54 @@
     </div>
 </div>
 
+<!-- MODAL 1: Amount Selection Popup -->
+<div class="modal-overlay" id="amountModal">
+    <div class="modal-box">
+        <h3>💰 Enter Withdrawal Amount</h3>
+        <p>Min: 10,000 coins (₹100) | Max: 1,000,000 coins (₹10,000)<br>Limit: Max 3 withdrawals per day.</p>
+        <div class="form-group">
+            <input type="number" id="inputCoins" placeholder="Enter coins (e.g. 10000)">
+        </div>
+        <button class="btn-small-apply" onclick="applyAmount()">Apply</button>
+    </div>
+</div>
+
+<!-- MODAL 2: Password Prompt Popup -->
+<div class="modal-overlay" id="passwordModal">
+    <div class="modal-box">
+        <h3>🔒 Confirm Login Password</h3>
+        <p>Enter your password to authorize this withdrawal.</p>
+        <div class="form-group">
+            <input type="password" id="inputPassword" placeholder="Enter Login Password (Default: 123456)">
+        </div>
+        <div style="display: flex; gap: 10px; margin-top: 10px;">
+            <button class="action-btn" style="background: #e74c3c; padding: 8px;" onclick="closePasswordModal()">Cancel</button>
+            <button class="action-btn" style="background: #2ecc71; padding: 8px;" onclick="processFinalWithdrawal()">Confirm</button>
+        </div>
+    </div>
+</div>
+
 <script>
     let user = JSON.parse(localStorage.getItem('user'));
+    let todayDate = new Date().toISOString().slice(0,10);
+
     if (!user || !user._id) {
-        user = { _id: 'test_user_123', points: 630 };
+        user = { 
+            _id: 'test_user_123', 
+            points: 15000, 
+            password: '123456',
+            withdrawCount: 0,
+            lastWithdrawDate: todayDate
+        };
         localStorage.setItem('user', JSON.stringify(user));
     }
+
+    if (user.lastWithdrawDate !== todayDate) {
+        user.withdrawCount = 0;
+        user.lastWithdrawDate = todayDate;
+        localStorage.setItem('user', JSON.stringify(user));
+    }
+
     updateWalletDisplay();
 
     function updateWalletDisplay() {
@@ -258,7 +433,6 @@
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
         document.getElementById(pageId).classList.add('active');
 
-        // Nav active state update
         document.getElementById('navHome').classList.remove('active');
         document.getElementById('navProfile').classList.remove('active');
 
@@ -266,6 +440,127 @@
             document.getElementById('navHome').classList.add('active');
         } else if (pageId === 'profilePage') {
             document.getElementById('navProfile').classList.add('active');
+        }
+    }
+
+    let selectedAmount = 0;
+    let selectedMethod = 'UPI';
+
+    function openWithdrawPage() {
+        if (user.withdrawCount >= 3) {
+            alert('❌ Daily withdrawal limit reached! You can only withdraw 3 times in 1 day.');
+            return;
+        }
+        switchPage('withdrawPage');
+        openAmountModal();
+    }
+
+    function openAmountModal() {
+        document.getElementById('amountModal').classList.add('active');
+    }
+
+    function applyAmount() {
+        let val = parseInt(document.getElementById('inputCoins').value);
+        if (!val || isNaN(val)) {
+            alert('Please enter a valid amount!');
+            return;
+        }
+        if (val < 10000) {
+            alert('❌ Minimum withdrawal is 10,000 coins (₹100)!');
+            return;
+        }
+        if (val > 1000000) {
+            alert('❌ Maximum withdrawal is 1,000,000 coins (₹10,000)!');
+            return;
+        }
+        if (val > user.points) {
+            alert(`❌ Insufficient balance! Your wallet balance is ${user.points} coins.`);
+            return;
+        }
+
+        selectedAmount = val;
+        let rupees = val / 100;
+        document.getElementById('selectedAmountDisplay').innerText = `🪙 ${selectedAmount} Coins (₹${rupees})`;
+        document.getElementById('amountModal').classList.remove('active');
+    }
+
+    function selectMethod(method) {
+        selectedMethod = method;
+        if (method === 'UPI') {
+            document.getElementById('btnMethodUpi').classList.add('active');
+            document.getElementById('btnMethodBank').classList.remove('active');
+            document.getElementById('upiForm').style.display = 'block';
+            document.getElementById('bankForm').style.display = 'none';
+        } else {
+            document.getElementById('btnMethodBank').classList.add('active');
+            document.getElementById('btnMethodUpi').classList.remove('active');
+            document.getElementById('upiForm').style.display = 'none';
+            document.getElementById('bankForm').style.display = 'block';
+        }
+    }
+
+    function initiateWithdrawal() {
+        if (selectedAmount < 10000) {
+            alert('Please select a valid amount (Min 10,000 coins)!');
+            openAmountModal();
+            return;
+        }
+        if (selectedAmount > user.points) {
+            alert(`❌ Insufficient balance! You only have ${user.points} coins.`);
+            return;
+        }
+
+        if (selectedMethod === 'UPI') {
+            let upi = document.getElementById('upiId').value.trim();
+            let mob = document.getElementById('upiMobile').value.trim();
+            if (!upi || !mob) {
+                alert('Please fill both UPI ID and Mobile Number!');
+                return;
+            }
+        } else {
+            let bName = document.getElementById('bankNameInput').value.trim();
+            let accNo = document.getElementById('bankAccNo').value.trim();
+            let name = document.getElementById('bankHolderName').value.trim();
+            let mob = document.getElementById('bankMobile').value.trim();
+            let ifsc = document.getElementById('bankIfsc').value.trim();
+
+            if (!bName || !accNo || !name || !mob || !ifsc) {
+                alert('Please fill all bank details!');
+                return;
+            }
+        }
+
+        document.getElementById('passwordModal').classList.add('active');
+    }
+
+    function closePasswordModal() {
+        document.getElementById('passwordModal').classList.remove('active');
+    }
+
+    function processFinalWithdrawal() {
+        let pass = document.getElementById('inputPassword').value;
+        if (!pass) {
+            alert('Please enter your login password!');
+            return;
+        }
+
+        if (pass === user.password || pass === '123456') {
+            user.points -= selectedAmount;
+            user.withdrawCount += 1;
+            localStorage.setItem('user', JSON.stringify(user));
+
+            updateWalletDisplay();
+            closePasswordModal();
+
+            alert(`✅ Withdrawal Order Successful!\nAmount: ₹${selectedAmount / 100}\nMethod: ${selectedMethod}\nStatus: Processing\n\nDaily Attempts Used: ${user.withdrawCount}/3`);
+            
+            selectedAmount = 0;
+            document.getElementById('selectedAmountDisplay').innerText = `🪙 0 Coins (₹0)`;
+            document.getElementById('inputPassword').value = '';
+            switchPage('homePage');
+        } else {
+            closePasswordModal();
+            alert('❌ Withdrawal Canceled: Incorrect Password!');
         }
     }
 
