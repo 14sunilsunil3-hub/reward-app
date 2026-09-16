@@ -3,13 +3,15 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const dns = require('dns');
 
-// Fixes Render DNS ENOTFOUND issue permanently by using Google DNS
+// Fixes Render DNS ENOTFOUND issue permanently
 dns.setServers(['8.8.8.8', '1.1.1.1']);
 
 const app = express();
 app.use(express.json());
 app.use(cors());
-app.use(express.static('.'));
+
+// Frontend ko backend se link karne ke liye static folder serve kar rahe hain
+app.use(express.static(__dirname));
 
 const MONGO_URI = 'mongodb+srv://14sunilsunil3_db_user:G2tvsEmVz3A8QCo7@cluster0.xawhra2.mongodb.net/?appName=Cluster0';
 
