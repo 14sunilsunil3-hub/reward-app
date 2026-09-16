@@ -1,6 +1,10 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const dns = require('dns');
+
+// Fixes Render DNS ENOTFOUND issue permanently by using Google DNS
+dns.setServers(['8.8.8.8', '1.1.1.1']);
 
 const app = express();
 app.use(express.json());
@@ -9,7 +13,6 @@ app.use(express.static('.'));
 
 const MONGO_URI = 'mongodb+srv://14sunilsunil3_db_user:G2tvsEmVz3A8QCo7@cluster0.xawhra2.mongodb.net/?appName=Cluster0';
 
-// Added { family: 4 } to fix the Render DNS / ENOTFOUND error permanently
 mongoose.connect(MONGO_URI, { family: 4 })
   .then(() => console.log('MongoDB Cloud Connected!'))
   .catch(err => console.log('MongoDB Connection Error:', err));
