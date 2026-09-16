@@ -3,96 +3,192 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reward App</title>
+    <title>Daman - WinGo</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background: #0f172a; color: #fff; padding: 15px; display: flex; justify-content: center; }
-        .container { width: 100%; max-width: 450px; background: #1e293b; padding: 20px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+        body { background: #f1f2f6; color: #333; display: flex; justify-content: center; }
+        .container { width: 100%; max-width: 450px; background: #ffffff; min-height: 100vh; padding-bottom: 30px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
         
-        .wallet-card { background: linear-gradient(135deg, #6366f1, #a855f7); padding: 20px; border-radius: 14px; text-align: center; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4); }
-        .wallet-card h3 { font-size: 14px; opacity: 0.9; margin-bottom: 5px; }
-        .wallet-card h1 { font-size: 32px; font-weight: bold; }
-
-        .card { background: #0f172a; padding: 15px; border-radius: 12px; margin-bottom: 15px; border: 1px solid #334155; }
-        .card h4 { font-size: 15px; margin-bottom: 5px; color: #f8fafc; }
-        .card p { font-size: 12px; color: #94a3b8; margin-bottom: 12px; }
+        /* Top Header */
+        .game-header { background: #ff4d4f; color: white; padding: 12px 15px; display: flex; align-items: center; justify-content: space-between; }
+        .game-header h2 { font-size: 18px; font-weight: 500; }
         
-        .action-btn { width: 100%; background: #6366f1; color: white; border: none; padding: 12px; border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer; transition: 0.2s; }
-        .action-btn:hover { background: #4f46e5; }
+        /* Tab Navigation (30s, 1Min, etc.) */
+        .game-tabs { display: flex; background: #ff4d4f; padding: 0 10px 12px 10px; justify-content: space-between; }
+        .tab-item { background: rgba(255, 255, 255, 0.2); border-radius: 8px; padding: 8px 10px; text-align: center; color: white; width: 23%; cursor: pointer; font-size: 12px; }
+        .tab-item.active { background: #ffffff; color: #ff4d4f; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .tab-item span { display: block; font-size: 11px; margin-top: 2px; }
 
-        .game-banner { background: linear-gradient(135deg, #f59e0b, #ef4444); padding: 15px; border-radius: 12px; margin-bottom: 15px; text-align: center; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3); }
-        .game-banner h3 { font-size: 16px; margin-bottom: 5px; color: #fff; }
-        .game-banner p { font-size: 12px; margin-bottom: 12px; opacity: 0.95; color: #fff; }
-        .game-btn { background: white; color: #b45309; padding: 8px 16px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 13px; display: inline-block; }
+        /* Timer / Period Box */
+        .timer-card { background: #fff; margin: 12px; border-radius: 12px; border: 1px solid #ff4d4f; padding: 12px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 8px rgba(255,77,79,0.1); }
+        .how-to-play { background: #ff4d4f; color: white; border: none; padding: 6px 12px; border-radius: 15px; font-size: 11px; cursor: pointer; }
+        .timer-right { text-align: right; }
+        .timer-label { font-size: 11px; color: #888; }
+        .timer-value { font-size: 18px; font-weight: bold; color: #ff4d4f; letter-spacing: 1px; }
+        .period-value { font-size: 11px; color: #555; font-weight: 600; margin-top: 2px; }
 
-        .nav-bar { display: flex; justify-content: space-around; margin-top: 20px; border-top: 1px solid #334155; padding-top: 15px; }
-        .nav-item { text-align: center; color: #94a3b8; text-decoration: none; font-size: 12px; font-weight: bold; cursor: pointer; }
-        .nav-item.active { color: #6366f1; }
+        /* Color Betting Buttons */
+        .color-btns { display: flex; justify-content: space-between; margin: 0 12px 12px 12px; gap: 8px; }
+        .color-btn { flex: 1; padding: 10px 0; border: none; border-radius: 6px; color: white; font-weight: bold; font-size: 14px; cursor: pointer; text-align: center; }
+        .btn-green { background: #2ecc71; }
+        .btn-violet { background: #9b59b6; }
+        .btn-red { background: #e74c3c; }
+
+        /* Number Grid (0-9) with Daman Style */
+        .number-grid-card { background: #f8f9fa; margin: 0 12px 12px 12px; padding: 12px; border-radius: 10px; border: 1px solid #e1e1e1; }
+        .number-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
+        .num-ball { width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 16px; color: white; cursor: pointer; margin: 0 auto; box-shadow: 0 2px 4px rgba(0,0,0,0.15); }
+        
+        /* Dual color simulation for balls like Daman */
+        .ball-0 { background: linear-gradient(135deg, #e74c3c 50%, #9b59b6 50%); }
+        .ball-1, .ball-3, .ball-7, .ball-9 { background: #2ecc71; }
+        .ball-2, .ball-4, .ball-6, .ball-8 { background: #e74c3c; }
+        .ball-5 { background: linear-gradient(135deg, #2ecc71 50%, #9b59b6 50%); }
+
+        /* Multipliers (X1, X5...) */
+        .multiplier-bar { display: flex; justify-content: space-between; margin: 0 12px 12px 12px; gap: 4px; }
+        .mult-btn { background: #f1f2f6; border: 1px solid #dcdde1; padding: 6px 0; flex: 1; text-align: center; font-size: 12px; border-radius: 4px; cursor: pointer; font-weight: 600; color: #555; }
+        .mult-btn.active { background: #2ecc71; color: white; border-color: #2ecc71; }
+
+        /* Big / Small Buttons */
+        .big-small-container { display: flex; gap: 10px; margin: 0 12px 15px 12px; }
+        .bs-btn { flex: 1; padding: 12px 0; border: none; border-radius: 6px; font-weight: bold; font-size: 14px; color: white; cursor: pointer; text-align: center; }
+        .btn-big { background: #e67e22; }
+        .btn-small { background: #3498db; }
+
+        /* History Section */
+        .history-section { margin: 0 12px; background: white; border-radius: 8px; border: 1px solid #e1e1e1; overflow: hidden; }
+        .history-tabs { display: flex; background: #f8f9fa; border-bottom: 1px solid #e1e1e1; }
+        .history-tab { flex: 1; padding: 10px; text-align: center; font-size: 13px; font-weight: 600; color: #666; cursor: pointer; }
+        .history-tab.active { background: #ff4d4f; color: white; }
+        
+        .history-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 12px; }
+        .history-table th { background: #ff4d4f; color: white; padding: 8px; font-weight: 500; }
+        .history-table td { padding: 8px; border-bottom: 1px solid #f1f2f6; color: #333; }
+        
+        /* Return Home Button */
+        .footer-action { padding: 15px 12px; text-align: center; }
+        .return-btn { background: #333; color: white; border: none; padding: 10px 20px; border-radius: 20px; font-size: 13px; cursor: pointer; width: 100%; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div class="wallet-card">
-        <h3>My Wallet Balance</h3>
-        <h1 id="userWallet">🪙 0 Coins</h1>
+    <!-- Header -->
+    <div class="game-header">
+        <h2>🛡️ Daman</h2>
+        <div id="userwallet" style="font-size: 13px; font-weight: bold;">🪙 630 Coins</div>
     </div>
 
-    <!-- Color Trading Game Banner -->
-    <div class="game-banner">
-        <h3>📊 Pro Color & Number Trading</h3>
-        <p>Play 30s / 60s / 3m games and double your coins!</p>
-        <a href="color-game.html" class="game-btn">Play Game Now 🚀</a>
+    <!-- Tabs -->
+    <div class="game-tabs">
+        <div class="tab-item active">WinGo<br><span>30sec</span></div>
+        <div class="tab-item">WinGo<br><span>1 Min</span></div>
+        <div class="tab-item">WinGo<br><span>3 Min</span></div>
+        <div class="tab-item">WinGo<br><span>5 Min</span></div>
     </div>
 
-    <div class="card">
-        <h4>Daily Check-in Bonus</h4>
-        <p>Claim your free daily login reward (+20 coins).</p>
-        <button class="action-btn" onclick="claimDaily()">Claim Daily Reward</button>
+    <!-- Timer Card -->
+    <div class="timer-card">
+        <button class="how-to-play">📖 How to play</button>
+        <div class="timer-right">
+            <div class="timer-label">Time remaining</div>
+            <div class="timer-value" id="timer">00 : 15</div>
+            <div class="period-value" id="periodId">20260916100052775</div>
+        </div>
     </div>
 
-    <div class="card">
-        <h4>Watch Ad & Earn</h4>
-        <p>Watch a sponsored video to earn instant coins (+50 coins).</p>
-        <button class="action-btn" onclick="watchAd()">Watch Ad Now</button>
+    <!-- Color Betting -->
+    <div class="color-btns">
+        <button class="color-btn btn-green" onclick="placeBet('Green', 2)">Green</button>
+        <button class="color-btn btn-violet" onclick="placeBet('Violet', 4.5)">Violet</button>
+        <button class="color-btn btn-red" onclick="placeBet('Red', 2)">Red</button>
     </div>
 
-    <div class="card">
-        <h4>Refer Friends & Earn</h4>
-        <p>Earn 1000 Coins when your friend registers using your link!</p>
-        <button class="action-btn" onclick="shareApp()">Share & Invite</button>
+    <!-- Number Grid Card (0-9) -->
+    <div class="number-grid-card">
+        <div class="number-grid">
+            <div class="num-ball ball-0" onclick="placeBet('Number 0', 9)">0</div>
+            <div class="num-ball ball-1" onclick="placeBet('Number 1', 9)">1</div>
+            <div class="num-ball ball-2" onclick="placeBet('Number 2', 9)">2</div>
+            <div class="num-ball ball-3" onclick="placeBet('Number 3', 9)">3</div>
+            <div class="num-ball ball-4" onclick="placeBet('Number 4', 9)">4</div>
+            <div class="num-ball ball-5" onclick="placeBet('Number 5', 9)">9</div>
+            <div class="num-ball ball-6" onclick="placeBet('Number 6', 9)">6</div>
+            <div class="num-ball ball-7" onclick="placeBet('Number 7', 9)">7</div>
+            <div class="num-ball ball-8" onclick="placeBet('Number 8', 9)">8</div>
+            <div class="num-ball ball-9" onclick="placeBet('Number 9', 9)">9</div>
+        </div>
     </div>
 
-    <div class="nav-bar">
-        <a href="index.html" class="nav-item active">🏠 Home</a>
-        <a href="#" class="nav-item" onclick="alert('Profile section coming soon!')">👤 Profile</a>
+    <!-- Multiplier Bar -->
+    <div class="multiplier-bar">
+        <div class="mult-btn active" onclick="setMultiplier(1, this)">X1</div>
+        <div class="mult-btn" onclick="setMultiplier(5, this)">X5</div>
+        <div class="mult-btn" onclick="setMultiplier(10, this)">X10</div>
+        <div class="mult-btn" onclick="setMultiplier(20, this)">X20</div>
+        <div class="mult-btn" onclick="setMultiplier(50, this)">X50</div>
+        <div class="mult-btn" onclick="setMultiplier(100, this)">X100</div>
+    </div>
+
+    <!-- Big / Small Buttons -->
+    <div class="big-small-container">
+        <button class="bs-btn btn-big" onclick="placeBet('Big', 2)">Big</button>
+        <button class="bs-btn btn-small" onclick="placeBet('Small', 2)">Small</button>
+    </div>
+
+    <!-- History Section -->
+    <div class="history-section">
+        <div class="history-tabs">
+            <div class="history-tab active">Game history</div>
+            <div class="history-tab">Chart</div>
+            <div class="history-tab">My bets</div>
+        </div>
+        <table class="history-table">
+            <thead>
+                <tr>
+                    <th>Period</th>
+                    <th>Number</th>
+                    <th>Big Small</th>
+                </tr>
+            </thead>
+            <tbody id="historyList">
+                <tr>
+                    <td>20260916100052774</td>
+                    <td style="color: #e74c3c; font-weight: bold;">4</td>
+                    <td>Small</td>
+                </tr>
+                <tr>
+                    <td>20260916100052773</td>
+                    <td style="color: #2ecc71; font-weight: bold;">1</td>
+                    <td>Small</td>
+                </tr>
+                <tr>
+                    <td>20260916100052772</td>
+                    <td style="color: #e74c3c; font-weight: bold;">9</td>
+                    <td>Big</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Return Button -->
+    <div class="footer-action">
+        <button class="return-btn" onclick="window.location.href='index.html'">← Return to Home</button>
     </div>
 </div>
 
 <script>
-    let user = JSON.parse(localStorage.getItem('user'));
-    if (!user || !user._id) {
-        user = { _id: "test_user_123", points: 630 };
-        localStorage.setItem('user', JSON.stringify(user));
-    }
-    document.getElementById('userWallet').innerText = `🪙 ${user.points} Coins`;
+    let currentMultiplier = 1;
 
-    function claimDaily() {
-        user.points += 20;
-        localStorage.setItem('user', JSON.stringify(user));
-        document.getElementById('userWallet').innerText = `🪙 ${user.points} Coins`;
-        alert('Successfully claimed 20 Daily Coins!');
+    function setMultiplier(val, element) {
+        currentMultiplier = val;
+        document.querySelectorAll('.mult-btn').forEach(btn => btn.classList.remove('active'));
+        element.classList.add('active');
     }
 
-    function watchAd() {
-        user.points += 50;
-        localStorage.setItem('user', JSON.stringify(user));
-        document.getElementById('userWallet').innerText = `🪙 ${user.points} Coins`;
-        alert('Ad watched successfully! +50 Coins added.');
-    }
-
-    function shareApp() {
-        alert('Share link copied to clipboard!');
+    function placeBet(type, multiplier) {
+        alert(`Bet placed on: ${type} with multiplier X${currentMultiplier}!`);
     }
 </script>
 
