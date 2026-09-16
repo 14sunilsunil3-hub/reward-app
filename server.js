@@ -7,10 +7,10 @@ app.use(express.json());
 app.use(cors());
 app.use(express.static('.'));
 
-// Correct MongoDB URI with your updated password
 const MONGO_URI = 'mongodb+srv://14sunilsunil3_db_user:G2tvsEmVz3A8QCo7@cluster0.xawhra2.mongodb.net/?appName=Cluster0';
 
-mongoose.connect(MONGO_URI)
+// Added { family: 4 } to fix the Render DNS / ENOTFOUND error permanently
+mongoose.connect(MONGO_URI, { family: 4 })
   .then(() => console.log('MongoDB Cloud Connected!'))
   .catch(err => console.log('MongoDB Connection Error:', err));
 
@@ -31,8 +31,8 @@ const userSchema = new mongoose.Schema({
   referredBy: { type: String, default: '' },
   withdrawals: [
     {
-      method: String, // 'UPI' or 'Bank'
-      details: Object, // UPI ID / Bank details with account holder name
+      method: String,
+      details: Object,
       amount: Number,
       status: { type: String, default: 'Pending' },
       date: { type: Date, default: Date.now }
@@ -42,7 +42,7 @@ const userSchema = new mongoose.Schema({
 
 const User = mongoose.model('User', userSchema);
 
-// Send OTP (Strictly checks if mobile number already registered for signup or exists for reset)
+// Send OTP
 app.post('/api/send-otp', async (req, res) => {
   try {
     const { phone, isSignup } = req.body;
@@ -50,7 +50,7 @@ app.post('/api/send-otp', async (req, res) => {
 
     let user = await User.findOne({ phone });
     if (isSignup && user) {
-      return res.status(400).json({ error: 'This mobile number is already registered! Only one ID per number is allowed.' });
+      return res.status(400).json({ error: 'This mobile number is already registered!' });
     }
     if (!isSignup && !user) {
       return res.status(404).json({ error: 'Mobile number not found. Please register first.' });
@@ -80,9 +80,8 @@ app.post('/api/register', async (req, res) => {
 
     user.password = password;
     user.otp = undefined;
-    user.points = 10; // Initial signup bonus
+    user.points = 10;
 
-    // Handle Referral logic (+1000 coins if valid referrer found)
     if (refCode) {
       const referrer = await User.findOne({ uid: refCode });
       if (referrer && referrer.phone !== phone) {
@@ -113,7 +112,7 @@ app.post('/api/login', async (req, res) => {
   }
 });
 
-// Reset Password Endpoint (For Forgot Password screen)
+// Reset Password
 app.post('/api/reset-password', async (req, res) => {
   try {
     const { phone, otp, newPassword } = req.body;
@@ -130,7 +129,7 @@ app.post('/api/reset-password', async (req, res) => {
   }
 });
 
-// Update Profile (Username & Avatar)
+// Update Profile
 app.post('/api/update-profile', async (req, res) => {
   try {
     const { userId, username, profilePic } = req.body;
@@ -147,7 +146,7 @@ app.post('/api/update-profile', async (req, res) => {
   }
 });
 
-// Daily Login Bonus (+20 coins)
+// Daily Login
 app.post('/api/daily-login', async (req, res) => {
   try {
     const { userId } = req.body;
@@ -156,19 +155,19 @@ app.post('/api/daily-login', async (req, res) => {
 
     const today = new Date().toISOString().slice(0, 10);
     if (user.lastDailyLogin === today) {
-      return res.status(400).json({ error: 'Already claimed today! Try again tomorrow.' });
+      return res.status(400).json({ error: 'Already claimed today!' });
     }
 
     user.lastDailyLogin = today;
     user.points += 20;
     await user.save();
-    res.status(200).json({ message: 'Daily bonus claimed successfully!', points: user.points });
+    res.status(200).json({ message: 'Daily bonus claimed!', points: user.points });
   } catch (err) {
     res.status(500).json({ error: 'Server error', details: err.message });
   }
 });
 
-// Points Update (For Tasks like Watching Ads, e.g., +50 coins)
+// Points Update
 app.post('/api/points', async (req, res) => {
   try {
     const { userId, pointsToAdd } = req.body;
@@ -183,39 +182,25 @@ app.post('/api/points', async (req, res) => {
   }
 });
 
-// Withdrawal with Same Account Holder Name Restriction & Updated Limits
-// Min: 10,000 Coins (₹100) | Max: 1,000,000 Coins (₹10,000) | Rate: 100 Coins = ₹1
+// Withdrawal
 app.post('/api/withdraw', async (req, res) => {
   try {
     const { userId, method, details, amount } = req.body;
     const user = await User.findById(userId);
     if (!user) return res.status(404).json({ error: 'User not found' });
 
-    // Validate limits
-    if (amount < 10000) {
-      return res.status(400).json({ error: 'Minimum withdrawal is 10,000 Coins (₹100)!' });
-    }
-    if (amount > 1000000) {
-      return res.status(400).json({ error: 'Maximum withdrawal is 1,000,000 Coins (₹10,000)!' });
-    }
-
-    if (user.points < amount) {
-      return res.status(400).json({ error: 'Insufficient coin balance!' });
-    }
+    if (amount < 10000) return res.status(400).json({ error: 'Minimum withdrawal is 10,000 Coins!' });
+    if (amount > 1000000) return res.status(400).json({ error: 'Maximum withdrawal is 1,000,000 Coins!' });
+    if (user.points < amount) return res.status(400).json({ error: 'Insufficient coin balance!' });
 
     const newHolderName = (details.holderName || '').trim().toLowerCase();
-    if (!newHolderName) {
-      return res.status(400).json({ error: 'Account holder name is required!' });
-    }
+    if (!newHolderName) return res.status(400).json({ error: 'Account holder name is required!' });
 
-    // Enforce same account holder name policy for subsequent withdrawals
     if (user.withdrawals.length > 0) {
       const firstWithdrawal = user.withdrawals[0];
-      const existingHolderName = (firstWithdrawals.details.holderName || '').trim().toLowerCase();
+      const existingHolderName = (firstWithdrawal.details.holderName || '').trim().toLowerCase();
       if (existingHolderName && existingHolderName !== newHolderName) {
-        return res.status(400).json({
-          error: `Security Error: You can only withdraw to accounts held by '${firstWithdrawal.details.holderName}'. Name mismatch!`
-        });
+        return res.status(400).json({ error: `Security Error: Name mismatch with first withdrawal!` });
       }
     }
 
