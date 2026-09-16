@@ -73,18 +73,6 @@
         .avatar-option { width: 50px; height: 50px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; }
         .avatar-option:hover, .avatar-option.selected { border-color: #4f46e5; transform: scale(1.05); }
 
-        /* Lucky Spin Wheel */
-        .wheel-container { display: flex; flex-direction: column; align-items: center; margin: 10px 0; position: relative; }
-        .wheel-coin-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 45px; height: 45px; background: #fff; border-radius: 50%; display: flex; justify-content: center; align-items: center; z-index: 15; box-shadow: 0 0 10px rgba(0,0,0,0.2); border: 2px solid #eab308; }
-        .wheel { width: 280px; height: 280px; border-radius: 50%; border: 8px solid #4f46e5; position: relative; transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99); background: conic-gradient(#7c3aed 0deg 60deg, #f59e0b 60deg 120deg, #ec4899 120deg 180deg, #ef4444 180deg 240deg, #3b82f6 240deg 300deg, #10b981 300deg 360deg); }
-        
-        /* Triangle Pointer with sharp tip pointing directly towards the wheel */
-        .wheel-pointer { width: 0; height: 0; border-left: 12px solid transparent; border-right: 12px solid transparent; border-top: 25px solid #111; position: absolute; top: -15px; left: 50%; transform: translateX(-50%); z-index: 20; }
-        
-        /* Slices text layout inside the wheel (White Color) */
-        .wheel-slice-text { position: absolute; width: 100%; height: 100%; top: 0; left: 0; pointer-events: none; }
-        .slice-label { position: absolute; font-size: 13px; font-weight: bold; color: #ffffff; text-shadow: 1px 1px 3px rgba(0,0,0,0.9); width: 80px; text-align: center; }
-
         /* Movable Support Popup Button */
         #floating-support { position: fixed; bottom: 85px; right: 20px; background: #16a34a; color: #fff; width: 50px; height: 50px; border-radius: 50%; display: flex; justify-content: center; align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.3); cursor: pointer; z-index: 2999; font-size: 22px; touch-action: none; }
 
@@ -93,6 +81,10 @@
 
         .history-item { background: #f8fafc; border: 1px solid #e2e8f0; padding: 10px; border-radius: 8px; margin-bottom: 8px; font-size: 12px; display: flex; justify-content: space-between; align-items: center; }
     </style>
+
+    <!-- Google AdSense Code -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5405487813802646"
+         crossorigin="anonymous"></script>
 </head>
 <body>
 
@@ -270,30 +262,6 @@
             </div>
         </div>
 
-        <!-- LUCKY WHEEL SCREEN -->
-        <div id="wheel-screen" class="screen">
-            <h2 style="text-align:center; margin-bottom: 2px;">Lucky Spin Wheel</h2>
-            <p style="text-align:center; font-size: 12px; color: #666; margin-bottom: 5px;">Spin & Win Coins based on your luck!</p>
-            
-            <div class="wheel-container">
-                <div class="wheel-pointer"></div>
-                <div class="wheel-coin-center"><i class="fa-solid fa-coins" style="color: #eab308; font-size: 22px;"></i></div>
-                <div class="wheel" id="spin-wheel-element">
-                    <!-- Text overlays for each slice in White Color -->
-                    <div class="wheel-slice-text">
-                        <div class="slice-label" style="top: 25px; left: 165px; transform: rotate(30deg);">50-200</div>
-                        <div class="slice-label" style="top: 95px; left: 200px; transform: rotate(90deg);">100-500</div>
-                        <div class="slice-label" style="top: 175px; left: 155px; transform: rotate(150deg);">1000-5000</div>
-                        <div class="slice-label" style="top: 215px; left: 65px; transform: rotate(210deg);">Lost</div>
-                        <div class="slice-label" style="top: 155px; left: 15px; transform: rotate(270deg);">50000-20000</div>
-                        <div class="slice-label" style="top: 75px; left: 40px; transform: rotate(330deg);">3000-10000</div>
-                    </div>
-                </div>
-            </div>
-
-            <button class="btn" onclick="spinWheel()" style="margin-top: 10px;">Spin</button>
-        </div>
-
         <!-- PROFILE SCREEN -->
         <div id="profile-screen" class="screen">
             <div class="profile-header">
@@ -322,7 +290,6 @@
         <!-- NAVBAR -->
         <div class="navbar">
             <div class="nav-item active" onclick="switchTab('home', this)"><i class="fa-solid fa-house"></i>Home</div>
-            <div class="nav-item" onclick="switchTab('wheel', this)"><i class="fa-solid fa-dharmachakra"></i>Lucky Wheel</div>
             <div class="nav-item" onclick="switchTab('profile', this)"><i class="fa-solid fa-user"></i>Profile</div>
         </div>
 
@@ -409,7 +376,7 @@
         <h3><i class="fa-solid fa-shield-halved"></i> Welcome Guide & Security Policy</h3>
         <div class="policy-section">
             <b>1. How to Earn Coins:</b><br>
-            • Claim daily check-in bonus, watch video ads, and test your luck on the Spin Wheel.<br>
+            • Claim daily check-in bonus and watch video ads.<br>
             • Share referral links to earn <b>5000 Coins</b> per referral!
         </div>
         <div class="policy-section">
@@ -433,16 +400,37 @@
 </div>
 
 <script>
+    let currentUser = null;
+
+    // Check for saved user login session in Local Storage
     window.addEventListener('load', () => {
+        const savedUser = localStorage.getItem('reward_zone_user');
+        if (savedUser) {
+            try {
+                currentUser = JSON.parse(savedUser);
+            } catch (e) {
+                console.error("Error parsing saved session", e);
+            }
+        }
+
         setTimeout(() => {
             const splash = document.getElementById('splash-screen');
             splash.style.opacity = '0';
-            setTimeout(() => { splash.style.display = 'none'; }, 500);
+            setTimeout(() => { 
+                splash.style.display = 'none'; 
+                // If user session exists, go directly to Home Screen
+                if (currentUser && currentUser._id) {
+                    initMainApp(false); 
+                }
+            }, 500);
         }, 5000);
     });
 
-    let currentUser = null;
-    let currentRotation = 0;
+    // Helper to update local storage user data
+    function saveUserSession(userData) {
+        currentUser = userData;
+        localStorage.setItem('reward_zone_user', JSON.stringify(userData));
+    }
 
     // Password See/Hide Toggle Function
     function togglePasswordVisibility(fieldId, iconEl) {
@@ -534,6 +522,7 @@
     async function selectAvatar(url) {
         currentUser.profilePic = url;
         document.getElementById('profile-avatar-img').src = url;
+        saveUserSession(currentUser);
         closeAvatarModal();
         await saveProfileToServer({ profilePic: url });
     }
@@ -541,6 +530,7 @@
     async function updateUsername(newVal) {
         if (!newVal.trim()) return;
         currentUser.username = newVal;
+        saveUserSession(currentUser);
         await saveProfileToServer({ username: newVal });
     }
 
@@ -609,8 +599,8 @@
         });
         let data = await res.json();
         if(res.ok) {
-            currentUser = data.user;
-            initMainApp();
+            saveUserSession(data.user);
+            initMainApp(true);
         } else {
             if(data.error && data.error.toLowerCase().includes('otp')) {
                 otpEl.classList.add('input-error');
@@ -638,8 +628,8 @@
         });
         let data = await res.json();
         if(res.ok) {
-            currentUser = data.user;
-            initMainApp();
+            saveUserSession(data.user);
+            initMainApp(true);
         } else {
             const errText = (data.error || '').toLowerCase();
             if(errText.includes('not register') || errText.includes('not found')) {
@@ -693,13 +683,15 @@
         }
     }
 
-    function initMainApp() {
+    function initMainApp(showPolicy = true) {
         document.getElementById('signup-screen').style.display = 'none';
         document.getElementById('login-screen').style.display = 'none';
         document.getElementById('forgot-screen').style.display = 'none';
         document.getElementById('main-app').style.display = 'flex';
         updateUI();
-        document.getElementById('policy-modal').style.display = 'flex';
+        if (showPolicy) {
+            document.getElementById('policy-modal').style.display = 'flex';
+        }
     }
 
     function closePolicyModal() { document.getElementById('policy-modal').style.display = 'none'; }
@@ -717,7 +709,6 @@
         document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
         
         if(tabName === 'home') document.getElementById('home-screen').classList.add('active');
-        if(tabName === 'wheel') document.getElementById('wheel-screen').classList.add('active');
         if(tabName === 'profile') document.getElementById('profile-screen').classList.add('active');
         
         el.classList.add('active');
@@ -733,6 +724,7 @@
         const data = await res.json();
         if(res.ok) {
             currentUser.points = data.points;
+            saveUserSession(currentUser);
             updateUI();
         }
 
@@ -753,6 +745,7 @@
         const data = await res.json();
         if(res.ok) {
             currentUser.points = data.points;
+            saveUserSession(currentUser);
             updateUI();
             alert(data.message);
         } else { alert(data.error); }
@@ -767,32 +760,10 @@
         const data = await res.json();
         if(res.ok) {
             currentUser.points = data.points;
+            saveUserSession(currentUser);
             updateUI();
             alert('Ad watched successfully! +50 Coins added.');
         }
-    }
-
-    // Lucky Wheel logic landing on Purple slice (50-200, angle 30)
-    async function spinWheel() {
-        const wheel = document.getElementById('spin-wheel-element');
-        const targetPurpleAngle = 30;
-        const extraSpins = 360 * 6;
-        currentRotation += extraSpins + targetPurpleAngle;
-        wheel.style.transform = `rotate(${currentRotation}deg)`;
-
-        setTimeout(async () => {
-            const res = await fetch('/api/spin-wheel', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ userId: currentUser._id, landedAngle: targetPurpleAngle })
-            });
-            const data = await res.json();
-            if(res.ok) {
-                currentUser.points = data.points;
-                updateUI();
-                alert(data.message);
-            } else { alert(data.error); }
-        }, 4000);
     }
 
     // Withdrawal Modals & Validation Logic (Min 100, Max 1000000)
@@ -847,8 +818,9 @@
         const data = await res.json();
         if(res.ok) {
             currentUser = data.user;
+            saveUserSession(currentUser);
             updateUI();
-            closeWithdrawalModal();
+            closeWithdrawModal();
             alert('Withdrawal request submitted successfully!');
         } else { alert(data.error); }
     }
@@ -883,7 +855,10 @@
     function closeCoinHistoryModal() { document.getElementById('coin-history-modal').style.display = 'none'; }
 
     function logout() {
-        if(confirm("Are you sure you want to logout?")) location.reload();
+        if(confirm("Are you sure you want to logout?")) {
+            localStorage.removeItem('reward_zone_user');
+            location.reload();
+        }
     }
 </script>
 </body>
