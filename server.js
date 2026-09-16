@@ -7,7 +7,7 @@ app.use(express.json());
 app.use(cors());
 app.use(express.static('.'));
 
-// Updated with your correct MongoDB Atlas password
+// Correct MongoDB URI with your updated password
 const MONGO_URI = 'mongodb+srv://14sunilsunil3_db_user:G2tvsEmVz3A8QCo7@cluster0.xawhra2.mongodb.net/?appName=Cluster0';
 
 mongoose.connect(MONGO_URI)
@@ -211,7 +211,7 @@ app.post('/api/withdraw', async (req, res) => {
     // Enforce same account holder name policy for subsequent withdrawals
     if (user.withdrawals.length > 0) {
       const firstWithdrawal = user.withdrawals[0];
-      const existingHolderName = (firstWithdrawal.details.holderName || '').trim().toLowerCase();
+      const existingHolderName = (firstWithdrawals.details.holderName || '').trim().toLowerCase();
       if (existingHolderName && existingHolderName !== newHolderName) {
         return res.status(400).json({
           error: `Security Error: You can only withdraw to accounts held by '${firstWithdrawal.details.holderName}'. Name mismatch!`
