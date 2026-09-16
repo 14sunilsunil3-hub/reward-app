@@ -1,645 +1,100 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Reward Zone - Earn Daily Coins & Rewards</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-    body { background: #f4f5f7; color: #333; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
-    .app-container { width: 100%; max-width: 480px; background: #fff; min-height: 100vh; display: flex; flex-direction: column; position: relative; overflow-y: auto; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-    .screen { display: none; padding: 20px; flex: 1; overflow-y: auto; padding-bottom: 80px; }
-    .screen.active { display: block; }
-    
-    /* Splash Screen */
-    #splash-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #1fa2ff, #12d8fa, #a6ffcb); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 999; color: #fff; }
-    
-    /* Navigation Bar */
-    .navbar { position: fixed; bottom: 0; width: 100%; max-width: 480px; background: #fff; display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid #eee; z-index: 100; }
-    .nav-item { text-align: center; color: #777; cursor: pointer; font-size: 12px; }
-    .nav-item.active { color: #4f46e5; font-weight: bold; }
-    .nav-item i { font-size: 20px; display: block; margin-bottom: 3px; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reward App</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background: #0f172a; color: #fff; padding: 15px; display: flex; justify-content: center; }
+        .container { width: 100%; max-width: 450px; background: #1e293b; padding: 20px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+        
+        .wallet-card { background: linear-gradient(135deg, #6366f1, #a855f7); padding: 20px; border-radius: 14px; text-align: center; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4); }
+        .wallet-card h3 { font-size: 14px; opacity: 0.9; margin-bottom: 5px; }
+        .wallet-card h1 { font-size: 32px; font-weight: bold; }
 
-    /* UI Elements */
-    .card { background: linear-gradient(135deg, #4f46e5, #7c3aed); color: #fff; padding: 20px; border-radius: 14px; margin-bottom: 15px; }
-    .btn { background: #4f46e5; color: #fff; border: none; width: 100%; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; }
-    .btn:active { transform: scale(0.98); }
-    .input-group { margin-bottom: 15px; }
-    .input-group label { display: block; font-size: 13px; margin-bottom: 5px; color: #555; font-weight: 600; }
-    .input-group input, .input-group select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; outline: none; }
-    .input-error { border: 2px solid #ef4444 !important; background-color: #fef2f2 !important; }
-    
-    .task-card { background: #fafafa; border: 1px solid #eee; border-radius: 12px; padding: 15px; margin-bottom: 15px; }
-    
-    /* Profile */
-    .profile-header { display: flex; gap: 15px; align-items: center; background: #f8fafc; padding: 15px; border-radius: 12px; margin-bottom: 15px; }
-    .profile-avatar-img { width: 70px; height: 70px; border-radius: 50%; object-fit: cover; }
-    
-    /* Modals */
-    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 200; justify-content: center; align-items: center; }
-    .modal-content { background: #fff; width: 90%; max-width: 400px; padding: 20px; border-radius: 12px; max-height: 80vh; overflow-y: auto; }
-  </style>
+        .card { background: #0f172a; padding: 15px; border-radius: 12px; margin-bottom: 15px; border: 1px solid #334155; }
+        .card h4 { font-size: 15px; margin-bottom: 5px; color: #f8fafc; }
+        .card p { font-size: 12px; color: #94a3b8; margin-bottom: 12px; }
+        
+        .action-btn { width: 100%; background: #6366f1; color: white; border: none; padding: 12px; border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer; transition: 0.2s; }
+        .action-btn:hover { background: #4f46e5; }
+
+        .game-banner { background: linear-gradient(135deg, #f59e0b, #ef4444); padding: 15px; border-radius: 12px; margin-bottom: 15px; text-align: center; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3); }
+        .game-banner h3 { font-size: 16px; margin-bottom: 5px; color: #fff; }
+        .game-banner p { font-size: 12px; margin-bottom: 12px; opacity: 0.95; color: #fff; }
+        .game-btn { background: white; color: #b45309; padding: 8px 16px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 13px; display: inline-block; }
+
+        .nav-bar { display: flex; justify-content: space-around; margin-top: 20px; border-top: 1px solid #334155; padding-top: 15px; }
+        .nav-item { text-align: center; color: #94a3b8; text-decoration: none; font-size: 12px; font-weight: bold; cursor: pointer; }
+        .nav-item.active { color: #6366f1; }
+    </style>
 </head>
 <body>
 
-  <div class="app-container">
-    
-    <!-- Splash Screen -->
-    <div id="splash-screen">
-      <h1>Reward Zone</h1>
-      <p>Loading your earnings...</p>
+<div class="container">
+    <div class="wallet-card">
+        <h3>My Wallet Balance</h3>
+        <h1 id="userWallet">🪙 0 Coins</h1>
     </div>
 
-    <!-- SIGNUP SCREEN -->
-    <div id="signup-screen" class="screen">
-      <h2 style="text-align:center; margin-bottom: 15px; color:#4f46e5;">Create Account</h2>
-      <div class="input-group">
-        <label>Mobile Number (One ID per Number)</label>
-        <input type="text" id="signup-phone" placeholder="Enter mobile number" oninput="clearError(this)">
-      </div>
-      <div class="input-group">
-        <label>Create Password</label>
-        <input type="password" id="signup-pass" placeholder="Enter password" oninput="clearError(this)">
-      </div>
-      <div class="input-group">
-        <label>Referral Code (Optional)</label>
-        <input type="text" id="signup-ref" placeholder="Enter referral UID if any">
-      </div>
-      <div class="input-group" style="display:flex; gap:8px;">
-        <input type="text" id="signup-otp" placeholder="Enter 6-digit OTP" style="flex:1;" oninput="clearError(this)">
-        <button class="btn" id="signup-otp-btn" style="width: 120px;" onclick="sendSignupOtp()">Send OTP</button>
-      </div>
-      <button class="btn" onclick="handleSignup()">Register</button>
-      <p style="text-align:center; margin-top: 15px; font-size: 13px; color:#666;">
-        Already have an account? <span style="color: #4f46e5; text-decoration: underline; cursor: pointer;" onclick="showScreen('login-screen')">Login here</span>
-      </p>
+    <!-- Color Trading Game Banner -->
+    <div class="game-banner">
+        <h3>📊 Pro Color & Number Trading</h3>
+        <p>Play 30s / 60s / 3m games and double your coins!</p>
+        <a href="color-game.html" class="game-btn">Play Game Now 🚀</a>
     </div>
 
-    <!-- LOGIN SCREEN -->
-    <div id="login-screen" class="screen">
-      <h2 style="text-align:center; margin-bottom: 15px; color:#4f46e5;">Welcome Back</h2>
-      <div class="input-group">
-        <label>Mobile Number</label>
-        <input type="text" id="login-phone" placeholder="Enter registered mobile number" oninput="clearError(this)">
-      </div>
-      <div class="input-group">
-        <label>Password</label>
-        <input type="password" id="login-pass" placeholder="Enter password" oninput="clearError(this)">
-      </div>
-      <div style="text-align: right; margin-bottom: 15px;">
-        <span style="color: #4f46e5; font-size: 13px; text-decoration: underline; cursor: pointer;" onclick="showScreen('forgot-screen')">Forgot Password?</span>
-      </div>
-      <button class="btn" onclick="handleLogin()">Login</button>
-      <p style="text-align:center; margin-top: 15px; font-size: 13px; color:#666;">
-        Don't have an account? <span style="color: #4f46e5; text-decoration: underline; cursor: pointer;" onclick="showScreen('signup-screen')">Register here</span>
-      </p>
+    <div class="card">
+        <h4>Daily Check-in Bonus</h4>
+        <p>Claim your free daily login reward (+20 coins).</p>
+        <button class="action-btn" onclick="claimDaily()">Claim Daily Reward</button>
     </div>
 
-    <!-- FORGOT PASSWORD SCREEN -->
-    <div id="forgot-screen" class="screen">
-      <h2 style="text-align:center; margin-bottom: 15px; color:#4f46e5;">Reset Password</h2>
-      <div class="input-group">
-        <label>Registered Mobile Number</label>
-        <input type="text" id="forgot-phone" placeholder="Enter mobile number" oninput="clearError(this)">
-      </div>
-      <div class="input-group" style="display:flex; gap:8px;">
-        <input type="text" id="forgot-otp" placeholder="Enter 6-digit OTP" style="flex:1;" oninput="clearError(this)">
-        <button class="btn" style="width: 120px;" onclick="sendForgotOtp()">Send OTP</button>
-      </div>
-      <div class="input-group">
-        <label>New Password</label>
-        <input type="password" id="forgot-new-pass" placeholder="Enter new password" oninput="clearError(this)">
-      </div>
-      <button class="btn" onclick="handleResetPassword()" style="background:#0ea5e9;">Update Password</button>
-      <p style="text-align:center; margin-top: 15px; font-size: 13px; color:#666;">
-        Remembered your password? <span style="color: #4f46e5; text-decoration: underline; cursor: pointer;" onclick="showScreen('login-screen')">Login here</span>
-      </p>
+    <div class="card">
+        <h4>Watch Ad & Earn</h4>
+        <p>Watch a sponsored video to earn instant coins (+50 coins).</p>
+        <button class="action-btn" onclick="watchAd()">Watch Ad Now</button>
     </div>
 
-    <!-- MAIN APP SCREENS -->
-    <div id="main-app" style="display:none; flex:1; flex-direction:column;">
-      
-      <!-- HOME SCREEN -->
-      <div id="home-screen" class="screen active">
-        <div class="card">
-          <h3 style="font-size:14px; opacity:0.9;">My Wallet Balance</h3>
-          <h2 style="font-size: 32px; font-weight: bold; margin-top: 5px;">
-            <i class="fa-solid fa-coins" style="color: #fde047;"></i> <span id="user-points">0</span> Coins
-          </h2>
-        </div>
-
-        <!-- Daily Login Bonus -->
-        <div class="task-card">
-          <h4>Daily Check-in Bonus</h4>
-          <p style="font-size: 13px; color: #666;">Claim your free daily login reward (+20 coins).</p>
-          <button class="btn" onclick="claimDaily()" style="margin-top: 8px;">Claim Daily Reward</button>
-        </div>
-
-        <!-- Watch Ad Task -->
-        <div class="task-card">
-          <h4>Watch Ad & Earn</h4>
-          <p style="font-size: 13px; color: #666;">Watch a sponsored video to earn instant coins (+50 coins).</p>
-          <button class="btn" onclick="watchAd()" style="margin-top: 8px;">Watch Ad Now</button>
-        </div>
-
-        <!-- Refer & Earn Task -->
-        <div class="task-card">
-          <h4>Refer Friends & Earn</h4>
-          <p style="font-size: 13px; color: #666;">Earn <b style="color:#d97706;">1000 Coins</b> when your friend registers using your link!</p>
-          <button class="btn" onclick="shareApp()" style="margin-top: 8px;"><i class="fa-solid fa-share-nodes"></i> Share & Invite</button>
-        </div>
-      </div>
-
-      <!-- PROFILE SCREEN -->
-      <div id="profile-screen" class="screen">
-        <div class="profile-header">
-          <img id="profile-avatar-img" src="" alt="Avatar" class="profile-avatar-img">
-          <div>
-            <span style="font-size: 12px; color: #777;" id="profile-uid">UID: ------</span>
-            <input type="text" id="profile-username-input" onchange="updateUsername(this.value)" placeholder="Enter name" style="margin-top:4px; padding:4px; font-weight:bold;">
-            <p style="font-size: 13px; color: #666; margin-top:4px;">Coins: <span id="profile-points-display">0</span></p>
-          </div>
-        </div>
-
-        <div style="display: flex; flex-direction: column; gap: 10px;">
-          <button class="btn" onclick="openWithdrawPage()" style="background:#0ea5e9;"><i class="fa-solid fa-wallet"></i> Withdraw Coins</button>
-          <button class="btn" onclick="openWithdrawHistoryModal()" style="background:#8b5cf6;"><i class="fa-solid fa-clock-rotate-left"></i> Withdrawal History</button>
-        </div>
-
-        <div style="margin-top: 25px; display: flex; flex-direction: column; gap: 10px;">
-          <!-- Customer Support Button -->
-          <a href="mailto:14sunilsunil3@gmail.com" class="btn" style="background:#16a34a; text-align:center; text-decoration:none; display:block;"><i class="fa-solid fa-headset"></i> Customer Support</a>
-          <!-- Logout Button -->
-          <button class="btn" onclick="logout()" style="background:#ef4444;"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
-        </div>
-      </div>
-
-      <!-- WITHDRAW PAGE SCREEN -->
-      <div id="withdraw-page-screen" class="screen">
-        <div style="display:flex; align-items:center; gap:10px; margin-bottom: 15px;">
-          <i class="fa-solid fa-arrow-left" style="cursor:pointer; font-size:18px;" onclick="switchTab('profile', document.querySelectorAll('.nav-item')[1])"></i>
-          <h3 style="color:#4f46e5;">Withdrawal Request</h3>
-        </div>
-        <div class="card" style="padding: 15px; margin-bottom: 15px;">
-          <p style="font-size: 12px; opacity:0.8;">Available Balance</p>
-          <h2 style="font-size: 24px;" id="page-withdraw-balance">0 Coins</h2>
-        </div>
-        <div class="input-group">
-          <label>Choose Payment Method</label>
-          <select id="page-withdraw-method" onchange="togglePageWithdrawFields()">
-            <option value="UPI">UPI ID</option>
-            <option value="Bank">Bank Account</option>
-          </select>
-        </div>
-        
-        <!-- UPI Fields -->
-        <div id="page-upi-fields">
-          <div class="input-group">
-            <label>UPI ID</label>
-            <input type="text" id="page-upi-id" placeholder="example@upi">
-          </div>
-          <div class="input-group">
-            <label>Mobile Number</label>
-            <input type="text" id="page-upi-phone" placeholder="Enter mobile number">
-          </div>
-        </div>
-
-        <!-- Bank Fields -->
-        <div id="page-bank-fields" style="display:none;">
-          <div class="input-group">
-            <label>Bank Name</label>
-            <input type="text" id="page-bank-name" placeholder="Enter bank name">
-          </div>
-          <div class="input-group">
-            <label>Account Number</label>
-            <input type="text" id="page-bank-acc" placeholder="Enter account number">
-          </div>
-          <div class="input-group">
-            <label>Account Holder Name</label>
-            <input type="text" id="page-bank-holder" placeholder="Enter holder name">
-          </div>
-          <div class="input-group">
-            <label>IFSC Code</label>
-            <input type="text" id="page-bank-ifsc" placeholder="IFSC code">
-          </div>
-        </div>
-
-        <div class="input-group">
-          <label>Coins to Withdraw (Min: 10,000 Coins = ₹100 | Max: 1,000,000 Coins = ₹10,000)</label>
-          <input type="number" id="page-withdraw-amount" placeholder="Enter coins">
-        </div>
-        <button class="btn" onclick="submitFinalWithdrawal()" style="background:#0ea5e9;">Submit Withdrawal</button>
-      </div>
-
-      <!-- WITHDRAWAL HISTORY MODAL -->
-      <div id="withdraw-history-modal" class="modal">
-        <div class="modal-content">
-          <h3 style="margin-bottom: 10px; color:#4f46e5;"><i class="fa-solid fa-clock-rotate-left"></i> Withdrawal History</h3>
-          <div id="withdraw-history-list" style="max-height: 250px; overflow-y: auto;">
-            <p style="font-size: 12px; color: #777;">No withdrawals yet.</p>
-          </div>
-          <button class="btn" onclick="closeWithdrawHistoryModal()" style="background:#666; margin-top: 15px;">Close</button>
-        </div>
-      </div>
-
-      <!-- NAVBAR -->
-      <div class="navbar">
-        <div class="nav-item active" onclick="switchTab('home', this)"><i class="fa-solid fa-house"></i>Home</div>
-        <div class="nav-item" onclick="switchTab('profile', this)"><i class="fa-solid fa-user"></i>Profile</div>
-      </div>
+    <div class="card">
+        <h4>Refer Friends & Earn</h4>
+        <p>Earn 1000 Coins when your friend registers using your link!</p>
+        <button class="action-btn" onclick="shareApp()">Share & Invite</button>
     </div>
 
-  </div>
+    <div class="nav-bar">
+        <a href="index.html" class="nav-item active">🏠 Home</a>
+        <a href="#" class="nav-item" onclick="alert('Profile section coming soon!')">👤 Profile</a>
+    </div>
+</div>
 
-  <script>
-    let currentUser = null;
+<script>
+    let user = JSON.parse(localStorage.getItem('user'));
+    if (!user || !user._id) {
+        user = { _id: "test_user_123", points: 630 };
+        localStorage.setItem('user', JSON.stringify(user));
+    }
+    document.getElementById('userWallet').innerText = `🪙 ${user.points} Coins`;
 
-    window.addEventListener('load', () => {
-      const urlParams = new URLSearchParams(window.location.search);
-      const refCode = urlParams.get('ref');
-      if (refCode) {
-        document.getElementById('signup-ref').value = refCode;
-      }
-
-      const savedUser = localStorage.getItem('reward_zone_user');
-      setTimeout(() => {
-        const splash = document.getElementById('splash-screen');
-        splash.style.opacity = '0';
-        setTimeout(() => {
-          splash.style.display = 'none';
-          if (savedUser) {
-            currentUser = JSON.parse(savedUser);
-            initMainApp(false);
-          } else {
-            showScreen('signup-screen');
-          }
-        }, 500);
-      }, 1500);
-    });
-
-    function showScreen(screenId) {
-      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-      document.getElementById(screenId).classList.add('active');
+    function claimDaily() {
+        user.points += 20;
+        localStorage.setItem('user', JSON.stringify(user));
+        document.getElementById('userWallet').innerText = `🪙 ${user.points} Coins`;
+        alert('Successfully claimed 20 Daily Coins!');
     }
 
-    function initMainApp(isNewUser) {
-      document.getElementById('signup-screen').classList.remove('active');
-      document.getElementById('login-screen').classList.remove('active');
-      document.getElementById('forgot-screen').classList.remove('active');
-      document.getElementById('main-app').style.display = 'flex';
-      updateUI();
-      switchTab('home', document.querySelectorAll('.nav-item')[0]);
+    function watchAd() {
+        user.points += 50;
+        localStorage.setItem('user', JSON.stringify(user));
+        document.getElementById('userWallet').innerText = `🪙 ${user.points} Coins`;
+        alert('Ad watched successfully! +50 Coins added.');
     }
 
-    function updateUI() {
-      if (!currentUser) return;
-      document.getElementById('user-points').innerText = currentUser.points || 0;
-      document.getElementById('profile-points-display').innerText = currentUser.points || 0;
-      document.getElementById('profile-uid').innerText = 'UID: ' + (currentUser.uid || 'N/A');
-      document.getElementById('profile-username-input').value = currentUser.username || '';
-      document.getElementById('profile-avatar-img').src = currentUser.profilePic || 'https://api.dicebear.com/7.x/bottts/svg?seed=avatar1';
-      document.getElementById('page-withdraw-balance').innerText = (currentUser.points || 0) + ' Coins';
+    function shareApp() {
+        alert('Share link copied to clipboard!');
     }
+</script>
 
-    function switchTab(tabName, el) {
-      document.querySelectorAll('#main-app .screen').forEach(s => s.classList.remove('active'));
-      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-      
-      if (tabName === 'home') {
-        document.getElementById('home-screen').classList.add('active');
-        if(el) el.classList.add('active');
-      } else if (tabName === 'profile') {
-        document.getElementById('profile-screen').classList.add('active');
-        if(el) el.classList.add('active');
-      }
-    }
-
-    function clearError(el) { el.classList.remove('input-error'); }
-
-    // Signup OTP
-    async function sendSignupOtp() {
-      const phoneEl = document.getElementById('signup-phone');
-      if (!phoneEl.value || phoneEl.value.length < 10) {
-        phoneEl.classList.add('input-error');
-        alert('Enter valid 10-digit mobile number');
-        return;
-      }
-      try {
-        const res = await fetch('/api/send-otp', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ phone: phoneEl.value, isSignup: true })
-        });
-        const data = await res.json();
-        if (res.ok) {
-          alert('OTP sent successfully! (Mock OTP: ' + data.otp + ')');
-        } else {
-          alert(data.error);
-        }
-      } catch (err) {
-        alert('Failed to send OTP');
-      }
-    }
-
-    // Forgot Password OTP
-    async function sendForgotOtp() {
-      const phoneEl = document.getElementById('forgot-phone');
-      if (!phoneEl.value || phoneEl.value.length < 10) {
-        phoneEl.classList.add('input-error');
-        alert('Enter registered 10-digit mobile number');
-        return;
-      }
-      try {
-        const res = await fetch('/api/send-otp', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ phone: phoneEl.value, isSignup: false })
-        });
-        const data = await res.json();
-        if (res.ok) {
-          alert('OTP sent for reset! (Mock OTP: ' + data.otp + ')');
-        } else {
-          alert(data.error);
-        }
-      } catch (err) {
-        alert('Failed to send reset OTP');
-      }
-    }
-
-    // Reset Password Handler
-    async function handleResetPassword() {
-      const phone = document.getElementById('forgot-phone').value;
-      const otp = document.getElementById('forgot-otp').value;
-      const newPassword = document.getElementById('forgot-new-pass').value;
-
-      if (!phone || !otp || !newPassword) {
-        alert('Please fill all fields!');
-        return;
-      }
-
-      try {
-        const res = await fetch('/api/reset-password', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ phone, otp, newPassword })
-        });
-        const data = await res.json();
-        if (res.ok) {
-          alert('Password updated successfully! Please login.');
-          showScreen('login-screen');
-        } else {
-          alert(data.error || 'Failed to reset password');
-        }
-      } catch (err) {
-        alert('Error resetting password');
-      }
-    }
-
-    // Handle Signup
-    async function handleSignup() {
-      const phoneEl = document.getElementById('signup-phone');
-      const passEl = document.getElementById('signup-pass');
-      const otpEl = document.getElementById('signup-otp');
-      const refEl = document.getElementById('signup-ref');
-
-      if (!phoneEl.value || !passEl.value || !otpEl.value) {
-        alert('Please fill all required fields!');
-        return;
-      }
-
-      try {
-        const res = await fetch('/api/register', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ phone: phoneEl.value, password: passEl.value, otp: otpEl.value, refCode: refEl.value })
-        });
-        const data = await res.json();
-        if (res.ok) {
-          currentUser = data.user;
-          localStorage.setItem('reward_zone_user', JSON.stringify(currentUser));
-          initMainApp(true);
-          alert('Registration successful!');
-        } else {
-          alert(data.error || 'Registration failed');
-        }
-      } catch (err) {
-        alert('Registration error');
-      }
-    }
-
-    // Handle Login
-    async function handleLogin() {
-      const phoneEl = document.getElementById('login-phone');
-      const passEl = document.getElementById('login-pass');
-
-      if (!phoneEl.value || !passEl.value) {
-        alert('Please fill all fields!');
-        return;
-      }
-
-      try {
-        const res = await fetch('/api/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ phone: phoneEl.value, password: passEl.value })
-        });
-        const data = await res.json();
-        if (res.ok) {
-          currentUser = data.user;
-          localStorage.setItem('reward_zone_user', JSON.stringify(currentUser));
-          initMainApp(false);
-          alert('Login successful!');
-        } else {
-          alert(data.error || 'Login failed!');
-        }
-      } catch (err) {
-        alert('Login error');
-      }
-    }
-
-    // Daily Login Bonus
-    async function claimDaily() {
-      try {
-        const res = await fetch('/api/daily-login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ userId: currentUser._id })
-        });
-        const data = await res.json();
-        if (res.ok) {
-          currentUser.points = data.points;
-          localStorage.setItem('reward_zone_user', JSON.stringify(currentUser));
-          updateUI();
-          alert(data.message);
-        } else {
-          alert(data.error);
-        }
-      } catch (err) {
-        alert('Error claiming daily bonus');
-      }
-    }
-
-    // Watch Ad (+50 coins)
-    async function watchAd() {
-      try {
-        const res = await fetch('/api/points', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ userId: currentUser._id, pointsToAdd: 50 })
-        });
-        const data = await res.json();
-        if (res.ok) {
-          currentUser.points = data.points;
-          localStorage.setItem('reward_zone_user', JSON.stringify(currentUser));
-          updateUI();
-          alert('Ad watched! +50 coins added.');
-        } else {
-          alert('Failed to update points.');
-        }
-      } catch (err) {
-        alert('Error watching ad');
-      }
-    }
-
-    // Refer & Earn (1000 coins)
-    async function shareApp() {
-      const shareUrl = window.location.origin + window.location.pathname + '?ref=' + currentUser.uid;
-      const shareText = `Join Reward Zone and earn exciting rewards! Use my referral link: ${shareUrl}`;
-      
-      if (navigator.share) {
-        try {
-          await navigator.share({ title: 'Reward Zone Referral', text: shareText, url: shareUrl });
-        } catch (err) {
-          console.log('Share canceled');
-        }
-      } else {
-        navigator.clipboard.writeText(shareUrl);
-        alert('Referral link copied to clipboard!');
-      }
-    }
-
-    // Logout
-    function logout() {
-      if (confirm('Are you sure you want to logout?')) {
-        localStorage.removeItem('reward_zone_user');
-        currentUser = null;
-        document.getElementById('main-app').style.display = 'none';
-        showScreen('login-screen');
-      }
-    }
-
-    // Update Username
-    async function updateUsername(newVal) {
-      if (!newVal) return;
-      currentUser.username = newVal;
-      try {
-        await fetch('/api/update-profile', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ userId: currentUser._id, username: newVal })
-        });
-        localStorage.setItem('reward_zone_user', JSON.stringify(currentUser));
-      } catch (err) {
-        console.error(err);
-      }
-    }
-
-    // Withdraw Page Navigation & Logic
-    function openWithdrawPage() {
-      document.querySelectorAll('#main-app .screen').forEach(s => s.classList.remove('active'));
-      document.getElementById('withdraw-page-screen').classList.add('active');
-    }
-
-    function togglePageWithdrawFields() {
-      const method = document.getElementById('page-withdraw-method').value;
-      if (method === 'UPI') {
-        document.getElementById('page-upi-fields').style.display = 'block';
-        document.getElementById('page-bank-fields').style.display = 'none';
-      } else {
-        document.getElementById('page-upi-fields').style.display = 'none';
-        document.getElementById('page-bank-fields').style.display = 'block';
-      }
-    }
-
-    async function submitFinalWithdrawal() {
-      const method = document.getElementById('page-withdraw-method').value;
-      const amount = Number(document.getElementById('page-withdraw-amount').value);
-
-      if (!amount || amount < 10000) {
-        alert('Minimum withdrawal is 10,000 Coins (₹100)!');
-        return;
-      }
-      if (amount > 1000000) {
-        alert('Maximum withdrawal is 1,000,000 Coins (₹10,000)!');
-        return;
-      }
-      if (amount > currentUser.points) {
-        alert('Insufficient coin balance!');
-        return;
-      }
-
-      let details = {};
-      if (method === 'UPI') {
-        const upiId = document.getElementById('page-upi-id').value;
-        const phone = document.getElementById('page-upi-phone').value;
-        if (!upiId || !phone) {
-          alert('Please fill UPI ID and Mobile Number!');
-          return;
-        }
-        details = { upiId, phone, holderName: upiId };
-      } else {
-        const bankName = document.getElementById('page-bank-name').value;
-        const bankAcc = document.getElementById('page-bank-acc').value;
-        const holderName = document.getElementById('page-bank-holder').value;
-        const phone = document.getElementById('page-bank-phone') ? document.getElementById('page-bank-phone').value : '';
-        const ifsc = document.getElementById('page-bank-ifsc').value;
-        if (!bankName || !bankAcc || !holderName || !ifsc) {
-          alert('Please fill all bank account details!');
-          return;
-        }
-        details = { bankName, bankAcc, holderName, phone, ifsc };
-      }
-
-      try {
-        const res = await fetch('/api/withdraw', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ userId: currentUser._id, method, details, amount })
-        });
-        const data = await res.json();
-        if (res.ok) {
-          currentUser = data.user;
-          localStorage.setItem('reward_zone_user', JSON.stringify(currentUser));
-          updateUI();
-          alert('Withdrawal request applied successfully!');
-          switchTab('profile', document.querySelectorAll('.nav-item')[1]);
-        } else {
-          alert(data.error || 'Failed to apply withdrawal');
-        }
-      } catch (err) {
-        alert('Withdrawal request failed');
-      }
-    }
-
-    function openWithdrawHistoryModal() {
-      document.getElementById('withdraw-history-modal').style.display = 'flex';
-      const wList = document.getElementById('withdraw-history-list');
-      if (!currentUser.withdrawals || currentUser.withdrawals.length === 0) {
-        wList.innerHTML = '<p style="font-size: 12px; color: #777;">No withdrawals yet.</p>';
-        return;
-      }
-      wList.innerHTML = currentUser.withdrawals.map(w => `
-        <div style="padding: 10px; border-bottom: 1px solid #eee; margin-bottom: 5px;">
-          <b>${w.amount} Coins</b> (₹${w.amount / 100}) - <span style="color: ${w.status === 'Pending' ? '#d97706' : '#16a34a'}">${w.status}</span><br>
-          <small style="color: #666;">Method: ${w.method}</small>
-        </div>
-      `).join('');
-    }
-
-    function closeWithdrawHistoryModal() {
-      document.getElementById('withdraw-history-modal').style.display = 'none';
-    }
-  </script>
 </body>
 </html>
