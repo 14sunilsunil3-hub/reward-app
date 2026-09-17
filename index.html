@@ -72,10 +72,6 @@
         .ball-2, .ball-4, .ball-6, .ball-8 { background: #e74c3c; }
         .ball-5 { background: linear-gradient(135deg, #2ecc71 50%, #9b59b6 50%); }
 
-        .multiplier-bar { display: flex; justify-content: space-between; margin: 0 10px 10px 10px; gap: 4px; }
-        .mult-btn { background: #f1f2f6; border: 1px solid #dcdde1; padding: 5px 0; flex: 1; text-align: center; font-size: 11px; border-radius: 4px; cursor: pointer; font-weight: 600; color: #555; }
-        .mult-btn.active { background: #2ecc71; color: white; border-color: #2ecc71; }
-
         .big-small-container { display: flex; gap: 8px; margin: 0 10px 12px 10px; }
         .bs-btn { flex: 1; padding: 10px 0; border: none; border-radius: 6px; font-weight: bold; font-size: 13px; color: white; cursor: pointer; text-align: center; }
         .btn-big { background: #e67e22; }
@@ -108,6 +104,36 @@
         .modal-box h3 { font-size: 16px; margin-bottom: 10px; color: #f8fafc; }
         .modal-box p { font-size: 12px; color: #94a3b8; margin-bottom: 15px; }
         .btn-small-apply { background: #2ecc71; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 12px; margin-top: 10px; }
+
+        /* Daman Style Bet Bottom Sheet Modal */
+        .bet-sheet-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: flex-end; z-index: 2000; }
+        .bet-sheet-overlay.active { display: flex; }
+        .bet-sheet { background: #ffffff; color: #333; width: 100%; max-width: 450px; border-top-left-radius: 20px; border-top-right-radius: 20px; padding: 20px; box-shadow: 0 -4px 20px rgba(0,0,0,0.3); animation: slideUp 0.3s ease; }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+
+        .bet-title-bar { background: #fa8231; color: white; text-align: center; padding: 10px; border-radius: 8px; font-weight: bold; font-size: 15px; margin-bottom: 15px; }
+        .bet-section-label { font-size: 13px; font-weight: 600; color: #444; margin-bottom: 8px; }
+        
+        .coin-chips { display: flex; gap: 8px; margin-bottom: 15px; }
+        .coin-chip { flex: 1; padding: 10px 0; background: #f1f2f6; border: 1px solid #dcdde1; border-radius: 6px; font-weight: bold; font-size: 13px; text-align: center; cursor: pointer; color: #333; }
+        .coin-chip.active { background: #fa8231; color: white; border-color: #fa8231; }
+
+        .quantity-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; }
+        .qty-controls { display: flex; align-items: center; border: 1px solid #dcdde1; border-radius: 6px; overflow: hidden; background: #f1f2f6; }
+        .qty-btn { background: #fa8231; color: white; border: none; width: 36px; height: 36px; font-size: 16px; font-weight: bold; cursor: pointer; }
+        .qty-input { width: 60px; text-align: center; border: none; background: transparent; font-weight: bold; font-size: 14px; outline: none; }
+
+        /* Updated Multiplier Grid for 8 items (4 columns x 2 rows) */
+        .multiplier-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-bottom: 15px; }
+        .m-btn { background: #f1f2f6; border: 1px solid #dcdde1; padding: 8px 0; text-align: center; font-size: 12px; border-radius: 6px; cursor: pointer; font-weight: 600; color: #555; }
+        .m-btn.active { background: #2ecc71; color: white; border-color: #2ecc71; }
+
+        .agreement-row { display: flex; align-items: center; gap: 8px; font-size: 12px; color: #666; margin-bottom: 20px; }
+        .agreement-row input { accent-color: #fa8231; width: 16px; height: 16px; cursor: pointer; }
+
+        .bet-footer { display: flex; border-radius: 8px; overflow: hidden; font-weight: bold; }
+        .btn-cancel-bet { background: #f1f2f6; color: #333; border: none; padding: 14px 20px; cursor: pointer; font-size: 14px; }
+        .btn-confirm-bet { background: #fa8231; color: white; border: none; flex: 1; padding: 14px; cursor: pointer; font-size: 14px; text-align: center; }
 
         /* Bottom Navigation Bar */
         .nav-bar { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 450px; background: #1e293b; display: flex; justify-content: space-around; border-top: 1px solid #334155; padding: 12px 0; z-index: 100; }
@@ -296,41 +322,34 @@
                 <div class="timer-right">
                     <div class="timer-label">Time remaining</div>
                     <div class="timer-value" id="timerDisplay">00 : 30</div>
-                    <div class="period-value" id="periodDisplay">2026091610001</div>
+                    <div class="period-value" id="periodDisplay">20260917001</div>
                 </div>
             </div>
 
             <div class="color-btns">
-                <button class="color-btn btn-green" onclick="placeBet('Green')">Green</button>
-                <button class="color-btn btn-violet" onclick="placeBet('Violet')">Violet</button>
-                <button class="color-btn btn-red" onclick="placeBet('Red')">Red</button>
+                <button class="color-btn btn-green" onclick="openBetModal('Green')">Green</button>
+                <button class="color-btn btn-violet" onclick="openBetModal('Violet')">Violet</button>
+                <button class="color-btn btn-red" onclick="openBetModal('Red')">Red</button>
             </div>
 
             <div class="number-grid-card">
                 <div class="number-grid">
-                    <div class="num-ball ball-0" onclick="placeBet('Number 0')">0</div>
-                    <div class="num-ball ball-1" onclick="placeBet('Number 1')">1</div>
-                    <div class="num-ball ball-2" onclick="placeBet('Number 2')">2</div>
-                    <div class="num-ball ball-3" onclick="placeBet('Number 3')">3</div>
-                    <div class="num-ball ball-4" onclick="placeBet('Number 4')">4</div>
-                    <div class="num-ball ball-5" onclick="placeBet('Number 5')">5</div>
-                    <div class="num-ball ball-6" onclick="placeBet('Number 6')">6</div>
-                    <div class="num-ball ball-7" onclick="placeBet('Number 7')">7</div>
-                    <div class="num-ball ball-8" onclick="placeBet('Number 8')">8</div>
-                    <div class="num-ball ball-9" onclick="placeBet('Number 9')">9</div>
+                    <div class="num-ball ball-0" onclick="openBetModal('Number 0')">0</div>
+                    <div class="num-ball ball-1" onclick="openBetModal('Number 1')">1</div>
+                    <div class="num-ball ball-2" onclick="openBetModal('Number 2')">2</div>
+                    <div class="num-ball ball-3" onclick="openBetModal('Number 3')">3</div>
+                    <div class="num-ball ball-4" onclick="openBetModal('Number 4')">4</div>
+                    <div class="num-ball ball-5" onclick="openBetModal('Number 5')">5</div>
+                    <div class="num-ball ball-6" onclick="openBetModal('Number 6')">6</div>
+                    <div class="num-ball ball-7" onclick="openBetModal('Number 7')">7</div>
+                    <div class="num-ball ball-8" onclick="openBetModal('Number 8')">8</div>
+                    <div class="num-ball ball-9" onclick="openBetModal('Number 9')">9</div>
                 </div>
             </div>
 
-            <div class="multiplier-bar">
-                <div class="mult-btn active" onclick="setMult(10, this)">10</div>
-                <div class="mult-btn" onclick="setMult(50, this)">50</div>
-                <div class="mult-btn" onclick="setMult(100, this)">100</div>
-                <div class="mult-btn" onclick="setMult(1000, this)">1000</div>
-            </div>
-
             <div class="big-small-container">
-                <button class="bs-btn btn-big" onclick="placeBet('Big')">Big</button>
-                <button class="bs-btn btn-small" onclick="placeBet('Small')">Small</button>
+                <button class="bs-btn btn-big" onclick="openBetModal('Big')">Big</button>
+                <button class="bs-btn btn-small" onclick="openBetModal('Small')">Small</button>
             </div>
 
             <!-- Scrollable Extended History Section -->
@@ -384,6 +403,52 @@
         <div style="display: flex; gap: 10px; margin-top: 10px;">
             <button class="action-btn" style="background: #e74c3c; padding: 8px;" onclick="closePasswordModal()">Cancel</button>
             <button class="action-btn" style="background: #2ecc71; padding: 8px;" onclick="processFinalWithdrawal()">Confirm</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL 3: Daman Style Bet Bottom Sheet -->
+<div class="bet-sheet-overlay" id="betSheetOverlay">
+    <div class="bet-sheet">
+        <div class="bet-title-bar" id="betSheetTitle">WinGo 30sec - Select Green</div>
+        
+        <div class="bet-section-label">Balance / Denomination</div>
+        <div class="coin-chips">
+            <div class="coin-chip active" onclick="setChipValue(1, this)">1</div>
+            <div class="coin-chip" onclick="setChipValue(10, this)">10</div>
+            <div class="coin-chip" onclick="setChipValue(100, this)">100</div>
+            <div class="coin-chip" onclick="setChipValue(1000, this)">1000</div>
+        </div>
+
+        <div class="quantity-row">
+            <div class="bet-section-label" style="margin-bottom:0;">Quantity</div>
+            <div class="qty-controls">
+                <button class="qty-btn" onclick="adjustQty(-1)">-</button>
+                <input type="number" class="qty-input" id="betQtyInput" value="1" min="1" oninput="calculateTotalBet()">
+                <button class="qty-btn" onclick="adjustQty(1)">+</button>
+            </div>
+        </div>
+
+        <div class="bet-section-label">Multipliers</div>
+        <div class="multiplier-grid">
+            <div class="m-btn active" onclick="setMultiplier(1, this)">X1</div>
+            <div class="m-btn" onclick="setMultiplier(5, this)">X5</div>
+            <div class="m-btn" onclick="setMultiplier(10, this)">X10</div>
+            <div class="m-btn" onclick="setMultiplier(20, this)">X20</div>
+            <div class="m-btn" onclick="setMultiplier(50, this)">X50</div>
+            <div class="m-btn" onclick="setMultiplier(100, this)">X100</div>
+            <div class="m-btn" onclick="setMultiplier(500, this)">X500</div>
+            <div class="m-btn" onclick="setMultiplier(1000, this)">X1000</div>
+        </div>
+
+        <div class="agreement-row">
+            <input type="checkbox" id="preSaleAgreement" checked>
+            <label for="preSaleAgreement">I agree 《Pre-sale rules》</label>
+        </div>
+
+        <div class="bet-footer">
+            <button class="btn-cancel-bet" onclick="closeBetModal()">Cancel</button>
+            <button class="btn-confirm-bet" id="confirmBetBtnText" onclick="confirmAndPlaceBet()">Total amount 🪙 1</button>
         </div>
     </div>
 </div>
@@ -578,12 +643,12 @@
     };
 
     let activeMode = '30s';
-    let currentMultiplier = 10;
-    
-    // Track user bets per mode and choice to implement "Win on Least Bets" logic
-    let modeBets = {
-        '30s': {}, '1m': {}, '3m': {}, '5m': {}
-    };
+    let modeBets = { '30s': {}, '1m': {}, '3m': {}, '5m': {} };
+
+    // Interactive Bet Popup Variables
+    let currentSelectedChoice = '';
+    let currentChipValue = 1;
+    let currentMultiplierVal = 1;
 
     function switchGameMode(modeKey, btnElement) {
         activeMode = modeKey;
@@ -593,31 +658,89 @@
         updateGameUI();
     }
 
-    function setMult(val, el) {
-        currentMultiplier = val;
-        document.querySelectorAll('.mult-btn').forEach(b => b.classList.remove('active'));
-        el.classList.add('active');
+    function openBetModal(choice) {
+        currentSelectedChoice = choice;
+        currentChipValue = 1;
+        currentMultiplierVal = 1;
+        
+        // Reset chip UI selection
+        document.querySelectorAll('.coin-chip').forEach((c, idx) => {
+            if(idx === 0) c.classList.add('active');
+            else c.classList.remove('active');
+        });
+
+        // Reset multiplier UI selection
+        document.querySelectorAll('.m-btn').forEach((m, idx) => {
+            if(idx === 0) m.classList.add('active');
+            else m.classList.remove('active');
+        });
+
+        document.getElementById('betQtyInput').value = 1;
+        document.getElementById('betSheetTitle').innerText = `${gameConfigs[activeMode].name} - Select ${choice}`;
+        calculateTotalBet();
+        document.getElementById('betSheetOverlay').classList.add('active');
     }
 
-    function placeBet(choice) {
-        let totalCost = currentMultiplier;
-        if (user.points < totalCost) {
-            alert(`❌ Insufficient balance! You need at least ${totalCost} coins.`);
+    function closeBetModal() {
+        document.getElementById('betSheetOverlay').classList.remove('active');
+    }
+
+    function setChipValue(val, el) {
+        currentChipValue = val;
+        document.querySelectorAll('.coin-chip').forEach(c => c.classList.remove('active'));
+        el.classList.add('active');
+        calculateTotalBet();
+    }
+
+    function setMultiplier(val, el) {
+        currentMultiplierVal = val;
+        document.querySelectorAll('.m-btn').forEach(m => m.classList.remove('active'));
+        el.classList.add('active');
+        calculateTotalBet();
+    }
+
+    function adjustQty(change) {
+        let input = document.getElementById('betQtyInput');
+        let val = parseInt(input.value) || 1;
+        val += change;
+        if (val < 1) val = 1;
+        input.value = val;
+        calculateTotalBet();
+    }
+
+    function calculateTotalBet() {
+        let qty = parseInt(document.getElementById('betQtyInput').value) || 1;
+        let total = currentChipValue * qty * currentMultiplierVal;
+        document.getElementById('confirmBetBtnText').innerText = `Total amount 🪙 ${total}`;
+    }
+
+    function confirmAndPlaceBet() {
+        if (!document.getElementById('preSaleAgreement').checked) {
+            alert('Please agree to the pre-sale rules first!');
             return;
         }
 
-        // Deduct coins for bet
+        let qty = parseInt(document.getElementById('betQtyInput').value) || 1;
+        let totalCost = currentChipValue * qty * currentMultiplierVal;
+
+        if (user.points < totalCost) {
+            alert(`❌ Insufficient balance! You need ${totalCost} coins.`);
+            return;
+        }
+
+        // Deduct coins
         user.points -= totalCost;
         localStorage.setItem('user', JSON.stringify(user));
         updateWalletDisplay();
 
         // Record bet for intelligent least-bet outcome calculation
-        if (!modeBets[activeMode][choice]) {
-            modeBets[activeMode][choice] = 0;
+        if (!modeBets[activeMode][currentSelectedChoice]) {
+            modeBets[activeMode][currentSelectedChoice] = 0;
         }
-        modeBets[activeMode][choice] += totalCost;
+        modeBets[activeMode][currentSelectedChoice] += totalCost;
 
-        alert(`✅ Bet placed successfully!\nMode: ${gameConfigs[activeMode].name}\nChoice: ${choice}\nAmount: ${totalCost} Coins`);
+        closeBetModal();
+        alert(`✅ Bet placed successfully!\nMode: ${gameConfigs[activeMode].name}\nChoice: ${currentSelectedChoice}\nTotal Cost: ${totalCost} Coins`);
     }
 
     // Timer Interval Engine
@@ -625,7 +748,6 @@
         for (let key in gameConfigs) {
             gameConfigs[key].timeLeft--;
             if (gameConfigs[key].timeLeft <= 0) {
-                // Round ends, determine outcome based on "Least Bets Win" rule
                 resolveRound(key);
                 gameConfigs[key].timeLeft = gameConfigs[key].duration;
                 gameConfigs[key].periodSeq++;
@@ -636,12 +758,8 @@
 
     function resolveRound(modeKey) {
         let bets = modeBets[modeKey];
-        let winningChoice = '';
-
-        // Options pool
         let possibleChoices = ['Green', 'Violet', 'Red', 'Big', 'Small', 'Number 0', 'Number 1', 'Number 2', 'Number 3', 'Number 4', 'Number 5', 'Number 6', 'Number 7', 'Number 8', 'Number 9'];
         
-        // Find choice with minimum bets (House intelligence: fewest bets win)
         let minBet = Infinity;
         let candidatePool = [];
 
@@ -655,10 +773,8 @@
             }
         });
 
-        // Pick randomly among least-bet choices to determine result
-        winningChoice = candidatePool[Math.floor(Math.random() * candidatePool.length)];
+        let winningChoice = candidatePool[Math.floor(Math.random() * candidatePool.length)];
 
-        // Map choice to Number & Big/Small representation
         let num = 3, bs = 'Small';
         if (winningChoice.startsWith('Number ')) {
             num = parseInt(winningChoice.replace('Number ', ''));
@@ -669,14 +785,13 @@
         } else if (winningChoice === 'Violet') {
             num = [0, 5][Math.floor(Math.random() * 2)];
         } else if (winningChoice === 'Big') {
-            num = Math.floor(Math.random() * 5) + 5; // 5 to 9
+            num = Math.floor(Math.random() * 5) + 5;
         } else if (winningChoice === 'Small') {
-            num = Math.floor(Math.random() * 5); // 0 to 4
+            num = Math.floor(Math.random() * 5);
         }
 
         bs = num >= 5 ? 'Big' : 'Small';
 
-        // Add to history
         let record = {
             period: gameConfigs[modeKey].periodSeq,
             number: num,
@@ -688,7 +803,6 @@
             gameConfigs[modeKey].history.pop();
         }
 
-        // Reset bets for this mode
         modeBets[modeKey] = {};
     }
 
@@ -698,29 +812,26 @@
         let secs = cfg.timeLeft % 60;
         let timeStr = (mins < 10 ? '0' + mins : mins) + ' : ' + (secs < 10 ? '0' + secs : secs);
 
-        if (activeMode === activeMode) { // current view update
-            document.getElementById('timerDisplay').innerText = timeStr;
-            document.getElementById('periodDisplay').innerText = cfg.periodSeq;
+        document.getElementById('timerDisplay').innerText = timeStr;
+        document.getElementById('periodDisplay').innerText = cfg.periodSeq;
 
-            // Render history table
-            let htmlStr = '';
-            if (cfg.history.length === 0) {
-                htmlStr = `<tr><td colspan="3" style="text-align:center; color:#888;">Waiting for first round result...</td></tr>`;
-            } else {
-                cfg.history.forEach(row => {
-                    let colorCode = '#2ecc71';
-                    if ([2,4,6,8].includes(row.number)) colorCode = '#e74c3c';
-                    if ([0,5].includes(row.number)) colorCode = '#9b59b6';
+        let htmlStr = '';
+        if (cfg.history.length === 0) {
+            htmlStr = `<tr><td colspan="3" style="text-align:center; color:#888;">Waiting for first round result...</td></tr>`;
+        } else {
+            cfg.history.forEach(row => {
+                let colorCode = '#2ecc71';
+                if ([2,4,6,8].includes(row.number)) colorCode = '#e74c3c';
+                if ([0,5].includes(row.number)) colorCode = '#9b59b6';
 
-                    htmlStr += `<tr>
-                        <td>${row.period}</td>
-                        <td style="color: ${colorCode}; font-weight: bold;">${row.number}</td>
-                        <td>${row.bigSmall}</td>
-                    </tr>`;
-                });
-            }
-            document.getElementById('historyTableBody').innerHTML = htmlStr;
+                htmlStr += `<tr>
+                    <td>${row.period}</td>
+                    <td style="color: ${colorCode}; font-weight: bold;">${row.number}</td>
+                    <td>${row.bigSmall}</td>
+                </tr>`;
+            });
         }
+        document.getElementById('historyTableBody').innerHTML = htmlStr;
     }
 
     // Initialize sample history on load
