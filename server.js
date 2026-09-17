@@ -25,7 +25,7 @@ app.use(express.json());
 app.use(cors());
 
 // ==================== 1. DATABASE CONNECTION ====================
-const MONGO_URI = "mongodb+srv://14sunilsunil3_db_user:7rbOaftd6JUrR9vm@cluster0.xawbmz2.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
+const MONGO_URI = "mongodb://14sunilsunil3_db_user:7rbOaftd6JUrR9vm@ac-qrcqjqf-shard-00-00.xawbmz2.mongodb.net:27017,ac-qrcqjqf-shard-00-01.xawbmz2.mongodb.net:27017,ac-qrcqjqf-shard-00-02.xawbmz2.mongodb.net:27017/?ssl=true&replicaSet=atlas-ouku4a-shard-0&authSource=admin&appName=Cluster0";
 
 mongoose.connect(MONGO_URI, {
     useNewUrlParser: true,
