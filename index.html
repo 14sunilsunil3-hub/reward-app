@@ -165,7 +165,7 @@
 
         .quantity-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; }
         .qty-controls { display: flex; align-items: center; border: 1px solid #dcdde1; border-radius: 6px; overflow: hidden; background: #f1f2f6; }
-        .qty-btn { color: white; border: none; width: 36px; height: 36px; font-size: 16px; font-weight: bold; cursor: pointer; }
+        .qty-btn { color: #333; border: none; width: 36px; height: 36px; font-size: 16px; font-weight: bold; cursor: pointer; background: #e2e8f0; }
         .qty-input { width: 60px; text-align: center; border: none; background: transparent; font-weight: bold; font-size: 14px; outline: none; }
 
         .multiplier-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-bottom: 15px; }
@@ -177,7 +177,7 @@
 
         .bet-footer { display: flex; border-radius: 8px; overflow: hidden; font-weight: bold; }
         .btn-cancel-bet { background: #f1f2f6; color: #333; border: none; padding: 14px 20px; cursor: pointer; font-size: 14px; }
-        .btn-confirm-bet { color: white; border: none; flex: 1; padding: 14px; cursor: pointer; font-size: 14px; text-align: center; }
+        .btn-confirm-bet { color: white; border: none; flex: 1; padding: 14px; cursor: pointer; font-size: 14px; text-align: center; background: #2ecc71; }
 
         /* Bottom Navigation Bar */
         .nav-bar { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 450px; background: #1e293b; display: flex; justify-content: space-around; border-top: 1px solid #334155; padding: 12px 0; z-index: 100; }
@@ -406,7 +406,7 @@
     <div id="gamePage" class="page">
         <div class="daman-wrapper">
             <div class="game-header">
-                <h2>🏆 Rewards zone</h2>
+                <h2>🏆 Rewards Zone</h2>
                 <div style="font-size: 12px; font-weight: bold;">🪙 <span id="gameWallet">0</span></div>
             </div>
 
@@ -507,7 +507,7 @@
 
 <div class="bet-sheet-overlay" id="betSheetOverlay">
     <div class="bet-sheet">
-        <div class="bet-title-bar" id="betSheetTitle">Select Bet</div>
+        <div class="bet-title-bar" id="betSheetTitle" style="background:#ff4d4f;">Select Bet</div>
         <div class="bet-section-label">Denomination</div>
         <div class="coin-chips">
             <div class="coin-chip active" onclick="setChipValue(1, this)">1</div>
@@ -571,10 +571,9 @@
 </div>
 
 <script>
-    let user = null;
     let usersDB = JSON.parse(localStorage.getItem('rewards_usersDB')) || [];
-    
     let loggedInIdentifier = localStorage.getItem('rewards_rememberedUser') || sessionStorage.getItem('rewards_sessionUser');
+    let user = null;
     let generatedOtp = '';
     let forgotGeneratedOtp = '';
     let otpTimerInterval = null;
@@ -931,7 +930,6 @@
         btn.disabled = true;
         btn.style.opacity = "0.5";
 
-        // Open Monetag Direct Link in a new tab
         window.open(DIRECT_AD_LINK, "_blank");
 
         let timeLeft = 60;
@@ -968,7 +966,6 @@
         '5m':  { name: 'WinGo 5 Min', duration: 300, timeLeft: 300, periodSeq: 20260917501, history: [] }
     };
     let activeMode = '30s';
-    let modeBets = { '30s': {}, '1m': {}, '3m': {}, '5m': {} };
     let userActiveBets = { '30s': null, '1m': null, '3m': null, '5m': null };
     let currentSelectedChoice = '', currentChipValue = 1, currentMultiplierVal = 1;
 
