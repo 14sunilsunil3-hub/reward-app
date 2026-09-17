@@ -5,7 +5,7 @@ const { Server } = require('socket.io');
 const cors = require('cors');
 const dns = require('dns');
 
-// Fix for Render / Network ENOTFOUND issues
+// Fix for Render / Network DNS issues
 try {
     dns.setServers(['8.8.8.8', '1.1.1.1']);
 } catch (error) {
