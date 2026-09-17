@@ -263,12 +263,19 @@
         <div class="auth-container">
             <div class="auth-logo">🔒</div>
             <h2>Reset Password</h2>
-            <p>Enter your registered mobile number to reset password</p>
+            <p>Verify OTP to reset your password</p>
             <div class="auth-form">
                 <div class="form-group">
                     <label>Mobile Number</label>
                     <div class="input-wrapper">
                         <input type="tel" id="forgotIdentifier" placeholder="Enter mobile number">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Verification OTP</label>
+                    <div class="otp-row">
+                        <input type="number" id="forgotOtpInput" placeholder="Enter 4-digit OTP">
+                        <button type="button" class="otp-btn" id="sendForgotOtpBtn" onclick="sendForgotOtp()">Send</button>
                     </div>
                 </div>
                 <div class="form-group">
@@ -563,7 +570,9 @@
     // Check local storage vs session storage handling for remember password feature
     let loggedInIdentifier = localStorage.getItem('rewards_rememberedUser') || sessionStorage.getItem('rewards_sessionUser');
     let generatedOtp = '';
+    let forgotGeneratedOtp = '';
     let otpTimerInterval = null;
+    let forgotOtpTimerInterval = null;
 
     if (loggedInIdentifier) {
         let found = usersDB.find(u => u.identifier === loggedInIdentifier);
@@ -623,7 +632,7 @@
         }
     }
 
-    // 120 Seconds OTP Timer Logic
+    // 120 Seconds OTP Timer Logic (Register)
     function sendRegOtp() {
         let mobile = document.getElementById('regMobile').value.trim();
         if (!mobile || mobile.length < 10) {
@@ -647,6 +656,42 @@
                 btn.innerText = `${timeLeft}s`;
             } else {
                 clearInterval(otpTimerInterval);
+                btn.disabled = false;
+                btn.innerText = 'Send';
+            }
+        }, 1000);
+    }
+
+    // 120 Seconds OTP Timer Logic (Forgot Password)
+    function sendForgotOtp() {
+        let mobile = document.getElementById('forgotIdentifier').value.trim();
+        if (!mobile || mobile.length < 10) {
+            alert('❌ Please enter a valid registered mobile number first!');
+            return;
+        }
+
+        let found = usersDB.find(u => u.identifier === mobile);
+        if (!found) {
+            alert('❌ Account not found with this mobile number!');
+            return;
+        }
+
+        forgotGeneratedOtp = Math.floor(1000 + Math.random() * 9000).toString();
+        alert(`📲 Simulated Reset OTP sent to ${mobile}: [ ${forgotGeneratedOtp} ]`);
+
+        let btn = document.getElementById('sendForgotOtpBtn');
+        btn.disabled = true;
+        let timeLeft = 120;
+        btn.innerText = `${timeLeft}s`;
+
+        if (forgotOtpTimerInterval) clearInterval(forgotOtpTimerInterval);
+
+        forgotOtpTimerInterval = setInterval(() => {
+            timeLeft--;
+            if (timeLeft > 0) {
+                btn.innerText = `${timeLeft}s`;
+            } else {
+                clearInterval(forgotOtpTimerInterval);
                 btn.disabled = false;
                 btn.innerText = 'Send';
             }
@@ -728,10 +773,16 @@
 
     function handleResetPassword() {
         let identifier = document.getElementById('forgotIdentifier').value.trim();
+        let otpInput = document.getElementById('forgotOtpInput').value.trim();
         let newPass = document.getElementById('forgotNewPassword').value.trim();
 
-        if (!identifier || !newPass) {
-            alert('Please fill all fields!');
+        if (!identifier || !otpInput || !newPass) {
+            alert('❌ Please fill all fields including OTP!');
+            return;
+        }
+
+        if (otpInput !== forgotGeneratedOtp) {
+            alert('❌ Incorrect OTP! Please check and enter the correct OTP.');
             return;
         }
 
