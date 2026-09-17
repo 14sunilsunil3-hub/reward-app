@@ -6,6 +6,10 @@
     <title>Rewards Zone - Login & Game</title>
     <!-- Monetag Domain Verification Tag -->
     <meta name="monetag" content="461f12f4999caa17cb8e670a67481109">
+    
+    <!-- MONETAG VIGNETTE AD SCRIPT -->
+    <script>(function(s){s.dataset.zone='11824344',s.src='https://n6wxm.com/vignette.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
+
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background: #0f172a; color: #fff; display: flex; justify-content: center; }
@@ -316,8 +320,9 @@
 
         <div class="card">
             <h4>📺 Watch Ad & Earn</h4>
-            <p>Watch a sponsored video to earn instant coins (+50 coins).</p>
-            <button class="action-btn" onclick="watchAd()">Watch Ad Now</button>
+            <p>Watch the ad for 60 seconds to claim instant coins (+50 coins).</p>
+            <div id="timerDisplay" style="font-size: 15px; color: #00ffcc; margin: 8px 0; font-weight: bold;"></div>
+            <button class="action-btn" id="watchAdBtn" onclick="startWatchAd()">Watch Ad Now (60s)</button>
         </div>
 
         <div class="card">
@@ -416,7 +421,7 @@
                 <button class="how-to-play" onclick="alert('Rules: Predict Green, Violet, Red, Big, Small or Numbers!')">📖 Rules</button>
                 <div class="timer-right">
                     <div class="timer-label">Time remaining</div>
-                    <div class="timer-value" id="timerDisplay">00 : 30</div>
+                    <div class="timer-value" id="gameTimerDisplay">00 : 30</div>
                     <div class="period-value" id="periodDisplay">20260917001</div>
                 </div>
             </div>
@@ -916,11 +921,41 @@
         alert('+20 Daily Coins claimed!');
     }
 
-    function watchAd() {
-        user.points += 50;
-        saveUserData();
-        updateWalletDisplay();
-        alert('+50 Coins added!');
+    // DIRECT LINK WATCH AD FUNCTION WITH 60s TIMER
+    const DIRECT_AD_LINK = "https://omg10.com/4/11824331";
+
+    function startWatchAd() {
+        let btn = document.getElementById("watchAdBtn");
+        let timerDisplay = document.getElementById("timerDisplay");
+        
+        btn.disabled = true;
+        btn.style.opacity = "0.5";
+
+        // Open Monetag Direct Link in a new tab
+        window.open(DIRECT_AD_LINK, "_blank");
+
+        let timeLeft = 60;
+        timerDisplay.innerText = "Ad is running... " + timeLeft + "s remaining";
+
+        let countdown = setInterval(function() {
+            timeLeft--;
+            timerDisplay.innerText = "Ad is running... " + timeLeft + "s remaining";
+
+            if (timeLeft <= 0) {
+                clearInterval(countdown);
+                timerDisplay.innerText = "🎉 Success! +50 Coins Added!";
+                
+                user.points += 50;
+                saveUserData();
+                updateWalletDisplay();
+
+                setTimeout(function() {
+                    timerDisplay.innerText = "";
+                    btn.disabled = false;
+                    btn.style.opacity = "1";
+                }, 5000);
+            }
+        }, 1000);
     }
 
     function shareApp() { alert('Invite link copied!'); }
@@ -1056,7 +1091,7 @@
         let cfg = gameConfigs[activeMode];
         let mins = Math.floor(cfg.timeLeft / 60);
         let secs = cfg.timeLeft % 60;
-        document.getElementById('timerDisplay').innerText = (mins < 10 ? '0' + mins : mins) + ' : ' + (secs < 10 ? '0' + secs : secs);
+        document.getElementById('gameTimerDisplay').innerText = (mins < 10 ? '0' + mins : mins) + ' : ' + (secs < 10 ? '0' + secs : secs);
         document.getElementById('periodDisplay').innerText = cfg.periodSeq;
 
         let htmlStr = '';
