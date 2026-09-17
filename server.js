@@ -123,16 +123,14 @@ app.post('/api/withdraw', async (req, res) => {
         if (!user) return res.status(404).json({ success: false, message: "User not found" });
         if (user.balance < amount) return res.status(400).json({ success: false, message: "Insufficient balance!" });
 
-        // Security validation check for name match (can be customized)
         if (!accountHolderName || accountHolderName.trim().length < 3) {
             return res.status(400).json({ success: false, message: "Invalid account holder name for security verification." });
         }
 
-        // Deduct balance and save withdrawal request
         user.balance -= Number(amount);
         await user.save();
 
-        const withdrawal = new Withdrawal({ userId, amount, accountHolderName,upiId });
+        const withdrawal = new Withdrawal({ userId, amount, accountHolderName, upiId });
         await withdrawal.save();
 
         res.json({ success: true, message: "Withdrawal request submitted successfully!" });
@@ -163,7 +161,6 @@ app.post('/api/bet', async (req, res) => {
     }
 });
 
-
 // ==================== 4. GAME ENGINE (CONTROLLED RANDOM) ====================
 
 function generatePeriodCode() {
@@ -178,7 +175,7 @@ function generatePeriodCode() {
     return `${year}${month}${day}${hours}${minutes}${secStr}`;
 }
 
-// Controlled Random Game Result Generator (Safe for new platforms)
+// Controlled Random Game Result Generator
 function generateGameResult() {
     const randomNum = Math.floor(Math.random() * 10);
     let color = '';
@@ -203,9 +200,8 @@ async function processBets(period, outcome) {
 
         for (const bet of pendingBets) {
             let isWin = false;
-            let multiplier = 2; // Default multiplier
+            let multiplier = 2;
 
-            // Check winning conditions based on bet type
             if (bet.betType === outcome.color || bet.betType === String(outcome.number)) {
                 isWin = true;
                 if (bet.betType.includes('violet')) multiplier = 4.5;
@@ -217,7 +213,6 @@ async function processBets(period, outcome) {
                 bet.payout = winnings;
                 await bet.save();
 
-                // Add winnings back to user wallet
                 await User.findByIdAndUpdate(bet.userId, {
                     $inc: { balance: winnings }
                 });
@@ -236,10 +231,8 @@ let currentPeriod = generatePeriodCode();
 
 setInterval(async () => {
     try {
-        // 1. Generate outcome for current period
         const outcome = generateGameResult();
         
-        // 2. Save result to DB
         const gameResult = new GameResult({
             period: currentPeriod,
             number: outcome.number,
@@ -247,21 +240,18 @@ setInterval(async () => {
         });
         await gameResult.save();
 
-        // 3. Process all user bets for this period
         await processBets(currentPeriod, outcome);
 
-        // 4. Broadcast result to frontend via Socket.io
         io.emit('gameResult', {
             period: currentPeriod,
             number: outcome.number,
             color: outcome.color
         });
 
-        // 5. Generate next period code
         currentPeriod = generatePeriodCode();
         
     } catch (err) {
-        console.log("Game loop error (Might be duplicate period entry):", err.message);
+        console.log("Game loop error:", err.message);
     }
 }, 30000); // 30 seconds interval
 
