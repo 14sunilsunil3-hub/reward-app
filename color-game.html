@@ -78,7 +78,7 @@
         </div>
         <div style="text-align: right;">
             <p>Period Series ID</p>
-            <div class="period-text" id="periodId">2026091701</div>
+            <div class="period-text" id="periodId">Loading...</div>
         </div>
     </div>
 
@@ -135,12 +135,17 @@
 </div>
 
 <script>
-    const user = JSON.parse(localStorage.getItem('user'));
-    if (!user || !user._id) {
-        alert('Please login first!');
+    let user = JSON.parse(localStorage.getItem('user'));
+    
+    // Support both user._id and direct userId formats from login response
+    let userId = user ? (user._id || user.userId) : null;
+    let balance = user ? (user.balance !== undefined ? user.balance : user.points) : 0;
+
+    if (!user || !userId) {
+        alert('Pehle login karo bhai!');
         window.location.href = 'index.html';
     } else {
-        document.getElementById('userWallet').innerText = `🪙 ${user.points}`;
+        document.getElementById('userWallet').innerText = `🪙 ${balance}`;
     }
 
     let currentTimerType = '30s';
@@ -181,7 +186,7 @@
     }
 
     function setAllIn() {
-        document.getElementById('betAmount').value = user.points;
+        document.getElementById('betAmount').value = balance;
     }
 
     function addBet(val) {
@@ -202,8 +207,8 @@
             alert('Kam se kam 1 coin ki bet lagani padegi!');
             return;
         }
-        if (Number(betAmount) > user.points) {
-            alert('Aapke wallet mein itne coins nahi hain!');
+        if (Number(betAmount) > balance) {
+            alert('Aapke wallet me itne coins nahi hain!');
             return;
         }
 
@@ -211,35 +216,43 @@
             const response = await fetch('/api/color-game', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ userId: user._id, betType, betValue, betAmount, timerType: currentTimerType })
+                body: JSON.stringify({ userId, betType, betValue, betAmount, timerType: currentTimerType })
             });
 
             const data = await response.json();
-            if (response.ok) {
+            if (response.ok && data.success !== undefined) {
                 resultText.style.color = data.success ? '#22c55e' : '#ef4444';
                 resultText.innerText = data.message;
                 
-                user.points = data.points;
-                localStorage.setItem('user', JSON.stringify(user));
-                document.getElementById('userWallet').innerText = `🪙 ${user.points}`;
+                balance = data.balance !== undefined ? data.balance : data.points;
+                if (user) {
+                    user.balance = balance;
+                    user.points = balance;
+                    localStorage.setItem('user', JSON.stringify(user));
+                }
+                document.getElementById('userWallet').innerText = `🪙 ${balance}`;
                 document.getElementById('periodId').innerText = data.periodId;
 
-                const tbody = document.getElementById('historyBody');
-                tbody.innerHTML = '';
-                data.history.forEach(item => {
-                    tbody.innerHTML += `<tr>
-                        <td>${item.period}</td>
-                        <td style="font-weight:bold; color:#facc15;">${item.number}</td>
-                        <td style="text-transform:uppercase;">${item.size}</td>
-                        <td style="color:${item.color==='green'?'#22c55e':item.color==='red'?'#ef4444':'#a855f7'}; font-weight:bold;">${item.color}</td>
-                    </tr>`;
-                });
+                if (data.history && data.history.length > 0) {
+                    const tbody = document.getElementById('historyBody');
+                    tbody.innerHTML = '';
+                    data.history.forEach(item => {
+                        let sizeText = item.size || (item.number >= 5 ? 'big' : 'small');
+                        let colorCode = item.color === 'green' ? '#22c55e' : item.color === 'red' ? '#ef4444' : '#a855f7';
+                        tbody.innerHTML += `<tr>
+                            <td>${item.period}</td>
+                            <td style="font-weight:bold; color:#facc15;">${item.number}</td>
+                            <td style="text-transform:uppercase;">${sizeText}</td>
+                            <td style="color:${colorCode}; font-weight:bold;">${item.color}</td>
+                        </tr>`;
+                    });
+                }
             } else {
-                alert(data.error || 'Betting failed');
+                alert(data.error || data.message || 'Betting fail ho gayi');
             }
         } catch (err) {
             console.error(err);
-            alert('Server connection error!');
+            alert('Server se connect nahi ho pa raha hai!');
         }
     }
 </script>
