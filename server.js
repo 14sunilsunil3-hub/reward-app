@@ -25,8 +25,7 @@ app.use(express.json());
 app.use(cors());
 
 // ==================== 1. DATABASE CONNECTION ====================
-// Yahan "TERA_PASSWORD" ki jagah apna asli MongoDB password daal de
-const MONGO_URI = "mongodb+srv://14sunilsunil3_db_user:TERA_PASSWORD@cluster0.xawbmz2.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
+const MONGO_URI = "mongodb+srv://14sunilsunil3_db_user:7rbOaftd6JUrR9vm@cluster0.xawbmz2.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
 
 mongoose.connect(MONGO_URI, {
     useNewUrlParser: true,
