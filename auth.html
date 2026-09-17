@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rewards Zone - Authentication</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background: #0f172a; color: #fff; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .container { width: 100%; max-width: 400px; background: #1e293b; padding: 25px; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.5); }
+        
+        .auth-section { display: none; }
+        .auth-section.active { display: block; }
+
+        .auth-logo { font-size: 45px; text-align: center; margin-bottom: 10px; }
+        h2 { font-size: 22px; text-align: center; margin-bottom: 5px; color: #f8fafc; }
+        p { font-size: 13px; text-align: center; color: #94a3b8; margin-bottom: 25px; }
+
+        .form-group { margin-bottom: 15px; }
+        label { display: block; font-size: 12px; color: #94a3b8; margin-bottom: 5px; }
+        .input-wrapper { position: relative; width: 100%; }
+        input { width: 100%; padding: 12px 40px 12px 12px; background: #0f172a; border: 1px solid #334155; border-radius: 8px; color: white; font-size: 14px; outline: none; }
+        input:focus { border-color: #6366f1; }
+        
+        .toggle-password { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #94a3b8; cursor: pointer; font-size: 16px; }
+
+        .otp-row { display: flex; gap: 10px; }
+        .otp-row input { flex: 1; }
+        .otp-btn { background: #334155; color: white; border: none; padding: 0 15px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 12px; white-space: nowrap; }
+        .otp-btn:hover { background: #475569; }
+        .otp-btn:disabled { background: #1e293b; color: #64748b; cursor: not-allowed; border: 1px solid #334155; }
+
+        .action-btn { background: #6366f1; color: white; border: none; padding: 12px; border-radius: 8px; width: 100%; font-weight: bold; cursor: pointer; margin-top: 10px; font-size: 14px; }
+        .action-btn:hover { background: #4f46e5; }
+
+        .auth-links { display: flex; justify-content: space-between; margin-top: 15px; font-size: 12px; }
+        .auth-link { color: #a855f7; cursor: pointer; text-decoration: underline; }
+        .auth-link:hover { color: #c084fc; }
+
+        .remember-row { display: flex; align-items: center; gap: 8px; font-size: 12px; color: #94a3b8; margin-top: 10px; }
+        .remember-row input { width: 16px; height: 16px; cursor: pointer; accent-color: #6366f1; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    
+    <!-- 1. LOGIN SECTION -->
+    <div id="loginSection" class="auth-section active">
+        <div class="auth-logo">🪙</div>
+        <h2>Welcome Back</h2>
+        <p>Login using your mobile number</p>
+        
+        <div class="form-group">
+            <label>Mobile Number</label>
+            <div class="input-wrapper">
+                <input type="tel" id="loginMobile" placeholder="Enter 10-digit mobile number" maxlength="10">
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label>Password</label>
+            <div class="input-wrapper">
+                <input type="password" id="loginPassword" placeholder="Enter your password">
+                <button type="button" class="toggle-password" onclick="togglePass('loginPassword', this)">👁️</button>
+            </div>
+        </div>
+
+        <div class="remember-row">
+            <input type="checkbox" id="rememberMe">
+            <label for="rememberMe" style="margin-bottom:0; cursor:pointer;">Remember login session</label>
+        </div>
+
+        <button class="action-btn" onclick="handleLogin()">Login Now 🚀</button>
+
+        <div class="auth-links">
+            <span class="auth-link" onclick="switchSection('registerSection')">Create new account</span>
+            <span class="auth-link" onclick="switchSection('forgotSection')">Forgot password?</span>
+        </div>
+    </div>
+
+    <!-- 2. REGISTER SECTION -->
+    <div id="registerSection" class="auth-section">
+        <div class="auth-logo">📝</div>
+        <h2>Create Account</h2>
+        <p>Register with mobile number & OTP verification</p>
+        
+        <div class="form-group">
+            <label>Mobile Number</label>
+            <div class="input-wrapper">
+                <input type="tel" id="regMobile" placeholder="Enter 10-digit mobile number" maxlength="10">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Verification OTP</label>
+            <div class="otp-row">
+                <input type="number" id="regOtpInput" placeholder="Enter 4-digit OTP">
+                <button type="button" class="otp-btn" id="sendOtpBtn" onclick="sendOtp('reg')">Send OTP</button>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Create Password</label>
+            <div class="input-wrapper">
+                <input type="password" id="regPassword" placeholder="Create strong password">
+                <button type="button" class="toggle-password" onclick="togglePass('regPassword', this)">👁️</button>
+            </div>
+        </div>
+
+        <button class="action-btn" style="background: #2ecc71;" onclick="handleRegister()">Register & Get 15,000 Coins 🎉</button>
+
+        <div class="auth-links" style="justify-content: center;">
+            <span class="auth-link" onclick="switchSection('loginSection')">Already have an account? Login</span>
+        </div>
+    </div>
+
+    <!-- 3. FORGOT PASSWORD SECTION -->
+    <div id="forgotSection" class="auth-section">
+        <div class="auth-logo">🔒</div>
+        <h2>Reset Password</h2>
+        <p>Verify via OTP to set a new password</p>
+        
+        <div class="form-group">
+            <label>Registered Mobile Number</label>
+            <div class="input-wrapper">
+                <input type="tel" id="forgotMobile" placeholder="Enter mobile number" maxlength="10">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Verification OTP</label>
+            <div class="otp-row">
+                <input type="number" id="forgotOtpInput" placeholder="Enter 4-digit OTP">
+                <button type="button" class="otp-btn" id="sendForgotOtpBtn" onclick="sendOtp('forgot')">Send OTP</button>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>New Password</label>
+            <div class="input-wrapper">
+                <input type="password" id="forgotNewPassword" placeholder="Enter new password">
+                <button type="button" class="toggle-password" onclick="togglePass('forgotNewPassword', this)">👁️</button>
+            </div>
+        </div>
+
+        <button class="action-btn" style="background: #e67e22;" onclick="handleResetPassword()">Update Password 🔑</button>
+
+        <div class="auth-links" style="justify-content: center;">
+            <span class="auth-link" onclick="switchSection('loginSection')">Back to Login</span>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    let usersDB = JSON.parse(localStorage.getItem('rewards_usersDB')) || [];
+    let generatedOtp = '';
+
+    // Switch between Login, Register and Forgot views
+    function switchSection(sectionId) {
+        document.querySelectorAll('.auth-section').forEach(s => s.classList.remove('active'));
+        document.getElementById(sectionId).classList.add('active');
+    }
+
+    // Toggle Password Hide/Show
+    function togglePass(inputId, btn) {
+        let input = document.getElementById(inputId);
+        if (input.type === 'password') {
+            input.type = 'text';
+            btn.innerText = '🙈';
+        } else {
+            input.type = 'password';
+            btn.innerText = '👁️';
+        }
+    }
+
+    // Send Simulated OTP
+    function sendOtp(type) {
+        let mobileId = type === 'reg' ? 'regMobile' : 'forgotMobile';
+        let btnId = type === 'reg' ? 'sendOtpBtn' : 'sendForgotOtpBtn';
+        let mobile = document.getElementById(mobileId).value.trim();
+
+        if (mobile.length !== 10) {
+            alert('❌ Please enter a valid 10-digit mobile number!');
+            return;
+        }
+
+        if (type === 'forgot') {
+            let exists = usersDB.find(u => u.mobile === mobile);
+            if (!exists) {
+                alert('❌ This mobile number is not registered with us!');
+                return;
+            }
+        }
+
+        generatedOtp = Math.floor(1000 + Math.random() * 9000).toString();
+        alert(`📲 Simulated OTP for ${mobile}: [ ${generatedOtp} ]`);
+
+        let btn = document.getElementById(btnId);
+        btn.disabled = true;
+        let timeLeft = 60;
+        btn.innerText = `${timeLeft}s`;
+
+        let timer = setInterval(() => {
+            timeLeft--;
+            if (timeLeft > 0) {
+                btn.innerText = `${timeLeft}s`;
+            } else {
+                clearInterval(timer);
+                btn.disabled = false;
+                btn.innerText = 'Send OTP';
+            }
+        }, 1000);
+    }
+
+    // Handle Registration
+    function handleRegister() {
+        let mobile = document.getElementById('regMobile').value.trim();
+        let otp = document.getElementById('regOtpInput').value.trim();
+        let password = document.getElementById('regPassword').value.trim();
+
+        if (mobile.length !== 10 || !otp || !password) {
+            alert('❌ Please fill all fields correctly!');
+            return;
+        }
+
+        if (otp !== generatedOtp) {
+            alert('❌ Incorrect OTP! Please enter the correct code.');
+            return;
+        }
+
+        let existing = usersDB.find(u => u.mobile === mobile);
+        if (existing) {
+            alert('❌ Mobile number already registered! Please login.');
+            switchSection('loginSection');
+            return;
+        }
+
+        let newUser = {
+            mobile: mobile,
+            password: password,
+            points: 15000,
+            withdrawCount: 0,
+            lastWithdrawDate: new Date().toISOString().slice(0, 10)
+        };
+
+        usersDB.push(newUser);
+        localStorage.setItem('rewards_usersDB', JSON.stringify(usersDB));
+        alert('✅ Registration Successful! You got 15,000 bonus coins. Please login.');
+        switchSection('loginSection');
+    }
+
+    // Handle Login
+    function handleLogin() {
+        let mobile = document.getElementById('loginMobile').value.trim();
+        let password = document.getElementById('loginPassword').value.trim();
+        let remember = document.getElementById('rememberMe').checked;
+
+        if (!mobile || !password) {
+            alert('❌ Please enter mobile number and password!');
+            return;
+        }
+
+        let user = usersDB.find(u => u.mobile === mobile && u.password === password);
+        if (user) {
+            if (remember) {
+                localStorage.setItem('rewards_loggedMobile', mobile);
+            } else {
+                sessionStorage.setItem('rewards_loggedMobile', mobile);
+            }
+            alert('✅ Login Successful!');
+            // Redirect to main game/dashboard index page
+            window.location.href = 'index.html';
+        } else {
+            alert('❌ Invalid mobile number or password!');
+        }
+    }
+
+    // Handle Password Reset
+    function handleResetPassword() {
+        let mobile = document.getElementById('forgotMobile').value.trim();
+        let otp = document.getElementById('forgotOtpInput').value.trim();
+        let newPass = document.getElementById('forgotNewPassword').value.trim();
+
+        if (!mobile || !otp || !newPass) {
+            alert('❌ Please fill all fields!');
+            return;
+        }
+
+        if (otp !== generatedOtp) {
+            alert('❌ Incorrect OTP!');
+            return;
+        }
+
+        let user = usersDB.find(u => u.mobile === mobile);
+        if (user) {
+            user.password = newPass;
+            localStorage.setItem('rewards_usersDB', JSON.stringify(usersDB));
+            alert('✅ Password updated successfully! Please login with your new password.');
+            switchSection('loginSection');
+        } else {
+            alert('❌ User not found!');
+        }
+    }
+</script>
+
+</body>
+</html>
