@@ -6,7 +6,7 @@
     <title>Rewards Zone - Authentication</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background: #0f172a; color: #fff; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        body { background: #0f172a; color: #fff; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 15px; }
         .container { width: 100%; max-width: 400px; background: #1e293b; padding: 25px; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.5); }
         
         .auth-section { display: none; }
@@ -39,6 +39,11 @@
 
         .remember-row { display: flex; align-items: center; gap: 8px; font-size: 12px; color: #94a3b8; margin-top: 10px; }
         .remember-row input { width: 16px; height: 16px; cursor: pointer; accent-color: #6366f1; }
+
+        /* Notification boxes */
+        .error-msg { background: rgba(239, 68, 68, 0.1); border: 1px solid #ef4444; color: #ef4444; font-size: 12px; padding: 10px; border-radius: 6px; margin-bottom: 12px; display: none; text-align: center; }
+        .success-msg { background: rgba(34, 197, 94, 0.1); border: 1px solid #22c55e; color: #22c55e; font-size: 12px; padding: 10px; border-radius: 6px; margin-bottom: 12px; display: none; text-align: center; }
+        .info-msg { background: rgba(99, 102, 241, 0.1); border: 1px solid #6366f1; color: #818cf8; font-size: 12px; padding: 8px; border-radius: 6px; margin-bottom: 10px; display: none; text-align: center; }
     </style>
 </head>
 <body>
@@ -49,8 +54,11 @@
     <div id="loginSection" class="auth-section active">
         <div class="auth-logo">🪙</div>
         <h2>Welcome Back</h2>
-        <p>Login using your mobile number</p>
+        <p>Login with your mobile number</p>
         
+        <div id="loginError" class="error-msg"></div>
+        <div id="loginSuccess" class="success-msg"></div>
+
         <div class="form-group">
             <label>Mobile Number</label>
             <div class="input-wrapper">
@@ -83,8 +91,12 @@
     <div id="registerSection" class="auth-section">
         <div class="auth-logo">📝</div>
         <h2>Create Account</h2>
-        <p>Register with mobile number & OTP verification</p>
+        <p>Register with mobile number & verification OTP</p>
         
+        <div id="regError" class="error-msg"></div>
+        <div id="regSuccess" class="success-msg"></div>
+        <div id="regInfo" class="info-msg"></div>
+
         <div class="form-group">
             <label>Mobile Number</label>
             <div class="input-wrapper">
@@ -108,7 +120,7 @@
             </div>
         </div>
 
-        <button class="action-btn" style="background: #2ecc71;" onclick="handleRegister()">Register & Get 15,000 Coins 🎉</button>
+        <button class="action-btn" style="background: #22c55e;" onclick="handleRegister()">Register & Get 15,000 Coins 🎉</button>
 
         <div class="auth-links" style="justify-content: center;">
             <span class="auth-link" onclick="switchSection('loginSection')">Already have an account? Login</span>
@@ -119,8 +131,12 @@
     <div id="forgotSection" class="auth-section">
         <div class="auth-logo">🔒</div>
         <h2>Reset Password</h2>
-        <p>Verify via OTP to set a new password</p>
+        <p>Verify OTP to set a new password</p>
         
+        <div id="forgotError" class="error-msg"></div>
+        <div id="forgotSuccess" class="success-msg"></div>
+        <div id="forgotInfo" class="info-msg"></div>
+
         <div class="form-group">
             <label>Registered Mobile Number</label>
             <div class="input-wrapper">
@@ -136,11 +152,20 @@
             </div>
         </div>
 
+        <!-- Two password boxes for Forgot Password -->
         <div class="form-group">
-            <label>New Password</label>
+            <label>Create New Password</label>
             <div class="input-wrapper">
                 <input type="password" id="forgotNewPassword" placeholder="Enter new password">
                 <button type="button" class="toggle-password" onclick="togglePass('forgotNewPassword', this)">👁️</button>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Confirm New Password</label>
+            <div class="input-wrapper">
+                <input type="password" id="forgotConfirmPassword" placeholder="Re-enter new password">
+                <button type="button" class="toggle-password" onclick="togglePass('forgotConfirmPassword', this)">👁️</button>
             </div>
         </div>
 
@@ -157,13 +182,15 @@
     let usersDB = JSON.parse(localStorage.getItem('rewards_usersDB')) || [];
     let generatedOtp = '';
 
-    // Switch between Login, Register and Forgot views
     function switchSection(sectionId) {
         document.querySelectorAll('.auth-section').forEach(s => s.classList.remove('active'));
         document.getElementById(sectionId).classList.add('active');
+        // Clear all messages
+        document.querySelectorAll('.error-msg').forEach(e => e.style.display = 'none');
+        document.querySelectorAll('.success-msg').forEach(s => s.style.display = 'none');
+        document.querySelectorAll('.info-msg').forEach(i => i.style.display = 'none');
     }
 
-    // Toggle Password Hide/Show
     function togglePass(inputId, btn) {
         let input = document.getElementById(inputId);
         if (input.type === 'password') {
@@ -175,27 +202,41 @@
         }
     }
 
-    // Send Simulated OTP
+    function showMsg(elementId, msg) {
+        let el = document.getElementById(elementId);
+        el.innerText = msg;
+        el.style.display = 'block';
+    }
+
+    function hideMsg(elementId) {
+        document.getElementById(elementId).style.display = 'none';
+    }
+
     function sendOtp(type) {
         let mobileId = type === 'reg' ? 'regMobile' : 'forgotMobile';
         let btnId = type === 'reg' ? 'sendOtpBtn' : 'sendForgotOtpBtn';
+        let errId = type === 'reg' ? 'regError' : 'forgotError';
+        let infoId = type === 'reg' ? 'regInfo' : 'forgotInfo';
         let mobile = document.getElementById(mobileId).value.trim();
 
+        hideMsg(errId);
+        hideMsg(successMsg => {});
+
         if (mobile.length !== 10) {
-            alert('❌ Please enter a valid 10-digit mobile number!');
+            showMsg(errId, '❌ Please enter a valid 10-digit mobile number!');
             return;
         }
 
         if (type === 'forgot') {
             let exists = usersDB.find(u => u.mobile === mobile);
             if (!exists) {
-                alert('❌ This mobile number is not registered with us!');
+                showMsg(errId, '❌ This mobile number is not registered!');
                 return;
             }
         }
 
         generatedOtp = Math.floor(1000 + Math.random() * 9000).toString();
-        alert(`📲 Simulated OTP for ${mobile}: [ ${generatedOtp} ]`);
+        showMsg(infoId, `📲 OTP sent successfully! (Demo OTP: ${generatedOtp})`);
 
         let btn = document.getElementById(btnId);
         btn.disabled = true;
@@ -214,26 +255,27 @@
         }, 1000);
     }
 
-    // Handle Registration
     function handleRegister() {
         let mobile = document.getElementById('regMobile').value.trim();
         let otp = document.getElementById('regOtpInput').value.trim();
         let password = document.getElementById('regPassword').value.trim();
 
+        hideMsg('regError');
+        hideMsg('regSuccess');
+
         if (mobile.length !== 10 || !otp || !password) {
-            alert('❌ Please fill all fields correctly!');
+            showMsg('regError', '❌ Please fill all fields correctly!');
             return;
         }
 
         if (otp !== generatedOtp) {
-            alert('❌ Incorrect OTP! Please enter the correct code.');
+            showMsg('regError', '❌ Incorrect OTP entered!');
             return;
         }
 
         let existing = usersDB.find(u => u.mobile === mobile);
         if (existing) {
-            alert('❌ Mobile number already registered! Please login.');
-            switchSection('loginSection');
+            showMsg('regError', '❌ Mobile number already registered! Please login.');
             return;
         }
 
@@ -247,18 +289,20 @@
 
         usersDB.push(newUser);
         localStorage.setItem('rewards_usersDB', JSON.stringify(usersDB));
-        alert('✅ Registration Successful! You got 15,000 bonus coins. Please login.');
-        switchSection('loginSection');
+        showMsg('regSuccess', '✅ Registration Successful! Redirecting to login...');
+        setTimeout(() => switchSection('loginSection'), 1500);
     }
 
-    // Handle Login
     function handleLogin() {
         let mobile = document.getElementById('loginMobile').value.trim();
         let password = document.getElementById('loginPassword').value.trim();
         let remember = document.getElementById('rememberMe').checked;
 
+        hideMsg('loginError');
+        hideMsg('loginSuccess');
+
         if (!mobile || !password) {
-            alert('❌ Please enter mobile number and password!');
+            showMsg('loginError', '❌ Please enter mobile number and password!');
             return;
         }
 
@@ -269,27 +313,36 @@
             } else {
                 sessionStorage.setItem('rewards_loggedMobile', mobile);
             }
-            alert('✅ Login Successful!');
-            // Redirect to main game/dashboard index page
-            window.location.href = 'index.html';
+            showMsg('loginSuccess', '✅ Login Successful! Redirecting...');
+            setTimeout(() => {
+                window.location.href = 'index.html';
+            }, 1000);
         } else {
-            alert('❌ Invalid mobile number or password!');
+            showMsg('loginError', '❌ Invalid mobile number or password!');
         }
     }
 
-    // Handle Password Reset
     function handleResetPassword() {
         let mobile = document.getElementById('forgotMobile').value.trim();
         let otp = document.getElementById('forgotOtpInput').value.trim();
         let newPass = document.getElementById('forgotNewPassword').value.trim();
+        let confirmPass = document.getElementById('forgotConfirmPassword').value.trim();
 
-        if (!mobile || !otp || !newPass) {
-            alert('❌ Please fill all fields!');
+        hideMsg('forgotError');
+        hideMsg('forgotSuccess');
+
+        if (!mobile || !otp || !newPass || !confirmPass) {
+            showMsg('forgotError', '❌ Please fill all fields!');
             return;
         }
 
         if (otp !== generatedOtp) {
-            alert('❌ Incorrect OTP!');
+            showMsg('forgotError', '❌ Incorrect OTP!');
+            return;
+        }
+
+        if (newPass !== confirmPass) {
+            showMsg('forgotError', '❌ New Password and Confirm Password do not match!');
             return;
         }
 
@@ -297,10 +350,10 @@
         if (user) {
             user.password = newPass;
             localStorage.setItem('rewards_usersDB', JSON.stringify(usersDB));
-            alert('✅ Password updated successfully! Please login with your new password.');
-            switchSection('loginSection');
+            showMsg('forgotSuccess', '✅ Password updated successfully! Redirecting...');
+            setTimeout(() => switchSection('loginSection'), 1500);
         } else {
-            alert('❌ User not found!');
+            showMsg('forgotError', '❌ User not found with this mobile number!');
         }
     }
 </script>
