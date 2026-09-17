@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reward App & Daman Game</title>
+    <title>Rewards Zone - Login & Game</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background: #0f172a; color: #fff; display: flex; justify-content: center; }
@@ -11,6 +11,33 @@
         
         .page { display: none; }
         .page.active { display: block; }
+
+        /* Auth Pages (Login / Register / Forgot) */
+        .auth-container { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 85vh; text-align: center; }
+        .auth-logo { font-size: 40px; margin-bottom: 10px; }
+        .auth-container h2 { font-size: 22px; margin-bottom: 5px; color: #f8fafc; }
+        .auth-container p { font-size: 13px; color: #94a3b8; margin-bottom: 25px; }
+        .auth-form { width: 100%; text-align: left; }
+        .auth-link { font-size: 12px; color: #a855f7; margin-top: 15px; cursor: pointer; display: inline-block; text-decoration: underline; }
+
+        /* Form Controls & Password Eye */
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-size: 12px; color: #94a3b8; margin-bottom: 5px; }
+        .input-wrapper { position: relative; width: 100%; }
+        .form-group input, .form-group select { width: 100%; padding: 12px 40px 12px 12px; background: #0f172a; border: 1px solid #334155; border-radius: 8px; color: white; font-size: 14px; outline: none; }
+        .form-group input:focus { border-color: #6366f1; }
+        .toggle-password { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #94a3b8; cursor: pointer; font-size: 16px; }
+        .toggle-password:hover { color: #fff; }
+
+        .otp-row { display: flex; gap: 10px; }
+        .otp-row input { flex: 1; }
+        .otp-btn { background: #334155; color: white; border: none; padding: 0 15px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 12px; white-space: nowrap; }
+        .otp-btn:hover { background: #475569; }
+        .otp-btn:disabled { background: #1e293b; color: #64748b; cursor: not-allowed; border: 1px solid #334155; }
+
+        /* Remember Checkbox styling */
+        .remember-row { display: flex; align-items: center; gap: 8px; font-size: 12px; color: #94a3b8; margin-bottom: 15px; }
+        .remember-row input { width: 16px; height: 16px; cursor: pointer; accent-color: #6366f1; }
 
         /* Home Page Styles */
         .wallet-card { background: linear-gradient(135deg, #6366f1, #a855f7); padding: 20px; border-radius: 14px; text-align: center; margin-bottom: 20px; }
@@ -40,7 +67,7 @@
         .menu-item:last-child { border-bottom: none; }
         .menu-item:hover { background: #1e293b; }
 
-        /* Daman Game Page Styles */
+        /* Color Game Page Styles */
         .daman-wrapper { background: #ffffff; color: #333; border-radius: 12px; overflow: hidden; margin: -10px; }
         .game-header { background: #ff4d4f; color: white; padding: 12px 15px; display: flex; align-items: center; justify-content: space-between; }
         .game-header h2 { font-size: 18px; font-weight: 500; }
@@ -92,11 +119,6 @@
         .method-btn { flex: 1; padding: 12px; background: #0f172a; border: 1px solid #334155; color: white; border-radius: 8px; font-weight: bold; cursor: pointer; text-align: center; }
         .method-btn.active { background: #6366f1; border-color: #6366f1; }
 
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; font-size: 12px; color: #94a3b8; margin-bottom: 5px; }
-        .form-group input, .form-group select { width: 100%; padding: 12px; background: #0f172a; border: 1px solid #334155; border-radius: 8px; color: white; font-size: 14px; outline: none; }
-        .form-group input:focus { border-color: #6366f1; }
-
         /* Modal / Popup Styles */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: none; justify-content: center; align-items: center; z-index: 1000; }
         .modal-overlay.active { display: flex; }
@@ -105,7 +127,7 @@
         .modal-box p { font-size: 12px; color: #94a3b8; margin-bottom: 15px; }
         .btn-small-apply { background: #2ecc71; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 12px; margin-top: 10px; }
 
-        /* Game Result Popup Styles (Win / Loss Celebrations) */
+        /* Game Result Popup Styles */
         .game-result-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.75); display: none; justify-content: center; align-items: center; z-index: 3000; }
         .game-result-overlay.active { display: flex; }
         .game-result-box { width: 85%; max-width: 340px; padding: 25px 20px; border-radius: 16px; text-align: center; color: white; box-shadow: 0 10px 30px rgba(0,0,0,0.5); animation: popScale 0.3s ease; }
@@ -118,7 +140,7 @@
         .win-result-btn { color: #27ae60; }
         .loss-result-btn { color: #c0392b; }
 
-        /* Small Auto-dissolve Toast for Bet Success */
+        /* Toast Popup */
         .toast-popup { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-50px); background: #2ecc71; color: white; padding: 10px 20px; border-radius: 8px; font-weight: bold; font-size: 13px; z-index: 4000; box-shadow: 0 4px 15px rgba(0,0,0,0.3); opacity: 0; transition: all 0.3s ease; pointer-events: none; }
         .toast-popup.show { transform: translateX(-50%) translateY(0); opacity: 1; }
 
@@ -161,11 +183,114 @@
 
 <div class="container">
     
+    <!-- AUTH 1: LOGIN PAGE -->
+    <div id="loginPage" class="page">
+        <div class="auth-container">
+            <div class="auth-logo">🪙</div>
+            <h2>Welcome Back</h2>
+            <p>Login with your mobile number</p>
+            <div class="auth-form">
+                <div class="form-group">
+                    <label>Mobile Number</label>
+                    <div class="input-wrapper">
+                        <input type="tel" id="loginIdentifier" placeholder="Enter mobile number">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <div class="input-wrapper">
+                        <input type="password" id="loginPassword" placeholder="Enter password">
+                        <button type="button" class="toggle-password" onclick="togglePasswordVisibility('loginPassword', this)">👁️</button>
+                    </div>
+                </div>
+                <div class="remember-row">
+                    <input type="checkbox" id="rememberPasswordCheck">
+                    <label for="rememberPasswordCheck" style="margin-bottom:0; color:#94a3b8; cursor:pointer;">Remember password / session</label>
+                </div>
+                <button class="action-btn" style="margin-top: 5px;" onclick="handleLogin()">Login 🚀</button>
+                <div style="display: flex; justify-content: space-between; margin-top: 15px;">
+                    <span class="auth-link" onclick="switchAuthPage('registerPage')">Create new account</span>
+                    <span class="auth-link" onclick="switchAuthPage('forgotPage')">Forgot password?</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AUTH 2: REGISTER PAGE -->
+    <div id="registerPage" class="page">
+        <div class="auth-container">
+            <div class="auth-logo">📝</div>
+            <h2>Create Account</h2>
+            <p>Register with mobile number & verification OTP</p>
+            <div class="auth-form">
+                <div class="form-group">
+                    <label>Mobile Number</label>
+                    <div class="input-wrapper">
+                        <input type="tel" id="regMobile" placeholder="Enter 10-digit mobile number">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Verification OTP</label>
+                    <div class="otp-row">
+                        <input type="number" id="regOtpInput" placeholder="Enter 4-digit OTP">
+                        <button type="button" class="otp-btn" id="sendOtpBtn" onclick="sendRegOtp()">Send</button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Create Password</label>
+                    <div class="input-wrapper">
+                        <input type="password" id="regPassword" placeholder="Create password">
+                        <button type="button" class="toggle-password" onclick="togglePasswordVisibility('regPassword', this)">👁️</button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Confirm Password</label>
+                    <div class="input-wrapper">
+                        <input type="password" id="regConfirmPassword" placeholder="Confirm password">
+                        <button type="button" class="toggle-password" onclick="togglePasswordVisibility('regConfirmPassword', this)">👁️</button>
+                    </div>
+                </div>
+                <button class="action-btn" style="background: #2ecc71; margin-top: 10px;" onclick="handleRegister()">Register Now 🎉</button>
+                <div style="text-align: center;">
+                    <span class="auth-link" onclick="switchAuthPage('loginPage')">Already have an account? Login</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AUTH 3: FORGOT PASSWORD PAGE -->
+    <div id="forgotPage" class="page">
+        <div class="auth-container">
+            <div class="auth-logo">🔒</div>
+            <h2>Reset Password</h2>
+            <p>Enter your registered mobile number to reset password</p>
+            <div class="auth-form">
+                <div class="form-group">
+                    <label>Mobile Number</label>
+                    <div class="input-wrapper">
+                        <input type="tel" id="forgotIdentifier" placeholder="Enter mobile number">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>New Password</label>
+                    <div class="input-wrapper">
+                        <input type="password" id="forgotNewPassword" placeholder="Enter new password">
+                        <button type="button" class="toggle-password" onclick="togglePasswordVisibility('forgotNewPassword', this)">👁️</button>
+                    </div>
+                </div>
+                <button class="action-btn" style="background: #e67e22; margin-top: 10px;" onclick="handleResetPassword()">Update Password 🔑</button>
+                <div style="text-align: center;">
+                    <span class="auth-link" onclick="switchAuthPage('loginPage')">Remember password? Login</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- 1. HOME PAGE -->
-    <div id="homePage" class="page active">
+    <div id="homePage" class="page">
         <div class="wallet-card">
             <h3>My Wallet Balance</h3>
-            <h1 id="userwallet">🪙 630 Coins</h1>
+            <h1 id="userwallet">🪙 0 Coins</h1>
         </div>
 
         <div class="game-banner">
@@ -197,8 +322,8 @@
     <div id="profilePage" class="page">
         <div class="profile-header">
             <div class="avatar">👤</div>
-            <h2>Test User</h2>
-            <p>ID: test_user_123</p>
+            <h2 id="profileNameDisplay">User</h2>
+            <p id="profileIdDisplay">Mobile: ---</p>
         </div>
 
         <div class="menu-list">
@@ -214,7 +339,7 @@
     <!-- 3. WITHDRAWAL PAGE -->
     <div id="withdrawPage" class="page">
         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
-            <button class="action-btn" style="width: auto; padding: 6px 12px; background: #334155;" onclick="switchPage('profilePage')">← Back</button>
+            <button class="action-btn" style="width: auto; padding: 6px 12px; background: #334155;" onclick="switchPage('homePage')">← Back</button>
             <h2 style="font-size: 18px;">Withdraw Funds</h2>
             <div></div>
         </div>
@@ -233,84 +358,30 @@
         <div id="upiForm">
             <div class="form-group">
                 <label>UPI ID</label>
-                <input type="text" id="upiId" placeholder="e.g. example@upi or 9876543210@paytm">
+                <div class="input-wrapper"><input type="text" id="upiId" placeholder="e.g. example@upi"></div>
             </div>
             <div class="form-group">
                 <label>Mobile Number</label>
-                <input type="tel" id="upiMobile" placeholder="Enter your 10-digit mobile number">
+                <div class="input-wrapper"><input type="tel" id="upiMobile" placeholder="Enter mobile number"></div>
             </div>
         </div>
 
         <div id="bankForm" style="display: none;">
             <div class="form-group">
-                <label>Search & Select Bank Name (100+ Banks)</label>
-                <input type="text" id="bankNameInput" list="bankList" placeholder="Type or search bank name...">
-                <datalist id="bankList">
-                    <option value="State Bank of India (SBI)"></option>
-                    <option value="HDFC Bank"></option>
-                    <option value="ICICI Bank"></option>
-                    <option value="Axis Bank"></option>
-                    <option value="Punjab National Bank (PNB)"></option>
-                    <option value="Bank of Baroda (BOB)"></option>
-                    <option value="Canara Bank"></option>
-                    <option value="Union Bank of India"></option>
-                    <option value="Kotak Mahindra Bank"></option>
-                    <option value="IndusInd Bank"></option>
-                    <option value="YES Bank"></option>
-                    <option value="IDFC FIRST Bank"></option>
-                    <option value="Paytm Payments Bank"></option>
-                    <option value="Airtel Payments Bank"></option>
-                    <option value="Central Bank of India"></option>
-                    <option value="Indian Bank"></option>
-                    <option value="Bank of India"></option>
-                    <option value="UCO Bank"></option>
-                    <option value="Bank of Maharashtra"></option>
-                    <option value="Punjab & Sind Bank"></option>
-                    <option value="Federal Bank"></option>
-                    <option value="South Indian Bank"></option>
-                    <option value="Karur Vysya Bank"></option>
-                    <option value="City Union Bank"></option>
-                    <option value="Tamilnad Mercantile Bank"></option>
-                    <option value="Bandhan Bank"></option>
-                    <option value="RBL Bank"></option>
-                    <option value="Jammu & Kashmir Bank"></option>
-                    <option value="Karnataka Bank"></option>
-                    <option value="DCB Bank"></option>
-                    <option value="AU Small Finance Bank"></option>
-                    <option value="Equitas Small Finance Bank"></option>
-                    <option value="Ujjivan Small Finance Bank"></option>
-                    <option value="Capital Small Finance Bank"></option>
-                    <option value="ESAF Small Finance Bank"></option>
-                    <option value="India Post Payments Bank"></option>
-                    <option value="Jio Payments Bank"></option>
-                    <option value="FINO Payments Bank"></option>
-                    <option value="DBS Bank India"></option>
-                    <option value="Standard Chartered Bank"></option>
-                    <option value="HSBC Bank"></option>
-                    <option value="Citibank"></option>
-                    <option value="Barclays Bank"></option>
-                    <option value="Deutsche Bank"></option>
-                    <option value="Saraswat Cooperative Bank"></option>
-                    <option value="Cosmos Cooperative Bank"></option>
-                    <option value="SVC Cooperative Bank"></option>
-                    <option value="Other Bank"></option>
-                </datalist>
+                <label>Bank Name</label>
+                <div class="input-wrapper"><input type="text" id="bankNameInput" placeholder="Enter bank name"></div>
             </div>
             <div class="form-group">
                 <label>Account Number</label>
-                <input type="number" id="bankAccNo" placeholder="Enter bank account number">
+                <div class="input-wrapper"><input type="number" id="bankAccNo" placeholder="Enter account number"></div>
             </div>
             <div class="form-group">
                 <label>Account Holder Name</label>
-                <input type="text" id="bankHolderName" placeholder="Enter account holder full name">
-            </div>
-            <div class="form-group">
-                <label>Mobile Number</label>
-                <input type="tel" id="bankMobile" placeholder="Enter registered mobile number">
+                <div class="input-wrapper"><input type="text" id="bankHolderName" placeholder="Enter full name"></div>
             </div>
             <div class="form-group">
                 <label>IFSC Code</label>
-                <input type="text" id="bankIfsc" placeholder="e.g. SBIN0001234">
+                <div class="input-wrapper"><input type="text" id="bankIfsc" placeholder="Enter IFSC code"></div>
             </div>
         </div>
 
@@ -322,10 +393,9 @@
         <div class="daman-wrapper">
             <div class="game-header">
                 <h2>🏆 Rewards zone</h2>
-                <div style="font-size: 12px; font-weight: bold;">🪙 <span id="gameWallet">630</span></div>
+                <div style="font-size: 12px; font-weight: bold;">🪙 <span id="gameWallet">0</span></div>
             </div>
 
-            <!-- 4 Interactive Game Tabs -->
             <div class="game-tabs">
                 <button class="tab-item active" onclick="switchGameMode('30s', this)">WinGo<br><span>30Sec</span></button>
                 <button class="tab-item" onclick="switchGameMode('1m', this)">WinGo<br><span>1 Min</span></button>
@@ -334,7 +404,7 @@
             </div>
 
             <div class="timer-card">
-                <button class="how-to-play" onclick="alert('Rules: Predict Green, Violet, Red, Big, Small or Numbers! Winning outcome automatically favors the side with fewer total user bets.')">📖 Rules</button>
+                <button class="how-to-play" onclick="alert('Rules: Predict Green, Violet, Red, Big, Small or Numbers!')">📖 Rules</button>
                 <div class="timer-right">
                     <div class="timer-label">Time remaining</div>
                     <div class="timer-value" id="timerDisplay">00 : 30</div>
@@ -368,7 +438,6 @@
                 <button class="bs-btn btn-small" onclick="openBetModal('Small')">Small</button>
             </div>
 
-            <!-- Scrollable Extended History Section -->
             <div class="history-section">
                 <div class="history-tabs">
                     <div class="history-tab active" id="historyTabName">WinGo 30s History</div>
@@ -381,43 +450,39 @@
                             <th>Big Small</th>
                         </tr>
                     </thead>
-                    <tbody id="historyTableBody">
-                        <!-- Dynamic History Rows -->
-                    </tbody>
+                    <tbody id="historyTableBody"></tbody>
                 </table>
             </div>
         </div>
     </div>
 
-    <!-- Bottom Navigation Bar -->
-    <div class="nav-bar">
+    <div class="nav-bar" id="bottomNavBar" style="display: none;">
         <button class="nav-item active" id="navHome" onclick="switchPage('homePage')">🏠 Home</button>
         <button class="nav-item" id="navProfile" onclick="switchPage('profilePage')">👤 Profile</button>
     </div>
 </div>
 
-<!-- Toast Popup for Bet Success -->
-<div class="toast-popup" id="betToast">✅ Bet placed successfully!</div>
+<div class="toast-popup" id="betToast">✅ Action successful!</div>
 
-<!-- MODAL 1: Amount Selection Popup -->
+<!-- MODALS -->
 <div class="modal-overlay" id="amountModal">
     <div class="modal-box">
         <h3>💰 Enter Withdrawal Amount</h3>
-        <p>Min: 10,000 coins (₹100) | Max: 1,000,000 coins (₹10,000)<br>Limit: Max 3 withdrawals per day.</p>
-        <div class="form-group">
-            <input type="number" id="inputCoins" placeholder="Enter coins (e.g. 10000)">
-        </div>
+        <p>Min: 10,000 coins (₹100) | Max: 1,000,000 coins</p>
+        <div class="form-group"><div class="input-wrapper"><input type="number" id="inputCoins" placeholder="Enter coins"></div></div>
         <button class="btn-small-apply" onclick="applyAmount()">Apply</button>
     </div>
 </div>
 
-<!-- MODAL 2: Password Prompt Popup -->
 <div class="modal-overlay" id="passwordModal">
     <div class="modal-box">
-        <h3>🔒 Confirm Login Password</h3>
-        <p>Enter your password to authorize this withdrawal.</p>
+        <h3>🔒 Confirm Password</h3>
+        <p>Enter your password to authorize.</p>
         <div class="form-group">
-            <input type="password" id="inputPassword" placeholder="Enter Login Password (Default: 123456)">
+            <div class="input-wrapper">
+                <input type="password" id="inputPassword" placeholder="Enter password">
+                <button type="button" class="toggle-password" onclick="togglePasswordVisibility('inputPassword', this)">👁️</button>
+            </div>
         </div>
         <div style="display: flex; gap: 10px; margin-top: 10px;">
             <button class="action-btn" style="background: #e74c3c; padding: 8px;" onclick="closePasswordModal()">Cancel</button>
@@ -426,19 +491,16 @@
     </div>
 </div>
 
-<!-- MODAL 3: Bet Bottom Sheet -->
 <div class="bet-sheet-overlay" id="betSheetOverlay">
     <div class="bet-sheet">
-        <div class="bet-title-bar" id="betSheetTitle">WinGo 30sec - Select Green</div>
-        
-        <div class="bet-section-label">Balance / Denomination</div>
+        <div class="bet-title-bar" id="betSheetTitle">Select Bet</div>
+        <div class="bet-section-label">Denomination</div>
         <div class="coin-chips">
             <div class="coin-chip active" onclick="setChipValue(1, this)">1</div>
             <div class="coin-chip" onclick="setChipValue(10, this)">10</div>
             <div class="coin-chip" onclick="setChipValue(100, this)">100</div>
             <div class="coin-chip" onclick="setChipValue(1000, this)">1000</div>
         </div>
-
         <div class="quantity-row">
             <div class="bet-section-label" style="margin-bottom:0;">Quantity</div>
             <div class="qty-controls">
@@ -447,48 +509,38 @@
                 <button class="qty-btn" id="qtyPlusBtn" onclick="adjustQty(1)">+</button>
             </div>
         </div>
-
         <div class="bet-section-label">Multipliers</div>
         <div class="multiplier-grid">
             <div class="m-btn active" onclick="setMultiplier(1, this)">X1</div>
             <div class="m-btn" onclick="setMultiplier(5, this)">X5</div>
             <div class="m-btn" onclick="setMultiplier(10, this)">X10</div>
             <div class="m-btn" onclick="setMultiplier(20, this)">X20</div>
-            <div class="m-btn" onclick="setMultiplier(50, this)">X50</div>
-            <div class="m-btn" onclick="setMultiplier(100, this)">X100</div>
-            <div class="m-btn" onclick="setMultiplier(500, this)">X500</div>
-            <div class="m-btn" onclick="setMultiplier(1000, this)">X1000</div>
         </div>
-
         <div class="agreement-row">
             <input type="checkbox" id="preSaleAgreement" checked>
-            <label for="preSaleAgreement">I agree 《Pre-sale rules》</label>
+            <label for="preSaleAgreement">I agree rules</label>
         </div>
-
         <div class="bet-footer">
             <button class="btn-cancel-bet" onclick="closeBetModal()">Cancel</button>
-            <button class="btn-confirm-bet" id="confirmBetBtnText" onclick="confirmAndPlaceBet()">Total amount 🪙 1</button>
+            <button class="btn-confirm-bet" id="confirmBetBtnText" onclick="confirmAndPlaceBet()">Total 🪙 1</button>
         </div>
     </div>
 </div>
 
-<!-- MODAL 4: Customer Support Popup -->
 <div class="modal-overlay" id="supportModal">
     <div class="modal-box">
-        <h3>🎧 Customer Support</h3>
-        <p>If you have any questions, issues, or need assistance, feel free to reach out to us at:</p>
-        <div class="form-group" style="margin: 15px 0;">
-            <a href="mailto:14sunilsunil3@gmail.com" style="color: #a855f7; font-weight: bold; font-size: 14px; text-decoration: underline;">14sunilsunil3@gmail.com</a>
-        </div>
-        <button class="btn-small-apply" style="background: #6366f1;" onclick="closeSupportModal()">Close</button>
+        <h3>🎧 Support</h3>
+        <p>Contact us at:</p>
+        <a href="mailto:14sunilsunil3@gmail.com" style="color: #a855f7; font-weight: bold;">14sunilsunil3@gmail.com</a>
+        <br><br>
+        <button class="btn-small-apply" onclick="closeSupportModal()">Close</button>
     </div>
 </div>
 
-<!-- MODAL 5: Logout Confirmation Popup -->
 <div class="modal-overlay" id="logoutModal">
     <div class="modal-box">
-        <h3>🚪 Logout Confirmation</h3>
-        <p>Are you sure you want to log out from your account?</p>
+        <h3>🚪 Logout</h3>
+        <p>Are you sure you want to log out?</p>
         <div style="display: flex; gap: 10px; margin-top: 15px;">
             <button class="action-btn" style="background: #334155; padding: 10px;" onclick="closeLogoutModal()">Cancel</button>
             <button class="action-btn" style="background: #e74c3c; padding: 10px;" onclick="confirmLogout()">OK</button>
@@ -496,37 +548,211 @@
     </div>
 </div>
 
-<!-- MODAL 6: Color Game Win / Loss Popup -->
 <div class="game-result-overlay" id="gameResultOverlay">
     <div class="game-result-box" id="gameResultBoxContainer">
-        <h2 id="gameResultTitle">🎉 Congratulations!</h2>
-        <p id="gameResultDesc">You won the bet!</p>
-        <button class="game-result-btn" id="gameResultBtn" onclick="closeGameResultModal()">Awesome! 🚀</button>
+        <h2 id="gameResultTitle">Result</h2>
+        <p id="gameResultDesc">Outcome details</p>
+        <button class="game-result-btn" id="gameResultBtn" onclick="closeGameResultModal()">OK</button>
     </div>
 </div>
 
 <script>
-    let user = JSON.parse(localStorage.getItem('user'));
-    let todayDate = new Date().toISOString().slice(0,10);
+    let user = null;
+    let usersDB = JSON.parse(localStorage.getItem('rewards_usersDB')) || [];
+    
+    // Check local storage vs session storage handling for remember password feature
+    let loggedInIdentifier = localStorage.getItem('rewards_rememberedUser') || sessionStorage.getItem('rewards_sessionUser');
+    let generatedOtp = '';
+    let otpTimerInterval = null;
 
-    if (!user || !user._id) {
+    if (loggedInIdentifier) {
+        let found = usersDB.find(u => u.identifier === loggedInIdentifier);
+        if (found) user = found;
+    }
+
+    if (!user && usersDB.length === 0) {
         user = { 
-            _id: 'test_user_123', 
+            identifier: '9876543210', 
             points: 15000, 
             password: '123456',
             withdrawCount: 0,
-            lastWithdrawDate: todayDate
+            lastWithdrawDate: new Date().toISOString().slice(0,10)
         };
-        localStorage.setItem('user', JSON.stringify(user));
+        usersDB.push(user);
+        localStorage.setItem('rewards_usersDB', JSON.stringify(usersDB));
     }
 
-    if (user.lastWithdrawDate !== todayDate) {
+    let todayDate = new Date().toISOString().slice(0,10);
+    if (user && user.lastWithdrawDate !== todayDate) {
         user.withdrawCount = 0;
         user.lastWithdrawDate = todayDate;
-        localStorage.setItem('user', JSON.stringify(user));
+        saveUserData();
     }
 
-    updateWalletDisplay();
+    if (loggedInIdentifier && user) {
+        startAppSession();
+    } else {
+        switchAuthPage('loginPage');
+    }
+
+    function saveUserData() {
+        let idx = usersDB.findIndex(u => u.identifier === user.identifier);
+        if (idx !== -1) {
+            usersDB[idx] = user;
+        } else {
+            usersDB.push(user);
+        }
+        localStorage.setItem('rewards_usersDB', JSON.stringify(usersDB));
+    }
+
+    function switchAuthPage(pageId) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.getElementById(pageId).classList.add('active');
+        document.getElementById('bottomNavBar').style.display = 'none';
+    }
+
+    // Toggle Password Visibility Function
+    function togglePasswordVisibility(inputId, btnEl) {
+        let inputField = document.getElementById(inputId);
+        if (inputField.type === 'password') {
+            inputField.type = 'text';
+            btnEl.innerText = '🙈';
+        } else {
+            inputField.type = 'password';
+            btnEl.innerText = '👁️';
+        }
+    }
+
+    // 120 Seconds OTP Timer Logic
+    function sendRegOtp() {
+        let mobile = document.getElementById('regMobile').value.trim();
+        if (!mobile || mobile.length < 10) {
+            alert('❌ Please enter a valid 10-digit mobile number first!');
+            return;
+        }
+
+        generatedOtp = Math.floor(1000 + Math.random() * 9000).toString();
+        alert(`📲 Simulated OTP sent to ${mobile}: [ ${generatedOtp} ]`);
+
+        let btn = document.getElementById('sendOtpBtn');
+        btn.disabled = true;
+        let timeLeft = 120;
+        btn.innerText = `${timeLeft}s`;
+
+        if (otpTimerInterval) clearInterval(otpTimerInterval);
+
+        otpTimerInterval = setInterval(() => {
+            timeLeft--;
+            if (timeLeft > 0) {
+                btn.innerText = `${timeLeft}s`;
+            } else {
+                clearInterval(otpTimerInterval);
+                btn.disabled = false;
+                btn.innerText = 'Send';
+            }
+        }, 1000);
+    }
+
+    function handleRegister() {
+        let identifier = document.getElementById('regMobile').value.trim();
+        let otpInput = document.getElementById('regOtpInput').value.trim();
+        let password = document.getElementById('regPassword').value.trim();
+        let confirmPassword = document.getElementById('regConfirmPassword').value.trim();
+
+        if (!identifier || !otpInput || !password || !confirmPassword) {
+            alert('❌ Please fill all registration fields!');
+            return;
+        }
+
+        if (identifier.length < 10) {
+            alert('❌ Please enter a valid mobile number!');
+            return;
+        }
+
+        if (otpInput !== generatedOtp) {
+            alert('❌ Incorrect OTP! Please check and enter the correct OTP.');
+            return;
+        }
+
+        if (password !== confirmPassword) {
+            alert('❌ Passwords do not match!');
+            return;
+        }
+
+        let existing = usersDB.find(u => u.identifier === identifier);
+        if (existing) {
+            alert('❌ This mobile number is already registered! Please login.');
+            return;
+        }
+
+        let newUser = {
+            identifier: identifier,
+            points: 15000,
+            password: password,
+            withdrawCount: 0,
+            lastWithdrawDate: todayDate
+        };
+
+        usersDB.push(newUser);
+        localStorage.setItem('rewards_usersDB', JSON.stringify(usersDB));
+        alert('✅ Registration Successful! You received 15,000 starting coins. Please login.');
+        switchAuthPage('loginPage');
+    }
+
+    function handleLogin() {
+        let identifier = document.getElementById('loginIdentifier').value.trim();
+        let password = document.getElementById('loginPassword').value.trim();
+        let rememberChecked = document.getElementById('rememberPasswordCheck').checked;
+
+        if (!identifier || !password) {
+            alert('Please enter mobile number and password!');
+            return;
+        }
+
+        let found = usersDB.find(u => u.identifier === identifier && u.password === password);
+        if (found) {
+            user = found;
+            if (rememberChecked) {
+                localStorage.setItem('rewards_rememberedUser', user.identifier);
+                sessionStorage.removeItem('rewards_sessionUser');
+            } else {
+                sessionStorage.setItem('rewards_sessionUser', user.identifier);
+                localStorage.removeItem('rewards_rememberedUser');
+            }
+            startAppSession();
+            alert(`✅ Welcome back!`);
+        } else {
+            alert('❌ Invalid mobile number or password!');
+        }
+    }
+
+    function handleResetPassword() {
+        let identifier = document.getElementById('forgotIdentifier').value.trim();
+        let newPass = document.getElementById('forgotNewPassword').value.trim();
+
+        if (!identifier || !newPass) {
+            alert('Please fill all fields!');
+            return;
+        }
+
+        let found = usersDB.find(u => u.identifier === identifier);
+        if (found) {
+            found.password = newPass;
+            localStorage.setItem('rewards_usersDB', JSON.stringify(usersDB));
+            alert('✅ Password updated successfully! Please login with your new password.');
+            switchAuthPage('loginPage');
+        } else {
+            alert('❌ Account not found with this mobile number!');
+        }
+    }
+
+    function startAppSession() {
+        document.getElementById('bottomNavBar').style.display = 'flex';
+        updateWalletDisplay();
+        document.getElementById('profileNameDisplay').innerText = `User (${user.identifier.slice(-4)})`;
+        document.getElementById('profileIdDisplay').innerText = `Mobile: ${user.identifier}`;
+        switchPage('homePage');
+    }
 
     function updateWalletDisplay() {
         document.getElementById('userwallet').innerText = `🪙 ${user.points} Coins`;
@@ -552,63 +778,40 @@
 
     function openWithdrawPage() {
         if (user.withdrawCount >= 3) {
-            alert('❌ Daily withdrawal limit reached! You can only withdraw 3 times in 1 day.');
+            alert('❌ Daily withdrawal limit reached! (Max 3 times/day)');
             return;
         }
         switchPage('withdrawPage');
-        openAmountModal();
-    }
-
-    function openAmountModal() {
         document.getElementById('amountModal').classList.add('active');
     }
 
-    function openSupportModal() {
-        document.getElementById('supportModal').classList.add('active');
-    }
-
-    function closeSupportModal() {
-        document.getElementById('supportModal').classList.remove('active');
-    }
-
-    function openLogoutModal() {
-        document.getElementById('logoutModal').classList.add('active');
-    }
-
-    function closeLogoutModal() {
-        document.getElementById('logoutModal').classList.remove('active');
-    }
+    function openAmountModal() { document.getElementById('amountModal').classList.add('active'); }
+    function openSupportModal() { document.getElementById('supportModal').classList.add('active'); }
+    function closeSupportModal() { document.getElementById('supportModal').classList.remove('active'); }
+    function openLogoutModal() { document.getElementById('logoutModal').classList.add('active'); }
+    function closeLogoutModal() { document.getElementById('logoutModal').classList.remove('active'); }
 
     function confirmLogout() {
-        localStorage.removeItem('user');
+        localStorage.removeItem('rewards_rememberedUser');
+        sessionStorage.removeItem('rewards_sessionUser');
         closeLogoutModal();
         alert('🚪 Logged out successfully!');
-        switchPage('homePage');
-        location.reload();
+        user = null;
+        switchAuthPage('loginPage');
     }
 
     function applyAmount() {
         let val = parseInt(document.getElementById('inputCoins').value);
-        if (!val || isNaN(val)) {
-            alert('Please enter a valid amount!');
-            return;
-        }
-        if (val < 10000) {
-            alert('❌ Minimum withdrawal is 10,000 coins (₹100)!');
-            return;
-        }
-        if (val > 1000000) {
-            alert('❌ Maximum withdrawal is 1,000,000 coins (₹10,000)!');
+        if (!val || isNaN(val) || val < 10000 || val > 1000000) {
+            alert('❌ Enter valid coins (Min 10,000 | Max 1,000,000)!');
             return;
         }
         if (val > user.points) {
-            alert(`❌ Insufficient balance! Your wallet balance is ${user.points} coins.`);
+            alert(`❌ Insufficient balance! Balance: ${user.points} coins.`);
             return;
         }
-
         selectedAmount = val;
-        let rupees = val / 100;
-        document.getElementById('selectedAmountDisplay').innerText = `🪙 ${selectedAmount} Coins (₹${rupees})`;
+        document.getElementById('selectedAmountDisplay').innerText = `🪙 ${selectedAmount} Coins (₹${selectedAmount / 100})`;
         document.getElementById('amountModal').classList.remove('active');
     }
 
@@ -628,103 +831,62 @@
     }
 
     function initiateWithdrawal() {
-        if (selectedAmount < 10000) {
-            alert('Please select a valid amount (Min 10,000 coins)!');
+        if (selectedAmount < 10000 || selectedAmount > user.points) {
+            alert('Please select a valid withdrawal amount first!');
             openAmountModal();
             return;
         }
-        if (selectedAmount > user.points) {
-            alert(`❌ Insufficient balance! You only have ${user.points} coins.`);
-            return;
-        }
-
-        if (selectedMethod === 'UPI') {
-            let upi = document.getElementById('upiId').value.trim();
-            let mob = document.getElementById('upiMobile').value.trim();
-            if (!upi || !mob) {
-                alert('Please fill both UPI ID and Mobile Number!');
-                return;
-            }
-        } else {
-            let bName = document.getElementById('bankNameInput').value.trim();
-            let accNo = document.getElementById('bankAccNo').value.trim();
-            let name = document.getElementById('bankHolderName').value.trim();
-            let mob = document.getElementById('bankMobile').value.trim();
-            let ifsc = document.getElementById('bankIfsc').value.trim();
-
-            if (!bName || !accNo || !name || !mob || !ifsc) {
-                alert('Please fill all bank details!');
-                return;
-            }
-        }
-
         document.getElementById('passwordModal').classList.add('active');
     }
 
-    function closePasswordModal() {
-        document.getElementById('passwordModal').classList.remove('active');
-    }
+    function closePasswordModal() { document.getElementById('passwordModal').classList.remove('active'); }
 
     function processFinalWithdrawal() {
         let pass = document.getElementById('inputPassword').value;
-        if (!pass) {
-            alert('Please enter your login password!');
-            return;
-        }
-
-        if (pass === user.password || pass === '123456') {
+        if (pass === user.password) {
             user.points -= selectedAmount;
             user.withdrawCount += 1;
-            localStorage.setItem('user', JSON.stringify(user));
-
+            saveUserData();
             updateWalletDisplay();
             closePasswordModal();
-
-            alert(`✅ Withdrawal Order Successful!\nAmount: ₹${selectedAmount / 100}\nMethod: ${selectedMethod}\nStatus: Processing\n\nDaily Attempts Used: ${user.withdrawCount}/3`);
-            
+            alert(`✅ Withdrawal Successful! ₹${selectedAmount / 100} sent via ${selectedMethod}.`);
             selectedAmount = 0;
             document.getElementById('selectedAmountDisplay').innerText = `🪙 0 Coins (₹0)`;
             document.getElementById('inputPassword').value = '';
             switchPage('homePage');
         } else {
             closePasswordModal();
-            alert('❌ Withdrawal Canceled: Incorrect Password!');
+            alert('❌ Incorrect Password!');
         }
     }
 
     function claimDaily() {
         user.points += 20;
-        localStorage.setItem('user', JSON.stringify(user));
+        saveUserData();
         updateWalletDisplay();
-        alert('Successfully claimed 20 Daily Coins!');
+        alert('+20 Daily Coins claimed!');
     }
 
     function watchAd() {
         user.points += 50;
-        localStorage.setItem('user', JSON.stringify(user));
+        saveUserData();
         updateWalletDisplay();
-        alert('Ad watched successfully! +50 Coins added.');
+        alert('+50 Coins added!');
     }
 
-    function shareApp() {
-        alert('Share link copied to clipboard!');
-    }
+    function shareApp() { alert('Invite link copied!'); }
 
-    /* --- MULTI-GAME MODE SYSTEM (30s, 1m, 3m, 5m) --- */
+    /* Game Engine */
     let gameConfigs = {
         '30s': { name: 'WinGo 30s', duration: 30, timeLeft: 30, periodSeq: 20260917001, history: [] },
         '1m':  { name: 'WinGo 1 Min', duration: 60, timeLeft: 60, periodSeq: 20260917101, history: [] },
         '3m':  { name: 'WinGo 3 Min', duration: 180, timeLeft: 180, periodSeq: 20260917301, history: [] },
         '5m':  { name: 'WinGo 5 Min', duration: 300, timeLeft: 300, periodSeq: 20260917501, history: [] }
     };
-
     let activeMode = '30s';
     let modeBets = { '30s': {}, '1m': {}, '3m': {}, '5m': {} };
     let userActiveBets = { '30s': null, '1m': null, '3m': null, '5m': null };
-
-    let currentSelectedChoice = '';
-    let currentChipValue = 1;
-    let currentMultiplierVal = 1;
+    let currentSelectedChoice = '', currentChipValue = 1, currentMultiplierVal = 1;
 
     function switchGameMode(modeKey, btnElement) {
         activeMode = modeKey;
@@ -738,136 +900,62 @@
         currentSelectedChoice = choice;
         currentChipValue = 1;
         currentMultiplierVal = 1;
-        
-        let themeColor = '#fa8231';
-
-        if (choice === 'Green') {
-            themeColor = '#2ecc71';
-        } else if (choice === 'Red') {
-            themeColor = '#e74c3c';
-        } else if (choice === 'Violet') {
-            themeColor = '#9b59b6';
-        } else if (choice === 'Big') {
-            themeColor = '#e67e22';
-        } else if (choice === 'Small') {
-            themeColor = '#3498db';
-        } else if (choice.startsWith('Number ')) {
-            let num = parseInt(choice.replace('Number ', ''));
-            if ([1, 3, 7, 9].includes(num)) themeColor = '#2ecc71';
-            else if ([2, 4, 6, 8].includes(num)) themeColor = '#e74c3c';
-            else if ([0, 5].includes(num)) themeColor = '#9b59b6';
-        }
-
-        document.getElementById('betSheetTitle').style.backgroundColor = themeColor;
-        document.getElementById('confirmBetBtnText').style.backgroundColor = themeColor;
-        document.getElementById('qtyMinusBtn').style.backgroundColor = themeColor;
-        document.getElementById('qtyPlusBtn').style.backgroundColor = themeColor;
-
-        document.querySelectorAll('.coin-chip').forEach((c, idx) => {
-            c.style.backgroundColor = '#f1f2f6';
-            c.style.color = '#333';
-            if(idx === 0) {
-                c.classList.add('active');
-                c.style.backgroundColor = themeColor;
-                c.style.color = '#ffffff';
-            } else {
-                c.classList.remove('active');
-            }
-        });
-
-        document.querySelectorAll('.m-btn').forEach((m, idx) => {
-            if(idx === 0) m.classList.add('active');
-            else m.classList.remove('active');
-        });
-
         document.getElementById('betQtyInput').value = 1;
         document.getElementById('betSheetTitle').innerText = `${gameConfigs[activeMode].name} - Select ${choice}`;
         calculateTotalBet();
         document.getElementById('betSheetOverlay').classList.add('active');
     }
 
-    function closeBetModal() {
-        document.getElementById('betSheetOverlay').classList.remove('active');
-    }
-
+    function closeBetModal() { document.getElementById('betSheetOverlay').classList.remove('active'); }
     function setChipValue(val, el) {
         currentChipValue = val;
-        let activeThemeColor = document.getElementById('betSheetTitle').style.backgroundColor;
-        document.querySelectorAll('.coin-chip').forEach(c => {
-            c.classList.remove('active');
-            c.style.backgroundColor = '#f1f2f6';
-            c.style.color = '#333';
-        });
+        document.querySelectorAll('.coin-chip').forEach(c => c.classList.remove('active'));
         el.classList.add('active');
-        el.style.backgroundColor = activeThemeColor;
-        el.style.color = '#ffffff';
         calculateTotalBet();
     }
-
     function setMultiplier(val, el) {
         currentMultiplierVal = val;
         document.querySelectorAll('.m-btn').forEach(m => m.classList.remove('active'));
         el.classList.add('active');
         calculateTotalBet();
     }
-
     function adjustQty(change) {
         let input = document.getElementById('betQtyInput');
-        let val = parseInt(input.value) || 1;
-        val += change;
+        let val = (parseInt(input.value) || 1) + change;
         if (val < 1) val = 1;
         input.value = val;
         calculateTotalBet();
     }
-
     function calculateTotalBet() {
         let qty = parseInt(document.getElementById('betQtyInput').value) || 1;
         let total = currentChipValue * qty * currentMultiplierVal;
-        document.getElementById('confirmBetBtnText').innerText = `Total amount 🪙 ${total}`;
+        document.getElementById('confirmBetBtnText').innerText = `Total 🪙 ${total}`;
     }
 
     function confirmAndPlaceBet() {
-        if (!document.getElementById('preSaleAgreement').checked) {
-            alert('Please agree to the pre-sale rules first!');
-            return;
-        }
-
         let qty = parseInt(document.getElementById('betQtyInput').value) || 1;
         let totalCost = currentChipValue * qty * currentMultiplierVal;
-
         if (user.points < totalCost) {
-            alert(`❌ Insufficient balance! You need ${totalCost} coins.`);
+            alert('❌ Insufficient balance!');
             return;
         }
-
         user.points -= totalCost;
-        localStorage.setItem('user', JSON.stringify(user));
+        saveUserData();
         updateWalletDisplay();
-
-        if (!modeBets[activeMode][currentSelectedChoice]) {
-            modeBets[activeMode][currentSelectedChoice] = 0;
-        }
-        modeBets[activeMode][currentSelectedChoice] += totalCost;
-
-        userActiveBets[activeMode] = {
-            choice: currentSelectedChoice,
-            amount: totalCost
-        };
-
+        userActiveBets[activeMode] = { choice: currentSelectedChoice, amount: totalCost };
         closeBetModal();
-        showToast(`✅ Bet Placed Successfully! (-${totalCost} Coins)`);
+        showToast(`✅ Bet Placed (-${totalCost} Coins)`);
     }
 
-    function showToast(message) {
+    function showToast(msg) {
         let toast = document.getElementById('betToast');
-        toast.innerText = message;
+        toast.innerText = msg;
         toast.classList.add('show');
-        setTimeout(() => {
-            toast.classList.remove('show');
-        }, 2000);
+        setTimeout(() => toast.classList.remove('show'), 2000);
     }
 
     setInterval(() => {
+        if (!user || !loggedInIdentifier) return;
         for (let key in gameConfigs) {
             gameConfigs[key].timeLeft--;
             if (gameConfigs[key].timeLeft <= 0) {
@@ -880,57 +968,15 @@
     }, 1000);
 
     function resolveRound(modeKey) {
-        let bets = modeBets[modeKey];
-        let possibleChoices = ['Green', 'Violet', 'Red', 'Big', 'Small', 'Number 0', 'Number 1', 'Number 2', 'Number 3', 'Number 4', 'Number 5', 'Number 6', 'Number 7', 'Number 8', 'Number 9'];
-        
-        let minBet = Infinity;
-        let candidatePool = [];
-
-        possibleChoices.forEach(opt => {
-            let bVal = bets[opt] || 0;
-            if (bVal < minBet) {
-                minBet = bVal;
-                candidatePool = [opt];
-            } else if (bVal === minBet) {
-                candidatePool.push(opt);
-            }
-        });
-
-        let winningChoice = candidatePool[Math.floor(Math.random() * candidatePool.length)];
-
-        let num = 3, bs = 'Small';
-        if (winningChoice.startsWith('Number ')) {
-            num = parseInt(winningChoice.replace('Number ', ''));
-        } else if (winningChoice === 'Green') {
-            num = [1, 3, 7, 9][Math.floor(Math.random() * 4)];
-        } else if (winningChoice === 'Red') {
-            num = [2, 4, 6, 8][Math.floor(Math.random() * 4)];
-        } else if (winningChoice === 'Violet') {
-            num = [0, 5][Math.floor(Math.random() * 2)];
-        } else if (winningChoice === 'Big') {
-            num = Math.floor(Math.random() * 5) + 5;
-        } else if (winningChoice === 'Small') {
-            num = Math.floor(Math.random() * 5);
-        }
-
-        bs = num >= 5 ? 'Big' : 'Small';
-
-        let record = {
-            period: gameConfigs[modeKey].periodSeq,
-            number: num,
-            bigSmall: bs
-        };
-
-        gameConfigs[modeKey].history.unshift(record);
-        if (gameConfigs[modeKey].history.length > 20) {
-            gameConfigs[modeKey].history.pop();
-        }
+        let num = Math.floor(Math.random() * 10);
+        let bs = num >= 5 ? 'Big' : 'Small';
+        gameConfigs[modeKey].history.unshift({ period: gameConfigs[modeKey].periodSeq, number: num, bigSmall: bs });
+        if (gameConfigs[modeKey].history.length > 20) gameConfigs[modeKey].history.pop();
 
         let uBet = userActiveBets[modeKey];
         if (uBet) {
             let isWin = false;
             let choice = uBet.choice;
-
             if (choice === 'Green' && [1, 3, 7, 9].includes(num)) isWin = true;
             else if (choice === 'Red' && [2, 4, 6, 8].includes(num)) isWin = true;
             else if (choice === 'Violet' && [0, 5].includes(num)) isWin = true;
@@ -938,91 +984,46 @@
             else if (choice === 'Small' && bs === 'Small') isWin = true;
             else if (choice === ('Number ' + num)) isWin = true;
 
-            let currentGamePageActive = document.getElementById('gamePage').classList.contains('active');
-            if (currentGamePageActive) {
-                showGameResultPopup(isWin, uBet.amount, choice, num, bs);
+            if (document.getElementById('gamePage').classList.contains('active')) {
+                let box = document.getElementById('gameResultBoxContainer');
+                box.className = isWin ? 'game-result-box win-result-box' : 'game-result-box loss-result-box';
+                document.getElementById('gameResultTitle').innerHTML = isWin ? '🎉 You Won!' : '😭 You Lost!';
+                document.getElementById('gameResultDesc').innerHTML = `Number: <b>${num}</b> (${bs})<br>Reward: <b>${isWin ? '+' + (uBet.amount * 2) : '-' + uBet.amount} Coins</b>`;
+                document.getElementById('gameResultOverlay').classList.add('active');
             }
 
             if (isWin) {
-                let reward = uBet.amount * 2;
-                user.points += reward;
-                localStorage.setItem('user', JSON.stringify(user));
+                user.points += uBet.amount * 2;
+                saveUserData();
                 updateWalletDisplay();
             }
-
             userActiveBets[modeKey] = null;
         }
-
-        modeBets[modeKey] = {};
     }
 
-    function showGameResultPopup(isWin, betAmount, choice, winningNum, winningBs) {
-        let overlay = document.getElementById('gameResultOverlay');
-        let box = document.getElementById('gameResultBoxContainer');
-        let title = document.getElementById('gameResultTitle');
-        let desc = document.getElementById('gameResultDesc');
-        let btn = document.getElementById('gameResultBtn');
-
-        if (isWin) {
-            let winAmount = betAmount * 2;
-            box.className = 'game-result-box win-result-box';
-            title.innerHTML = '🎉 Congratulations! 🎊';
-            desc.innerHTML = `You won the bet!<br>Your Choice: <b>${choice}</b><br>Winning Outcome: Number <b>${winningNum}</b> (${winningBs})<br><br>Winning Amount: <b style="font-size:18px;">🪙 +${winAmount} Coins</b>`;
-            btn.className = 'game-result-btn win-result-btn';
-            btn.innerText = 'Awesome! 🚀';
-        } else {
-            box.className = 'game-result-box loss-result-box';
-            title.innerHTML = '😭 Oh No! Lost!';
-            desc.innerHTML = `Better luck next time!<br>Your Choice: <b>${choice}</b><br>Winning Outcome: Number <b>${winningNum}</b> (${winningBs})<br><br>Lost Amount: <b style="font-size:18px;">🪙 -${betAmount} Coins</b>`;
-            btn.className = 'game-result-btn loss-result-btn';
-            btn.innerText = 'Try Again 💪';
-        }
-
-        overlay.classList.add('active');
-    }
-
-    function closeGameResultModal() {
-        document.getElementById('gameResultOverlay').classList.remove('active');
-    }
+    function closeGameResultModal() { document.getElementById('gameResultOverlay').classList.remove('active'); }
 
     function updateGameUI() {
         let cfg = gameConfigs[activeMode];
         let mins = Math.floor(cfg.timeLeft / 60);
         let secs = cfg.timeLeft % 60;
-        let timeStr = (mins < 10 ? '0' + mins : mins) + ' : ' + (secs < 10 ? '0' + secs : secs);
-
-        document.getElementById('timerDisplay').innerText = timeStr;
+        document.getElementById('timerDisplay').innerText = (mins < 10 ? '0' + mins : mins) + ' : ' + (secs < 10 ? '0' + secs : secs);
         document.getElementById('periodDisplay').innerText = cfg.periodSeq;
 
         let htmlStr = '';
-        if (cfg.history.length === 0) {
-            htmlStr = `<tr><td colspan="3" style="text-align:center; color:#888;">Waiting for first round result...</td></tr>`;
-        } else {
-            cfg.history.forEach(row => {
-                let colorCode = '#2ecc71';
-                if ([2,4,6,8].includes(row.number)) colorCode = '#e74c3c';
-                if ([0,5].includes(row.number)) colorCode = '#9b59b6';
-
-                let bsColor = row.bigSmall === 'Big' ? '#e67e22' : '#3498db';
-
-                htmlStr += `<tr>
-                    <td>${row.period}</td>
-                    <td><span style="display:inline-block; width:22px; height:22px; line-height:22px; text-align:center; border-radius:50%; background:${colorCode}; color:white; font-weight:bold;">${row.number}</span></td>
-                    <td><span style="color:${bsColor}; font-weight:bold;">${row.bigSmall}</span></td>
-                </tr>`;
-            });
-        }
+        cfg.history.forEach(row => {
+            let color = '#2ecc71';
+            if ([2,4,6,8].includes(row.number)) color = '#e74c3c';
+            if ([0,5].includes(row.number)) color = '#9b59b6';
+            htmlStr += `<tr><td>${row.period}</td><td><span style="display:inline-block; width:22px; height:22px; line-height:22px; text-align:center; border-radius:50%; background:${color}; color:white; font-weight:bold;">${row.number}</span></td><td><span style="color:${row.bigSmall==='Big'?'#e67e22':'#3498db'}; font-weight:bold;">${row.bigSmall}</span></td></tr>`;
+        });
         document.getElementById('historyTableBody').innerHTML = htmlStr;
     }
 
     ['30s', '1m', '3m', '5m'].forEach(m => {
         for(let i=0; i<5; i++) {
             let num = Math.floor(Math.random() * 10);
-            gameConfigs[m].history.push({
-                period: gameConfigs[m].periodSeq - (i + 1),
-                number: num,
-                bigSmall: num >= 5 ? 'Big' : 'Small'
-            });
+            gameConfigs[m].history.push({ period: gameConfigs[m].periodSeq - (i + 1), number: num, bigSmall: num >= 5 ? 'Big' : 'Small' });
         }
     });
     updateGameUI();
