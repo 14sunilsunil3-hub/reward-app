@@ -40,7 +40,7 @@ mongoose.connect(MONGO_URI, {
 const userSchema = new mongoose.Schema({
     phone: { type: String, required: true, unique: true },
     password: { type: String, required: true },
-    balance: { type: Number, default: 0 },
+    balance: { type: Number, default: 15000 }, // Default balance 15000 set kiya hai taaki test karne me dikkat na ho
     createdAt: { type: Date, default: Date.now }
 });
 const User = mongoose.model('User', userSchema);
@@ -49,6 +49,7 @@ const gameResultSchema = new mongoose.Schema({
     period: { type: String, required: true, unique: true },
     number: { type: Number, required: true },
     color: { type: String, required: true },
+    size: { type: String },
     createdAt: { type: Date, default: Date.now }
 });
 const GameResult = mongoose.model('GameResult', gameResultSchema);
@@ -56,7 +57,8 @@ const GameResult = mongoose.model('GameResult', gameResultSchema);
 const betSchema = new mongoose.Schema({
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     period: String,
-    betType: String, // color or number chosen
+    betType: String, // color, size, or number chosen
+    betValue: String, // green, red, violet, big, small, or 0-9
     amount: Number,
     status: { type: String, default: 'pending' }, // pending, win, loss
     payout: { type: Number, default: 0 }
@@ -82,7 +84,7 @@ app.post('/api/register', async (req, res) => {
         const existingUser = await User.findOne({ phone });
         if (existingUser) return res.status(400).json({ success: false, message: "User already exists!" });
 
-        const newUser = new User({ phone, password, balance: 0 });
+        const newUser = new User({ phone, password, balance: 15000 });
         await newUser.save();
         res.json({ success: true, message: "Registration successful!" });
     } catch (err) {
@@ -97,7 +99,13 @@ app.post('/api/login', async (req, res) => {
         const user = await User.findOne({ phone, password });
         if (!user) return res.status(400).json({ success: false, message: "Invalid phone or password!" });
 
-        res.json({ success: true, message: "Login successful!", userId: user._id, balance: user.balance });
+        res.json({ 
+            success: true, 
+            message: "Login successful!", 
+            userId: user._id, 
+            balance: user.balance,
+            user: { _id: user._id, identifier: user.phone, points: user.balance } 
+        });
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });
     }
@@ -114,7 +122,7 @@ app.get('/api/user/:userId', async (req, res) => {
     }
 });
 
-// Secure Withdrawal Route (With Account Name Matching Check)
+// Secure Withdrawal Route
 app.post('/api/withdraw', async (req, res) => {
     try {
         const { userId, amount, accountHolderName, upiId } = req.body;
@@ -139,7 +147,81 @@ app.post('/api/withdraw', async (req, res) => {
     }
 });
 
-// Place Bet Route
+// Pro Color Game Bet & Play Route (Updated & Unified)
+app.post('/api/color-game', async (req, res) => {
+    try {
+        const { userId, betType, betValue, betAmount, timerType } = req.body;
+        const user = await User.findById(userId);
+
+        if (!user) return res.status(404).json({ success: false, error: "User not found" });
+        const amount = Number(betAmount);
+        if (user.balance < amount) return res.status(400).json({ success: false, error: "Insufficient balance!" });
+
+        // Deduct bet amount
+        user.balance -= amount;
+
+        // Generate Random Outcome
+        const winningNum = Math.floor(Math.random() * 10);
+        const winningSize = winningNum >= 5 ? 'big' : 'small';
+        let winningColor = 'green';
+        if ([2, 4, 6, 8].includes(winningNum)) winningColor = 'red';
+        else if ([0, 5].includes(winningNum)) winningColor = 'violet';
+
+        let isWin = false;
+        let payoutMultiplier = 0;
+
+        if (betType === 'color') {
+            if (betValue === winningColor) {
+                isWin = true;
+                payoutMultiplier = 2; // 100% profit
+            }
+        } else if (betType === 'size') {
+            if (betValue === winningSize) {
+                isWin = true;
+                payoutMultiplier = 1.9; // 90% profit
+            }
+        } else if (betType === 'number') {
+            if (Number(betValue) === winningNum) {
+                isWin = true;
+                payoutMultiplier = 3; // 200% profit
+            }
+        }
+
+        let winnings = 0;
+        if (isWin) {
+            winnings = amount * payoutMultiplier;
+            user.balance += winnings;
+        }
+
+        await user.save();
+
+        const periodId = generatePeriodCode();
+        
+        // Save result in GameResult model
+        const newResult = new GameResult({
+            period: periodId,
+            number: winningNum,
+            color: winningColor,
+            size: winningSize
+        });
+        await newResult.save().catch(() => {}); // Ignore duplicate period key if any
+
+        const history = await GameResult.find().sort({ _id: -1 }).limit(10);
+
+        res.json({
+            success: isWin,
+            message: isWin ? `🎉 You Won ${winnings} coins!` : `❌ You Lost ${amount} coins. Winning number was ${winningNum}`,
+            balance: user.balance,
+            points: user.balance,
+            periodId,
+            history: history.map(h => ({ period: h.period, number: h.number, size: h.size || (h.number >= 5 ? 'big' : 'small'), color: h.color }))
+        });
+    } catch (err) {
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
+
+// Legacy /api/bet route for fallback
 app.post('/api/bet', async (req, res) => {
     try {
         const { userId, period, betType, amount } = req.body;
@@ -170,30 +252,21 @@ function generatePeriodCode() {
     const day = String(now.getDate()).padStart(2, '0');
     const hours = String(now.getHours()).padStart(2, '0');
     const minutes = String(now.getMinutes()).padStart(2, '0');
-    const seconds = Math.floor(now.getSeconds() / 30) * 30; // 30-sec intervals
+    const seconds = Math.floor(now.getSeconds() / 30) * 30; 
     const secStr = String(seconds).padStart(2, '0');
     return `${year}${month}${day}${hours}${minutes}${secStr}`;
 }
 
-// Controlled Random Game Result Generator
 function generateGameResult() {
     const randomNum = Math.floor(Math.random() * 10);
-    let color = '';
+    let color = 'green';
+    if ([2, 4, 6, 8].includes(randomNum)) color = 'red';
+    else if ([0, 5].includes(randomNum)) color = 'violet';
+    const size = randomNum >= 5 ? 'big' : 'small';
 
-    if (randomNum === 0) {
-        color = 'violet-red';
-    } else if (randomNum === 5) {
-        color = 'violet-green';
-    } else if (randomNum % 2 === 0) {
-        color = 'red';
-    } else {
-        color = 'green';
-    }
-
-    return { number: randomNum, color };
+    return { number: randomNum, color, size };
 }
 
-// Process Bets for the finished period
 async function processBets(period, outcome) {
     try {
         const pendingBets = await Bet.find({ period, status: 'pending' });
@@ -233,19 +306,25 @@ setInterval(async () => {
     try {
         const outcome = generateGameResult();
         
-        const gameResult = new GameResult({
-            period: currentPeriod,
-            number: outcome.number,
-            color: outcome.color
-        });
-        await gameResult.save();
+        // Avoid duplicate key error if period exists
+        const existingResult = await GameResult.findOne({ period: currentPeriod });
+        if (!existingResult) {
+            const gameResult = new GameResult({
+                period: currentPeriod,
+                number: outcome.number,
+                color: outcome.color,
+                size: outcome.size
+            });
+            await gameResult.save();
+        }
 
         await processBets(currentPeriod, outcome);
 
         io.emit('gameResult', {
             period: currentPeriod,
             number: outcome.number,
-            color: outcome.color
+            color: outcome.color,
+            size: outcome.size
         });
 
         currentPeriod = generatePeriodCode();
@@ -253,7 +332,7 @@ setInterval(async () => {
     } catch (err) {
         console.log("Game loop error:", err.message);
     }
-}, 30000); // 30 seconds interval
+}, 30000); 
 
 // ==================== 6. SOCKET.IO CONNECTION ====================
 io.on('connection', (socket) => {
