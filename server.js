@@ -25,7 +25,8 @@ app.use(express.json());
 app.use(cors());
 
 // ==================== 1. DATABASE CONNECTION ====================
-const MONGO_URI = process.env.MONGO_URI || "your_mongodb_connection_string_here";
+// Yahan "TERA_PASSWORD" ki jagah apna asli MongoDB password daal de
+const MONGO_URI = "mongodb+srv://14sunilsunil3_db_user:TERA_PASSWORD@cluster0.xawbmz2.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
 
 mongoose.connect(MONGO_URI, {
     useNewUrlParser: true,
@@ -40,7 +41,7 @@ mongoose.connect(MONGO_URI, {
 const userSchema = new mongoose.Schema({
     phone: { type: String, required: true, unique: true },
     password: { type: String, required: true },
-    balance: { type: Number, default: 15000 }, // Default balance 15000 set kiya hai taaki test karne me dikkat na ho
+    balance: { type: Number, default: 15000 },
     createdAt: { type: Date, default: Date.now }
 });
 const User = mongoose.model('User', userSchema);
@@ -57,10 +58,10 @@ const GameResult = mongoose.model('GameResult', gameResultSchema);
 const betSchema = new mongoose.Schema({
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     period: String,
-    betType: String, // color, size, or number chosen
-    betValue: String, // green, red, violet, big, small, or 0-9
+    betType: String, 
+    betValue: String, 
     amount: Number,
-    status: { type: String, default: 'pending' }, // pending, win, loss
+    status: { type: String, default: 'pending' }, 
     payout: { type: Number, default: 0 }
 });
 const Bet = mongoose.model('Bet', betSchema);
@@ -147,7 +148,7 @@ app.post('/api/withdraw', async (req, res) => {
     }
 });
 
-// Pro Color Game Bet & Play Route (Updated & Unified)
+// Pro Color Game Bet & Play Route
 app.post('/api/color-game', async (req, res) => {
     try {
         const { userId, betType, betValue, betAmount, timerType } = req.body;
@@ -157,10 +158,8 @@ app.post('/api/color-game', async (req, res) => {
         const amount = Number(betAmount);
         if (user.balance < amount) return res.status(400).json({ success: false, error: "Insufficient balance!" });
 
-        // Deduct bet amount
         user.balance -= amount;
 
-        // Generate Random Outcome
         const winningNum = Math.floor(Math.random() * 10);
         const winningSize = winningNum >= 5 ? 'big' : 'small';
         let winningColor = 'green';
@@ -173,17 +172,17 @@ app.post('/api/color-game', async (req, res) => {
         if (betType === 'color') {
             if (betValue === winningColor) {
                 isWin = true;
-                payoutMultiplier = 2; // 100% profit
+                payoutMultiplier = 2;
             }
         } else if (betType === 'size') {
             if (betValue === winningSize) {
                 isWin = true;
-                payoutMultiplier = 1.9; // 90% profit
+                payoutMultiplier = 1.9;
             }
         } else if (betType === 'number') {
             if (Number(betValue) === winningNum) {
                 isWin = true;
-                payoutMultiplier = 3; // 200% profit
+                payoutMultiplier = 3;
             }
         }
 
@@ -197,14 +196,13 @@ app.post('/api/color-game', async (req, res) => {
 
         const periodId = generatePeriodCode();
         
-        // Save result in GameResult model
         const newResult = new GameResult({
             period: periodId,
             number: winningNum,
             color: winningColor,
             size: winningSize
         });
-        await newResult.save().catch(() => {}); // Ignore duplicate period key if any
+        await newResult.save().catch(() => {});
 
         const history = await GameResult.find().sort({ _id: -1 }).limit(10);
 
@@ -221,7 +219,6 @@ app.post('/api/color-game', async (req, res) => {
     }
 });
 
-// Legacy /api/bet route for fallback
 app.post('/api/bet', async (req, res) => {
     try {
         const { userId, period, betType, amount } = req.body;
@@ -243,7 +240,7 @@ app.post('/api/bet', async (req, res) => {
     }
 });
 
-// ==================== 4. GAME ENGINE (CONTROLLED RANDOM) ====================
+// ==================== 4. GAME ENGINE ====================
 
 function generatePeriodCode() {
     const now = new Date();
@@ -299,14 +296,13 @@ async function processBets(period, outcome) {
     }
 }
 
-// ==================== 5. GAME TIMER LOOP (30 SECONDS) ====================
+// ==================== 5. GAME TIMER LOOP ====================
 let currentPeriod = generatePeriodCode();
 
 setInterval(async () => {
     try {
         const outcome = generateGameResult();
         
-        // Avoid duplicate key error if period exists
         const existingResult = await GameResult.findOne({ period: currentPeriod });
         if (!existingResult) {
             const gameResult = new GameResult({
