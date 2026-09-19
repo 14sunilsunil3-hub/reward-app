@@ -45,7 +45,7 @@
         .remember-row { display: flex; align-items: center; gap: 8px; font-size: 12px; color: #94a3b8; margin-bottom: 15px; }
         .remember-row input { width: 16px; height: 16px; cursor: pointer; accent-color: #6366f1; }
 
-        /* Top Minimal Balance Bars on Home Page */
+        /* Top Minimal Balance Bars */
         .top-balance-bar { display: flex; justify-content: flex-end; align-items: center; gap: 8px; margin-bottom: 15px; }
         .mini-wallet { background: #0f172a; border: 1px solid #334155; padding: 6px 12px; border-radius: 20px; font-size: 14px; font-weight: bold; color: #2ecc71; display: flex; align-items: center; gap: 5px; }
         .mini-money-wallet { background: #0f172a; border: 1px solid #334155; padding: 6px 12px; border-radius: 20px; font-size: 14px; font-weight: bold; color: #38bdf8; display: flex; align-items: center; gap: 5px; }
@@ -81,6 +81,17 @@
         .profile-square-btn:hover { background: #1e293b; border-color: #6366f1; transform: translateY(-2px); }
         .square-icon { font-size: 26px; margin-bottom: 8px; }
         .square-title { font-size: 13px; font-weight: 600; color: #f8fafc; }
+
+        /* Deposit Page Styles */
+        .deposit-card { background: #0f172a; border: 1px solid #334155; border-radius: 12px; padding: 20px; text-align: center; margin-bottom: 15px; }
+        .qr-placeholder { width: 160px; height: 160px; background: #ffffff; margin: 0 auto 15px auto; border-radius: 8px; display: flex; align-items: center; justify-content: center; border: 4px solid #38bdf8; overflow: hidden; }
+        .qr-placeholder img { width: 100%; height: 100%; object-fit: cover; }
+        .upi-id-box { background: #1e293b; border: 1px dashed #38bdf8; padding: 10px; border-radius: 8px; font-size: 14px; font-weight: bold; color: #38bdf8; margin-bottom: 15px; display: inline-block; width: 100%; }
+        
+        /* Deposit Amount Grid Options */
+        .deposit-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 15px; }
+        .deposit-amt-btn { background: #1e293b; border: 1px solid #334155; color: white; padding: 10px 0; border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer; text-align: center; }
+        .deposit-amt-btn.active { background: #6366f1; border-color: #6366f1; }
 
         /* Color Game Page Styles */
         .daman-wrapper { background: #ffffff; color: #333; border-radius: 12px; overflow: hidden; margin: -10px; }
@@ -370,6 +381,16 @@
 
     <!-- 3. PROFILE PAGE -->
     <div id="profilePage" class="page">
+        <!-- Top Minimal Balance Bars on Profile Page -->
+        <div class="top-balance-bar">
+            <div class="mini-wallet">
+                <span>🪙</span> <span id="profileUserwallet">0</span>
+            </div>
+            <div class="mini-money-wallet">
+                <span>₹</span> <span id="profileUsermoney">0</span>
+            </div>
+        </div>
+
         <!-- Profile Top Section: Left Avatar (Clickable) + Right Details (UID read-only + Custom Username) -->
         <div class="profile-top-section">
             <div class="profile-left-col">
@@ -389,7 +410,7 @@
 
         <!-- Square Menu Grid Layout for Profile -->
         <div class="profile-grid">
-            <div class="profile-square-btn" onclick="alert('Opening Deposit Window...')">
+            <div class="profile-square-btn" onclick="switchPage('depositPage')">
                 <div class="square-icon">➕</div>
                 <div class="square-title">Deposit</div>
             </div>
@@ -420,17 +441,57 @@
         </div>
     </div>
 
+    <!-- DEPOSIT PAGE -->
+    <div id="depositPage" class="page">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
+            <button class="action-btn" style="width: auto; padding: 6px 12px; background: #334155;" onclick="switchPage('profilePage')">← Back</button>
+            <h2 style="font-size: 18px;">Deposit Funds</h2>
+            <div></div>
+        </div>
+
+        <div class="deposit-card">
+            <p style="font-size: 13px; color: #94a3b8; margin-bottom: 12px;">Select Deposit Amount (₹)</p>
+            
+            <div class="deposit-grid">
+                <div class="deposit-amt-btn active" onclick="selectDepositAmount(100, this)">₹100</div>
+                <div class="deposit-amt-btn" onclick="selectDepositAmount(200, this)">₹200</div>
+                <div class="deposit-amt-btn" onclick="selectDepositAmount(300, this)">₹300</div>
+                <div class="deposit-amt-btn" onclick="selectDepositAmount(500, this)">₹500</div>
+                <div class="deposit-amt-btn" onclick="selectDepositAmount(1000, this)">₹1K</div>
+                <div class="deposit-amt-btn" onclick="selectDepositAmount(2000, this)">₹2K</div>
+                <div class="deposit-amt-btn" onclick="selectDepositAmount(3000, this)">₹3K</div>
+                <div class="deposit-amt-btn" onclick="selectDepositAmount(5000, this)">₹5K</div>
+                <div class="deposit-amt-btn" onclick="selectDepositAmount(10000, this)">₹10K</div>
+                <div class="deposit-amt-btn" onclick="selectDepositAmount(20000, this)">₹20K</div>
+                <div class="deposit-amt-btn" onclick="selectDepositAmount(30000, this)">₹30K</div>
+                <div class="deposit-amt-btn" onclick="selectDepositAmount(50000, this)">₹50K</div>
+            </div>
+
+            <div class="qr-placeholder">
+                <img src="1000261836.png" alt="Deposit QR Code[span_4](start_span)"[span_4](end_span)>
+            </div>
+
+            <div style="font-size: 12px; color: #94a3b8; margin-bottom: 2px;">Account Holder Name</div>
+            <div style="font-size: 15px; font-weight: bold; color: #fff; margin-bottom: 12px;" id="depositNameDisplay">Mr SUNIL BHOI</div>
+
+            <div style="font-size: 12px; color: #94a3b8; margin-bottom: 2px;">Official UPI ID</div>
+            <div class="upi-id-box" id="depositUpiDisplay">8093361993@nyes</div>
+
+            <button class="action-btn" style="background: #2563eb;" onclick="proceedDeposit()">Pay ₹<span id="payAmountText">100</span> via UPI 💸</button>
+        </div>
+    </div>
+
     <!-- 4. WITHDRAWAL PAGE -->
     <div id="withdrawPage" class="page">
         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
-            <button class="action-btn" style="width: auto; padding: 6px 12px; background: #334155;" onclick="switchPage('homePage')">← Back</button>
-            <h2 style="font-size: 18px;">Withdraw Funds</h2>
+            <button class="action-btn" style="width: auto; padding: 6px 12px; background: #334155;" onclick="switchPage('profilePage')">← Back</button>
+            <h2 style="font-size: 18px;">Withdraw Real Money</h2>
             <div></div>
         </div>
 
         <div class="card" style="text-align: center; background: linear-gradient(135deg, #1e1b4b, #311b92);">
-            <p>Selected Withdrawal Amount</p>
-            <h1 id="selectedAmountDisplay" style="color: #2ecc71; font-size: 26px; margin: 5px 0;">🪙 0 Coins (₹0)</h1>
+            <p>Selected Withdrawal Cash</p>
+            <h1 id="selectedAmountDisplay" style="color: #38bdf8; font-size: 26px; margin: 5px 0;">₹0</h1>
             <button class="btn-small-apply" style="background: #6366f1;" onclick="openAmountModal()">Change Amount ✏️</button>
         </div>
 
@@ -556,10 +617,13 @@
 <!-- MODALS -->
 <div class="modal-overlay" id="amountModal">
     <div class="modal-box">
-        <h3>💰 Enter Withdrawal Amount</h3>
-        <p>Min: 10,000 coins (₹100) | Max: 1,000,000 coins</p>
-        <div class="form-group"><div class="input-wrapper"><input type="number" id="inputCoins" placeholder="Enter coins"></div></div>
-        <button class="btn-small-apply" onclick="applyAmount()">Apply</button>
+        <h3>💰 Enter Withdrawal Amount (₹)</h3>
+        <p>Min: ₹100 | Max: ₹10,000</p>
+        <div class="form-group"><div class="input-wrapper"><input type="number" id="inputMoney" placeholder="Enter amount in ₹"></div></div>
+        <div style="display: flex; gap: 10px;">
+            <button class="action-btn" style="background: #e74c3c; padding: 8px;" onclick="closeAmountModal()">Cancel</button>
+            <button class="btn-small-apply" style="flex: 1; margin-top: 0;" onclick="applyAmount()">Apply</button>
+        </div>
     </div>
 </div>
 
@@ -675,6 +739,18 @@
     let forgotGeneratedOtp = '';
     let otpTimerInterval = null;
     let forgotOtpTimerInterval = null;
+    let selectedDepositAmt = 100;
+
+    function selectDepositAmount(amt, el) {
+        selectedDepositAmt = amt;
+        document.querySelectorAll('.deposit-amt-btn').forEach(b => b.classList.remove('active'));
+        el.classList.add('active');
+        document.getElementById('payAmountText').innerText = amt;
+    }
+
+    function proceedDeposit() {
+        window.location.href = `upi://pay?pa=8093361993@nyes&pn=SunilBhoi&am=${selectedDepositAmt}&cu=INR`;
+    }
 
     if (loggedInIdentifier) {
         let found = usersDB.find(u => u.identifier === loggedInIdentifier);
@@ -688,7 +764,7 @@
             username: 'User_' + Math.floor(1000 + Math.random() * 9000),
             avatar: '👤',
             points: 15000, 
-            money: 0,
+            money: 500,
             password: '123456',
             withdrawCount: 0,
             lastWithdrawDate: new Date().toISOString().slice(0,10)
@@ -846,7 +922,7 @@
             username: 'User_' + identifier.slice(-4),
             avatar: '👤',
             points: 15000,
-            money: 0,
+            money: 100,
             password: password,
             withdrawCount: 0,
             lastWithdrawDate: todayDate
@@ -854,7 +930,7 @@
 
         usersDB.push(newUser);
         localStorage.setItem('rewards_usersDB', JSON.stringify(usersDB));
-        alert('✅ Registration Successful! You received 15,000 starting coins. Please login.');
+        alert('✅ Registration Successful! You received starting bonuses. Please login.');
         switchAuthPage('loginPage');
     }
 
@@ -939,6 +1015,8 @@
     function updateWalletDisplay() {
         document.getElementById('userwallet').innerText = user.points;
         document.getElementById('usermoney').innerText = user.money !== undefined ? user.money : 0;
+        document.getElementById('profileUserwallet').innerText = user.points;
+        document.getElementById('profileUsermoney').innerText = user.money !== undefined ? user.money : 0;
         document.getElementById('gameWallet').innerText = user.points;
     }
 
@@ -978,7 +1056,7 @@
         }
     }
 
-    let selectedAmount = 0;
+    let selectedMoneyAmount = 0;
     let selectedMethod = 'UPI';
 
     function openWithdrawPage() {
@@ -991,6 +1069,13 @@
     }
 
     function openAmountModal() { document.getElementById('amountModal').classList.add('active'); }
+    function closeAmountModal() { 
+        document.getElementById('amountModal').classList.remove('active'); 
+        if (selectedMoneyAmount === 0) {
+            switchPage('homePage');
+        }
+    }
+
     function openSupportModal() { document.getElementById('supportModal').classList.add('active'); }
     function closeSupportModal() { document.getElementById('supportModal').classList.remove('active'); }
     function openLogoutModal() { document.getElementById('logoutModal').classList.add('active'); }
@@ -1007,17 +1092,17 @@
     }
 
     function applyAmount() {
-        let val = parseInt(document.getElementById('inputCoins').value);
-        if (!val || isNaN(val) || val < 10000 || val > 1000000) {
-            alert('❌ Enter valid coins (Min 10,000 | Max 1,000,000)!');
+        let val = parseInt(document.getElementById('inputMoney').value);
+        if (!val || isNaN(val) || val < 100 || val > 10000) {
+            alert('❌ Enter valid amount (Min ₹100 | Max ₹10,000)!');
             return;
         }
-        if (val > user.points) {
-            alert(`❌ Insufficient balance! Balance: ${user.points} coins.`);
+        if (val > (user.money || 0)) {
+            alert(`❌ Insufficient real money balance! Balance: ₹${user.money || 0}.`);
             return;
         }
-        selectedAmount = val;
-        document.getElementById('selectedAmountDisplay').innerText = `🪙 ${selectedAmount} Coins (₹${selectedAmount / 100})`;
+        selectedMoneyAmount = val;
+        document.getElementById('selectedAmountDisplay').innerText = `₹${selectedMoneyAmount}`;
         document.getElementById('amountModal').classList.remove('active');
     }
 
@@ -1037,7 +1122,7 @@
     }
 
     function initiateWithdrawal() {
-        if (selectedAmount < 10000 || selectedAmount > user.points) {
+        if (selectedMoneyAmount < 100 || selectedMoneyAmount > (user.money || 0)) {
             alert('Please select a valid withdrawal amount first!');
             openAmountModal();
             return;
@@ -1050,14 +1135,14 @@
     function processFinalWithdrawal() {
         let pass = document.getElementById('inputPassword').value;
         if (pass === user.password) {
-            user.points -= selectedAmount;
+            user.money -= selectedMoneyAmount;
             user.withdrawCount += 1;
             saveUserData();
             updateWalletDisplay();
             closePasswordModal();
-            alert(`✅ Withdrawal Successful! ₹${selectedAmount / 100} sent via ${selectedMethod}.`);
-            selectedAmount = 0;
-            document.getElementById('selectedAmountDisplay').innerText = `🪙 0 Coins (₹0)`;
+            alert(`✅ Withdrawal Successful! ₹${selectedMoneyAmount} sent via ${selectedMethod}.`);
+            selectedMoneyAmount = 0;
+            document.getElementById('selectedAmountDisplay').innerText = `₹0`;
             document.getElementById('inputPassword').value = '';
             switchPage('homePage');
         } else {
