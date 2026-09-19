@@ -63,10 +63,12 @@
         .profile-header h2 { font-size: 20px; margin-bottom: 5px; }
         .profile-header p { font-size: 13px; color: #94a3b8; }
 
-        .menu-list { background: #0f172a; border-radius: 12px; border: 1px solid #334155; overflow: hidden; margin-bottom: 20px; }
-        .menu-item { padding: 15px; border-bottom: 1px solid #334155; font-size: 14px; color: #f8fafc; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
-        .menu-item:last-child { border-bottom: none; }
-        .menu-item:hover { background: #1e293b; }
+        /* Square Menu Grid Layout for Profile */
+        .profile-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 20px; }
+        .profile-square-btn { background: #0f172a; border: 1px solid #334155; border-radius: 12px; padding: 20px 15px; text-align: center; cursor: pointer; transition: all 0.2s ease; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 110px; }
+        .profile-square-btn:hover { background: #1e293b; border-color: #6366f1; transform: translateY(-2px); }
+        .square-icon { font-size: 26px; margin-bottom: 8px; }
+        .square-title { font-size: 13px; font-weight: 600; color: #f8fafc; }
 
         /* Color Game Page Styles */
         .daman-wrapper { background: #ffffff; color: #333; border-radius: 12px; overflow: hidden; margin: -10px; }
@@ -346,11 +348,10 @@
                 <p>WinGo 30s/1m/3m/5m Prediction Game</p>
                 <button class="action-btn" style="padding: 8px; font-size: 12px; background: #2563eb;">Play Now</button>
             </div>
-            <!-- Aap yahan naye games ke cards add kar sakte hain -->
         </div>
     </div>
 
-    <!-- 3. PROFILE PAGE -->
+    <!-- 3. PROFILE PAGE (WITH SQUARE SHAPE BUTTONS GRID & DEPOSIT BUTTON) -->
     <div id="profilePage" class="page">
         <div class="profile-header">
             <div class="avatar">👤</div>
@@ -364,13 +365,35 @@
             <button class="action-btn" style="background: #10b981;" onclick="convertCoins()">Convert to Money</button>
         </div>
 
-        <div class="menu-list">
-            <div class="menu-item" onclick="openWithdrawPage()">💳 Withdraw Coins <span>›</span></div>
-            <div class="menu-item" onclick="alert('Opening Transaction History...')">📊 Transaction History <span>›</span></div>
-            <div class="menu-item" onclick="alert('Opening Security Settings...')">🔒 Security Settings <span>›</span></div>
-            <div class="menu-item" onclick="alert('Opening Terms & Conditions...')">📜 Terms & Conditions <span>›</span></div>
-            <div class="menu-item" onclick="openLogoutModal()">🚪 Logout <span>›</span></div>
-            <div class="menu-item" onclick="openSupportModal()">🎧 Customer Support <span style="font-size: 11px; color: #a855f7;">14sunilsunil3@gmail.com ›</span></div>
+        <div class="profile-grid">
+            <div class="profile-square-btn" onclick="alert('Opening Deposit Window...')">
+                <div class="square-icon">➕</div>
+                <div class="square-title">Deposit</div>
+            </div>
+            <div class="profile-square-btn" onclick="openWithdrawPage()">
+                <div class="square-icon">💳</div>
+                <div class="square-title">Withdraw</div>
+            </div>
+            <div class="profile-square-btn" onclick="alert('Opening Transaction History...')">
+                <div class="square-icon">📊</div>
+                <div class="square-title">History</div>
+            </div>
+            <div class="profile-square-btn" onclick="alert('Opening Security Settings...')">
+                <div class="square-icon">🔒</div>
+                <div class="square-title">Security</div>
+            </div>
+            <div class="profile-square-btn" onclick="alert('Opening Terms & Conditions...')">
+                <div class="square-icon">📜</div>
+                <div class="square-title">Terms</div>
+            </div>
+            <div class="profile-square-btn" onclick="openSupportModal()">
+                <div class="square-icon">🎧</div>
+                <div class="square-title">Support</div>
+            </div>
+            <div class="profile-square-btn" onclick="openLogoutModal()" style="border-color: #7f1d1d; background: rgba(127,29,29,0.2); grid-column: span 2;">
+                <div class="square-icon">🚪</div>
+                <div class="square-title" style="color: #fca5a5;">Logout</div>
+            </div>
         </div>
     </div>
 
