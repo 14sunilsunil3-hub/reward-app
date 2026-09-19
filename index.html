@@ -264,7 +264,7 @@
         </div>
     </div>
 
-    <!-- AUTH 3: FORGOT PASSWORD PAGE -->
+    <!-- AUTH 3: FORGOT PASSWORD PAGE (Updated with Confirm Password) -->
     <div id="forgotPage" class="page">
         <div class="auth-container">
             <div class="auth-logo">🔒</div>
@@ -289,6 +289,13 @@
                     <div class="input-wrapper">
                         <input type="password" id="forgotNewPassword" placeholder="Enter new password">
                         <button type="button" class="toggle-password" onclick="togglePasswordVisibility('forgotNewPassword', this)">👁️</button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Confirm New Password</label>
+                    <div class="input-wrapper">
+                        <input type="password" id="forgotConfirmPassword" placeholder="Confirm new password">
+                        <button type="button" class="toggle-password" onclick="togglePasswordVisibility('forgotConfirmPassword', this)">👁️</button>
                     </div>
                 </div>
                 <button class="action-btn" style="background: #e67e22; margin-top: 10px;" onclick="handleResetPassword()">Update Password 🔑</button>
@@ -785,14 +792,20 @@
         let identifier = document.getElementById('forgotIdentifier').value.trim();
         let otpInput = document.getElementById('forgotOtpInput').value.trim();
         let newPass = document.getElementById('forgotNewPassword').value.trim();
+        let confirmNewPass = document.getElementById('forgotConfirmPassword').value.trim();
 
-        if (!identifier || !otpInput || !newPass) {
-            alert('❌ Please fill all fields including OTP!');
+        if (!identifier || !otpInput || !newPass || !confirmNewPass) {
+            alert('❌ Please fill all fields including OTP and Confirm Password!');
             return;
         }
 
         if (otpInput !== forgotGeneratedOtp) {
             alert('❌ Incorrect OTP! Please check and enter the correct OTP.');
+            return;
+        }
+
+        if (newPass !== confirmNewPass) {
+            alert('❌ New Passwords do not match! Please re-type carefully.');
             return;
         }
 
