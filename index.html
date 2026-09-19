@@ -86,7 +86,7 @@
         .deposit-card { background: #0f172a; border: 1px solid #334155; border-radius: 12px; padding: 20px; text-align: center; margin-bottom: 15px; }
         .qr-placeholder { width: 160px; height: 160px; background: #ffffff; margin: 0 auto 15px auto; border-radius: 8px; display: flex; align-items: center; justify-content: center; border: 4px solid #38bdf8; overflow: hidden; }
         .qr-placeholder img { width: 100%; height: 100%; object-fit: cover; }
-        .upi-id-box { background: #1e293b; border: 1px dashed #38bdf8; padding: 10px; border-radius: 8px; font-size: 14px; font-weight: bold; color: #38bdf8; margin-bottom: 15px; display: inline-block; width: 100%; }
+        .upi-id-box { background: #1e293b; border: 1px dashed #38bdf8; padding: 10px; border-radius: 8px; font-size: 14px; font-weight: bold; color: #38bdf8; margin-bottom: 15px; display: inline-block; width: 100%; cursor: pointer; }
         
         /* Deposit Amount Grid Options */
         .deposit-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 15px; }
@@ -468,16 +468,14 @@
             </div>
 
             <div class="qr-placeholder">
-                <img src="1000261836.png" alt="Deposit QR Code[span_4](start_span)"[span_4](end_span)>
+                <img src="1000261836.png" alt="Deposit QR Code">
             </div>
 
             <div style="font-size: 12px; color: #94a3b8; margin-bottom: 2px;">Account Holder Name</div>
             <div style="font-size: 15px; font-weight: bold; color: #fff; margin-bottom: 12px;" id="depositNameDisplay">Mr SUNIL BHOI</div>
 
-            <div style="font-size: 12px; color: #94a3b8; margin-bottom: 2px;">Official UPI ID</div>
-            <div class="upi-id-box" id="depositUpiDisplay">8093361993@nyes</div>
-
-            <button class="action-btn" style="background: #2563eb;" onclick="proceedDeposit()">Pay ₹<span id="payAmountText">100</span> via UPI 💸</button>
+            <div style="font-size: 12px; color: #94a3b8; margin-bottom: 2px;">Official UPI ID (Click to Copy)</div>
+            <div class="upi-id-box" id="depositUpiDisplay" onclick="copyUpiId()" title="Click to copy UPI">8093361993@nyes 📋</div>
         </div>
     </div>
 
@@ -745,11 +743,15 @@
         selectedDepositAmt = amt;
         document.querySelectorAll('.deposit-amt-btn').forEach(b => b.classList.remove('active'));
         el.classList.add('active');
-        document.getElementById('payAmountText').innerText = amt;
     }
 
-    function proceedDeposit() {
-        window.location.href = `upi://pay?pa=8093361993@nyes&pn=SunilBhoi&am=${selectedDepositAmt}&cu=INR`;
+    function copyUpiId() {
+        let upiText = "8093361993@nyes";
+        navigator.clipboard.writeText(upiText).then(() => {
+            showToast("✅ UPI ID Copied Successfully!");
+        }).catch(err => {
+            alert("Failed to copy UPI ID");
+        });
     }
 
     if (loggedInIdentifier) {
@@ -1072,7 +1074,7 @@
     function closeAmountModal() { 
         document.getElementById('amountModal').classList.remove('active'); 
         if (selectedMoneyAmount === 0) {
-            switchPage('homePage');
+            switchPage('profilePage');
         }
     }
 
@@ -1144,7 +1146,7 @@
             selectedMoneyAmount = 0;
             document.getElementById('selectedAmountDisplay').innerText = `₹0`;
             document.getElementById('inputPassword').value = '';
-            switchPage('homePage');
+            switchPage('profilePage');
         } else {
             closePasswordModal();
             alert('❌ Incorrect Password!');
