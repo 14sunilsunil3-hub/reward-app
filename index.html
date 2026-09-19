@@ -56,11 +56,6 @@
         
         .action-btn { background: #6366f1; color: white; border: none; padding: 12px; border-radius: 8px; width: 100%; font-weight: bold; cursor: pointer; }
         .action-btn:hover { background: #4f46e5; }
-        
-        .game-banner { background: linear-gradient(135deg, #ff4d4f, #ff7875); padding: 15px; border-radius: 12px; margin-bottom: 15px; text-align: center; }
-        .game-banner h3 { font-size: 16px; margin-bottom: 5px; color: #fff; }
-        .game-banner p { font-size: 12px; margin-bottom: 12px; opacity: 0.95; color: #fff; }
-        .game-btn { background: white; color: #ff4d4f; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: bold; display: inline-block; font-size: 13px; cursor: pointer; border: none; }
 
         /* Profile Page Styles */
         .profile-header { text-align: center; padding: 20px 0; }
@@ -119,6 +114,13 @@
         .history-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 11px; }
         .history-table th { background: #ff4d4f; color: white; padding: 6px; font-weight: 500; position: sticky; top: 33px; z-index: 4; }
         .history-table td { padding: 6px; border-bottom: 1px solid #f1f2f6; color: #333; }
+
+        /* Games Hub Page Styles */
+        .games-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-top: 15px; }
+        .game-card-item { background: linear-gradient(135deg, #3b82f6, #1d4ed8); border-radius: 12px; padding: 20px; text-align: center; cursor: pointer; transition: transform 0.2s; border: 1px solid #60a5fa; }
+        .game-card-item:hover { transform: scale(1.03); }
+        .game-card-item h3 { font-size: 16px; margin-bottom: 8px; color: #fff; }
+        .game-card-item p { font-size: 11px; color: #bfdbfe; margin-bottom: 12px; }
 
         /* Withdrawal Page Styles */
         .method-selector { display: flex; gap: 10px; margin-bottom: 20px; }
@@ -264,7 +266,7 @@
         </div>
     </div>
 
-    <!-- AUTH 3: FORGOT PASSWORD PAGE (Updated with Confirm Password) -->
+    <!-- AUTH 3: FORGOT PASSWORD PAGE -->
     <div id="forgotPage" class="page">
         <div class="auth-container">
             <div class="auth-logo">🔒</div>
@@ -313,12 +315,6 @@
             <h1 id="userwallet">🪙 0 Coins</h1>
         </div>
 
-        <div class="game-banner">
-            <h3>🎮 Pro Color & Number Trading</h3>
-            <p>Play 30s / 60s / 3m / 5m games and double your coins!</p>
-            <button class="game-btn" onclick="switchPage('gamePage')">Play Game Now 🚀</button>
-        </div>
-
         <div class="card">
             <h4>🎁 Daily Check-in Bonus</h4>
             <p>Claim your free daily login reward (+20 coins).</p>
@@ -332,13 +328,6 @@
             <button class="action-btn" id="watchAdBtn" onclick="startWatchAd()">Watch Ad Now (60s)</button>
         </div>
 
-        <!-- CONVERT COINS TO MONEY CARD (Min 10,000 Coins / ₹100) -->
-        <div class="card">
-            <h4>💱 Convert Coins to Money</h4>
-            <p>Convert your earned reward coins directly into real wallet cash (Min: 10,000 Coins = ₹100).</p>
-            <button class="action-btn" style="background: #10b981;" onclick="convertCoins()">Convert to Money</button>
-        </div>
-
         <div class="card">
             <h4>🤝 Refer Friends & Earn</h4>
             <p>Earn 500 Coins when your friend registers using your link!</p>
@@ -346,12 +335,33 @@
         </div>
     </div>
 
-    <!-- 2. PROFILE PAGE -->
+    <!-- 2. GAMES HUB PAGE -->
+    <div id="gamesHubPage" class="page">
+        <h2 style="font-size: 20px; margin-bottom: 5px; color: #f8fafc;">🎮 Games Arena</h2>
+        <p style="font-size: 13px; color: #94a3b8; margin-bottom: 15px;">Choose your favorite game and start winning coins!</p>
+        
+        <div class="games-grid">
+            <div class="game-card-item" onclick="switchPage('gamePage')">
+                <h3>🎨 Color Trading</h3>
+                <p>WinGo 30s/1m/3m/5m Prediction Game</p>
+                <button class="action-btn" style="padding: 8px; font-size: 12px; background: #2563eb;">Play Now</button>
+            </div>
+            <!-- Aap yahan naye games ke cards add kar sakte hain -->
+        </div>
+    </div>
+
+    <!-- 3. PROFILE PAGE -->
     <div id="profilePage" class="page">
         <div class="profile-header">
             <div class="avatar">👤</div>
             <h2 id="profileNameDisplay">User</h2>
             <p id="profileIdDisplay">Mobile: ---</p>
+        </div>
+
+        <div class="card" style="background: linear-gradient(135deg, #065f46, #047857); margin-bottom: 20px;">
+            <h4>💱 Convert Coins to Money</h4>
+            <p style="color: #a7f3d0;">Convert your earned reward coins directly into real wallet cash (Min: 10,000 Coins = ₹100).</p>
+            <button class="action-btn" style="background: #10b981;" onclick="convertCoins()">Convert to Money</button>
         </div>
 
         <div class="menu-list">
@@ -364,7 +374,7 @@
         </div>
     </div>
 
-    <!-- 3. WITHDRAWAL PAGE -->
+    <!-- 4. WITHDRAWAL PAGE -->
     <div id="withdrawPage" class="page">
         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
             <button class="action-btn" style="width: auto; padding: 6px 12px; background: #334155;" onclick="switchPage('homePage')">← Back</button>
@@ -416,11 +426,14 @@
         <button class="action-btn" style="background: #2ecc71; margin-top: 10px;" onclick="initiateWithdrawal()">Submit Withdrawal 🚀</button>
     </div>
 
-    <!-- 4. COLOR GAME PAGE -->
+    <!-- 5. COLOR GAME PAGE -->
     <div id="gamePage" class="page">
+        <div style="margin-bottom: 15px;">
+            <button class="action-btn" style="width: auto; padding: 6px 12px; background: #334155;" onclick="switchPage('gamesHubPage')">← Back to Games</button>
+        </div>
         <div class="daman-wrapper">
             <div class="game-header">
-                <h2>🏆 Rewards Zone</h2>
+                <h2>🏆 Color Trading</h2>
                 <div style="font-size: 12px; font-weight: bold;">🪙 <span id="gameWallet">0</span></div>
             </div>
 
@@ -484,8 +497,10 @@
         </div>
     </div>
 
+    <!-- BOTTOM NAVIGATION BAR -->
     <div class="nav-bar" id="bottomNavBar" style="display: none;">
         <button class="nav-item active" id="navHome" onclick="switchPage('homePage')">🏠 Home</button>
+        <button class="nav-item" id="navGames" onclick="switchPage('gamesHubPage')">🎮 Games</button>
         <button class="nav-item" id="navProfile" onclick="switchPage('profilePage')">👤 Profile</button>
     </div>
 </div>
@@ -839,10 +854,13 @@
         document.getElementById(pageId).classList.add('active');
 
         document.getElementById('navHome').classList.remove('active');
+        document.getElementById('navGames').classList.remove('active');
         document.getElementById('navProfile').classList.remove('active');
 
         if (pageId === 'homePage') {
             document.getElementById('navHome').classList.add('active');
+        } else if (pageId === 'gamesHubPage' || pageId === 'gamePage') {
+            document.getElementById('navGames').classList.add('active');
         } else if (pageId === 'profilePage') {
             document.getElementById('navProfile').classList.add('active');
         }
