@@ -58,11 +58,22 @@
         .action-btn { background: #6366f1; color: white; border: none; padding: 12px; border-radius: 8px; width: 100%; font-weight: bold; cursor: pointer; }
         .action-btn:hover { background: #4f46e5; }
 
-        /* Profile Page Styles */
-        .profile-header { text-align: center; padding: 20px 0; }
-        .avatar { width: 80px; height: 80px; background: #6366f1; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 32px; margin: 0 auto 10px auto; }
-        .profile-header h2 { font-size: 20px; margin-bottom: 5px; }
-        .profile-header p { font-size: 13px; color: #94a3b8; }
+        /* Profile Page Layout (Left Pic + Right Details + Avatars) */
+        .profile-top-section { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; background: #0f172a; padding: 15px; border-radius: 12px; border: 1px solid #334155; }
+        .profile-left-col { display: flex; flex-direction: column; align-items: center; flex-shrink: 0; }
+        .avatar-box { width: 80px; height: 80px; background: #6366f1; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 38px; border: 2px solid #38bdf8; overflow: hidden; cursor: pointer; transition: transform 0.2s; }
+        .avatar-box:hover { transform: scale(1.05); }
+
+        .profile-right-col { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+        .profile-info-row label { font-size: 11px; color: #94a3b8; display: block; margin-bottom: 2px; }
+        .profile-info-row input { width: 100%; background: #1e293b; border: 1px solid #334155; border-radius: 6px; padding: 8px 10px; color: white; font-size: 13px; outline: none; }
+        .profile-info-row input:focus { border-color: #6366f1; }
+        .profile-info-row input:disabled { background: #0f172a; color: #64748b; cursor: not-allowed; }
+
+        /* Avatar Selector Drawer/Modal */
+        .avatar-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 10px; }
+        .avatar-option { font-size: 28px; background: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 10px; text-align: center; cursor: pointer; transition: transform 0.2s; }
+        .avatar-option:hover { transform: scale(1.1); border-color: #38bdf8; }
 
         /* Square Menu Grid Layout for Profile */
         .profile-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 20px; }
@@ -359,18 +370,24 @@
 
     <!-- 3. PROFILE PAGE -->
     <div id="profilePage" class="page">
-        <div class="profile-header">
-            <div class="avatar">👤</div>
-            <h2 id="profileNameDisplay">User</h2>
-            <p id="profileIdDisplay">Mobile: ---</p>
+        <!-- Profile Top Section: Left Avatar (Clickable) + Right Details (UID read-only + Custom Username) -->
+        <div class="profile-top-section">
+            <div class="profile-left-col">
+                <div class="avatar-box" id="profileAvatarDisplay" onclick="openAvatarModal()" title="Click to change avatar">👤</div>
+            </div>
+            <div class="profile-right-col">
+                <div class="profile-info-row">
+                    <label>Unique UID (Unchangeable)</label>
+                    <input type="text" id="profileUidDisplay" disabled>
+                </div>
+                <div class="profile-info-row">
+                    <label>Custom Username</label>
+                    <input type="text" id="profileUsernameInput" placeholder="Enter username" oninput="saveCustomUsername()">
+                </div>
+            </div>
         </div>
 
-        <div class="card" style="background: linear-gradient(135deg, #065f46, #047857); margin-bottom: 20px;">
-            <h4>💱 Convert Coins to Money</h4>
-            <p style="color: #a7f3d0;">Convert your earned reward coins directly into real wallet cash (Min: 10,000 Coins = ₹100).</p>
-            <button class="action-btn" style="background: #10b981;" onclick="convertCoins()">Convert to Money</button>
-        </div>
-
+        <!-- Square Menu Grid Layout for Profile -->
         <div class="profile-grid">
             <div class="profile-square-btn" onclick="alert('Opening Deposit Window...')">
                 <div class="square-icon">➕</div>
@@ -380,13 +397,13 @@
                 <div class="square-icon">💳</div>
                 <div class="square-title">Withdraw</div>
             </div>
+            <div class="profile-square-btn" onclick="convertCoins()">
+                <div class="square-icon">💱</div>
+                <div class="square-title">Convert</div>
+            </div>
             <div class="profile-square-btn" onclick="alert('Opening Transaction History...')">
                 <div class="square-icon">📊</div>
                 <div class="square-title">History</div>
-            </div>
-            <div class="profile-square-btn" onclick="alert('Opening Security Settings...')">
-                <div class="square-icon">🔒</div>
-                <div class="square-title">Security</div>
             </div>
             <div class="profile-square-btn" onclick="alert('Opening Terms & Conditions...')">
                 <div class="square-icon">📜</div>
@@ -563,6 +580,28 @@
     </div>
 </div>
 
+<!-- AVATAR SELECTOR MODAL -->
+<div class="modal-overlay" id="avatarModal">
+    <div class="modal-box">
+        <h3>Select Human Avatar</h3>
+        <p>Choose your profile icon:</p>
+        <div class="avatar-grid">
+            <div class="avatar-option" onclick="selectAvatar('👨')">👨</div>
+            <div class="avatar-option" onclick="selectAvatar('👩')">👩</div>
+            <div class="avatar-option" onclick="selectAvatar('🧑')">🧑</div>
+            <div class="avatar-option" onclick="selectAvatar('👦')">👦</div>
+            <div class="avatar-option" onclick="selectAvatar('👧')">👧</div>
+            <div class="avatar-option" onclick="selectAvatar('🧔')">🧔</div>
+            <div class="avatar-option" onclick="selectAvatar('👱')">👱</div>
+            <div class="avatar-option" onclick="selectAvatar('🧓')">🧓</div>
+            <div class="avatar-option" onclick="selectAvatar('🦸')">🦸</div>
+            <div class="avatar-option" onclick="selectAvatar('🥷')">🥷</div>
+        </div>
+        <br>
+        <button class="btn-small-apply" onclick="closeAvatarModal()">Close</button>
+    </div>
+</div>
+
 <div class="bet-sheet-overlay" id="betSheetOverlay">
     <div class="bet-sheet">
         <div class="bet-title-bar" id="betSheetTitle" style="background:#ff4d4f;">Select Bet</div>
@@ -645,6 +684,9 @@
     if (!user && usersDB.length === 0) {
         user = { 
             identifier: '9876543210', 
+            uid: 'UID-' + Math.floor(100000 + Math.random() * 900000),
+            username: 'User_' + Math.floor(1000 + Math.random() * 9000),
+            avatar: '👤',
             points: 15000, 
             money: 0,
             password: '123456',
@@ -655,9 +697,11 @@
         localStorage.setItem('rewards_usersDB', JSON.stringify(usersDB));
     }
 
-    // Ensure money field exists for older users in localStorage
-    if (user && user.money === undefined) {
-        user.money = 0;
+    if (user) {
+        if (user.uid === undefined) user.uid = 'UID-' + Math.floor(100000 + Math.random() * 900000);
+        if (user.username === undefined) user.username = 'User_' + user.identifier.slice(-4);
+        if (user.avatar === undefined) user.avatar = '👤';
+        if (user.money === undefined) user.money = 0;
     }
 
     let todayDate = new Date().toISOString().slice(0,10);
@@ -798,6 +842,9 @@
 
         let newUser = {
             identifier: identifier,
+            uid: 'UID-' + Math.floor(100000 + Math.random() * 900000),
+            username: 'User_' + identifier.slice(-4),
+            avatar: '👤',
             points: 15000,
             money: 0,
             password: password,
@@ -824,7 +871,11 @@
         let found = usersDB.find(u => u.identifier === identifier && u.password === password);
         if (found) {
             user = found;
+            if (user.uid === undefined) user.uid = 'UID-' + Math.floor(100000 + Math.random() * 900000);
+            if (user.username === undefined) user.username = 'User_' + user.identifier.slice(-4);
+            if (user.avatar === undefined) user.avatar = '👤';
             if (user.money === undefined) user.money = 0;
+
             if (rememberChecked) {
                 localStorage.setItem('rewards_rememberedUser', user.identifier);
                 sessionStorage.removeItem('rewards_sessionUser');
@@ -876,8 +927,12 @@
         document.getElementById('bottomNavBar').style.display = 'flex';
         localStorage.setItem('userId', user.identifier);
         updateWalletDisplay();
-        document.getElementById('profileNameDisplay').innerText = `User (${user.identifier.slice(-4)})`;
-        document.getElementById('profileIdDisplay').innerText = `Mobile: ${user.identifier}`;
+        
+        // Populate Profile details
+        document.getElementById('profileAvatarDisplay').innerText = user.avatar;
+        document.getElementById('profileUidDisplay').value = user.uid;
+        document.getElementById('profileUsernameInput').value = user.username;
+
         switchPage('homePage');
     }
 
@@ -901,6 +956,25 @@
             document.getElementById('navGames').classList.add('active');
         } else if (pageId === 'profilePage') {
             document.getElementById('navProfile').classList.add('active');
+        }
+    }
+
+    function openAvatarModal() { document.getElementById('avatarModal').classList.add('active'); }
+    function closeAvatarModal() { document.getElementById('avatarModal').classList.remove('active'); }
+
+    function selectAvatar(emoji) {
+        user.avatar = emoji;
+        saveUserData();
+        document.getElementById('profileAvatarDisplay').innerText = emoji;
+        closeAvatarModal();
+        showToast('✅ Avatar Updated!');
+    }
+
+    function saveCustomUsername() {
+        let val = document.getElementById('profileUsernameInput').value.trim();
+        if (val) {
+            user.username = val;
+            saveUserData();
         }
     }
 
@@ -1037,21 +1111,14 @@
 
     // CONVERT COINS TO MONEY FUNCTION (Minimum 10,000 Coins / ₹100 Limit)
     async function convertCoins() {
-        const userId = localStorage.getItem('userId') || (user ? user.identifier : null);
-        
-        if (!userId) {
-            alert("Pehle login karein!");
-            return;
-        }
-
         let minCoinsRequired = 10000;
 
         if (user.points < minCoinsRequired) {
-            alert(`❌ Minimum 10,000 coins (₹100) required to convert! Aapke paas abhi ${user.points} coins hain. Aur ads dekh kar coins earn karein!`);
+            alert(`❌ Minimum 10,000 coins (₹100) required to convert! Aapke paas abhi ${user.points} coins hain.`);
             return;
         }
 
-        if (confirm(`Aap apne ${user.points} coins ko real money me convert karna chahte hain? (Min limit: 10,000 coins)`)) {
+        if (confirm(`Aap apne ${user.points} coins ko real money me convert karna chahte hain?`)) {
             let convertAmount = Math.floor(user.points / 100); 
             let deductedCoins = convertAmount * 100;
             
