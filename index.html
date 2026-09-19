@@ -325,6 +325,13 @@
             <button class="action-btn" id="watchAdBtn" onclick="startWatchAd()">Watch Ad Now (60s)</button>
         </div>
 
+        <!-- CONVERT COINS TO MONEY CARD (Min 10,000 Coins / ₹100) -->
+        <div class="card">
+            <h4>💱 Convert Coins to Money</h4>
+            <p>Convert your earned reward coins directly into real wallet cash (Min: 10,000 Coins = ₹100).</p>
+            <button class="action-btn" style="background: #10b981;" onclick="convertCoins()">Convert to Money</button>
+        </div>
+
         <div class="card">
             <h4>🤝 Refer Friends & Earn</h4>
             <p>Earn 500 Coins when your friend registers using your link!</p>
@@ -766,6 +773,7 @@
                 sessionStorage.setItem('rewards_sessionUser', user.identifier);
                 localStorage.removeItem('rewards_rememberedUser');
             }
+            localStorage.setItem('userId', user.identifier);
             startAppSession();
             alert(`✅ Welcome back!`);
         } else {
@@ -801,6 +809,7 @@
 
     function startAppSession() {
         document.getElementById('bottomNavBar').style.display = 'flex';
+        localStorage.setItem('userId', user.identifier);
         updateWalletDisplay();
         document.getElementById('profileNameDisplay').innerText = `User (${user.identifier.slice(-4)})`;
         document.getElementById('profileIdDisplay').innerText = `Mobile: ${user.identifier}`;
@@ -847,6 +856,7 @@
     function confirmLogout() {
         localStorage.removeItem('rewards_rememberedUser');
         sessionStorage.removeItem('rewards_sessionUser');
+        localStorage.removeItem('userId');
         closeLogoutModal();
         alert('🚪 Logged out successfully!');
         user = null;
@@ -954,6 +964,34 @@
                 }, 5000);
             }
         }, 1000);
+    }
+
+    // CONVERT COINS TO MONEY FUNCTION (Minimum 10,000 Coins / ₹100 Limit)
+    async function convertCoins() {
+        const userId = localStorage.getItem('userId') || (user ? user.identifier : null);
+        
+        if (!userId) {
+            alert("Pehle login karein!");
+            return;
+        }
+
+        let minCoinsRequired = 10000;
+
+        if (user.points < minCoinsRequired) {
+            alert(`❌ Minimum 10,000 coins (₹100) required to convert! Aapke paas abhi ${user.points} coins hain. Aur ads dekh kar coins earn karein!`);
+            return;
+        }
+
+        if (confirm(`Aap apne ${user.points} coins ko real money me convert karna chahte hain? (Min limit: 10,000 coins)`)) {
+            let convertAmount = Math.floor(user.points / 100); 
+            let deductedCoins = convertAmount * 100;
+            
+            user.points -= deductedCoins;
+            saveUserData();
+            updateWalletDisplay();
+            
+            alert(`✅ Successfully converted ${deductedCoins} coins into ₹${convertAmount} real money!`);
+        }
     }
 
     function shareApp() { alert('Invite link copied!'); }
