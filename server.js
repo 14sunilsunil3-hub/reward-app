@@ -41,6 +41,7 @@ const userSchema = new mongoose.Schema({
     phone: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     balance: { type: Number, default: 15000 },
+    rewardCoins: { type: Number, default: 0 }, // <-- Added Reward Coins field here
     createdAt: { type: Date, default: Date.now }
 });
 const User = mongoose.model('User', userSchema);
@@ -84,7 +85,7 @@ app.post('/api/register', async (req, res) => {
         const existingUser = await User.findOne({ phone });
         if (existingUser) return res.status(400).json({ success: false, message: "User already exists!" });
 
-        const newUser = new User({ phone, password, balance: 15000 });
+        const newUser = new User({ phone, password, balance: 15000, rewardCoins: 0 });
         await newUser.save();
         res.json({ success: true, message: "Registration successful!" });
     } catch (err) {
@@ -104,19 +105,74 @@ app.post('/api/login', async (req, res) => {
             message: "Login successful!", 
             userId: user._id, 
             balance: user.balance,
-            user: { _id: user._id, identifier: user.phone, points: user.balance } 
+            rewardCoins: user.rewardCoins, // <-- Sent reward coins to frontend
+            user: { _id: user._id, identifier: user.phone, points: user.balance, rewardCoins: user.rewardCoins } 
         });
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });
     }
 });
 
-// Get User Balance
+// Get User Details (Balance & Coins)
 app.get('/api/user/:userId', async (req, res) => {
     try {
         const user = await User.findById(req.params.userId);
         if (!user) return res.status(404).json({ success: false, message: "User not found" });
-        res.json({ success: true, balance: user.balance });
+        res.json({ success: true, balance: user.balance, rewardCoins: user.rewardCoins });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+});
+
+// Convert Coins to Money Route
+app.post('/api/convert-coins', async (req, res) => {
+    try {
+        const { userId } = req.body;
+        const user = await User.findById(userId);
+
+        if (!user) return res.status(404).json({ success: false, message: "User not found" });
+
+        const conversionRate = 100; // 100 Coins = ₹1
+
+        if (user.rewardCoins < conversionRate) {
+            return res.status(400).json({ 
+                success: false, 
+                message: `Kam se kam ${conversionRate} coins hone chahiye convert karne ke liye!` 
+            });
+        }
+
+        // Calculate rupees and coins to deduct
+        const rupeesEarned = Math.floor(user.rewardCoins / conversionRate);
+        const coinsToDeduct = rupeesEarned * conversionRate;
+
+        // Update database values
+        user.rewardCoins -= coinsToDeduct;
+        user.balance += rupeesEarned;
+        await user.save();
+
+        res.json({
+            success: true,
+            message: `Successfully converted ${coinsToDeduct} coins into ₹${rupeesEarned}!`,
+            balance: user.balance,
+            rewardCoins: user.rewardCoins
+        });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+});
+
+// Test Route to add coins when user watches an ad
+app.post('/api/add-reward-coins', async (req, res) => {
+    try {
+        const { userId, coins } = req.body;
+        const user = await User.findById(userId);
+        if (!user) return res.status(404).json({ success: false, message: "User not found" });
+
+        const addCoins = Number(coins) || 50; 
+        user.rewardCoins += addCoins;
+        await user.save();
+
+        res.json({ success: true, message: `Added ${addCoins} coins successfully!`, rewardCoins: user.rewardCoins });
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });
     }
