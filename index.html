@@ -45,11 +45,12 @@
         .remember-row { display: flex; align-items: center; gap: 8px; font-size: 12px; color: #94a3b8; margin-bottom: 15px; }
         .remember-row input { width: 16px; height: 16px; cursor: pointer; accent-color: #6366f1; }
 
+        /* Top Minimal Balance Bars on Home Page */
+        .top-balance-bar { display: flex; justify-content: flex-end; align-items: center; gap: 8px; margin-bottom: 15px; }
+        .mini-wallet { background: #0f172a; border: 1px solid #334155; padding: 6px 12px; border-radius: 20px; font-size: 14px; font-weight: bold; color: #2ecc71; display: flex; align-items: center; gap: 5px; }
+        .mini-money-wallet { background: #0f172a; border: 1px solid #334155; padding: 6px 12px; border-radius: 20px; font-size: 14px; font-weight: bold; color: #38bdf8; display: flex; align-items: center; gap: 5px; }
+
         /* Home Page Styles */
-        .wallet-card { background: linear-gradient(135deg, #6366f1, #a855f7); padding: 20px; border-radius: 14px; text-align: center; margin-bottom: 20px; }
-        .wallet-card h3 { font-size: 14px; opacity: 0.9; margin-bottom: 5px; }
-        .wallet-card h1 { font-size: 32px; font-weight: bold; }
-        
         .card { background: #0f172a; padding: 15px; border-radius: 12px; margin-bottom: 15px; border: 1px solid #334155; }
         .card h4 { font-size: 15px; margin-bottom: 5px; color: #f8fafc; }
         .card p { font-size: 12px; color: #94a3b8; margin-bottom: 12px; }
@@ -312,9 +313,14 @@
 
     <!-- 1. HOME PAGE -->
     <div id="homePage" class="page">
-        <div class="wallet-card">
-            <h3>My Wallet Balance</h3>
-            <h1 id="userwallet">🪙 0 Coins</h1>
+        <!-- Top Minimal Balance Bars -->
+        <div class="top-balance-bar">
+            <div class="mini-wallet">
+                <span>🪙</span> <span id="userwallet">0</span>
+            </div>
+            <div class="mini-money-wallet">
+                <span>₹</span> <span id="usermoney">0</span>
+            </div>
         </div>
 
         <div class="card">
@@ -351,7 +357,7 @@
         </div>
     </div>
 
-    <!-- 3. PROFILE PAGE (WITH SQUARE SHAPE BUTTONS GRID & DEPOSIT BUTTON) -->
+    <!-- 3. PROFILE PAGE -->
     <div id="profilePage" class="page">
         <div class="profile-header">
             <div class="avatar">👤</div>
@@ -640,12 +646,18 @@
         user = { 
             identifier: '9876543210', 
             points: 15000, 
+            money: 0,
             password: '123456',
             withdrawCount: 0,
             lastWithdrawDate: new Date().toISOString().slice(0,10)
         };
         usersDB.push(user);
         localStorage.setItem('rewards_usersDB', JSON.stringify(usersDB));
+    }
+
+    // Ensure money field exists for older users in localStorage
+    if (user && user.money === undefined) {
+        user.money = 0;
     }
 
     let todayDate = new Date().toISOString().slice(0,10);
@@ -787,6 +799,7 @@
         let newUser = {
             identifier: identifier,
             points: 15000,
+            money: 0,
             password: password,
             withdrawCount: 0,
             lastWithdrawDate: todayDate
@@ -811,6 +824,7 @@
         let found = usersDB.find(u => u.identifier === identifier && u.password === password);
         if (found) {
             user = found;
+            if (user.money === undefined) user.money = 0;
             if (rememberChecked) {
                 localStorage.setItem('rewards_rememberedUser', user.identifier);
                 sessionStorage.removeItem('rewards_sessionUser');
@@ -868,7 +882,8 @@
     }
 
     function updateWalletDisplay() {
-        document.getElementById('userwallet').innerText = `🪙 ${user.points} Coins`;
+        document.getElementById('userwallet').innerText = user.points;
+        document.getElementById('usermoney').innerText = user.money !== undefined ? user.money : 0;
         document.getElementById('gameWallet').innerText = user.points;
     }
 
@@ -1041,6 +1056,7 @@
             let deductedCoins = convertAmount * 100;
             
             user.points -= deductedCoins;
+            user.money = (user.money || 0) + convertAmount;
             saveUserData();
             updateWalletDisplay();
             
