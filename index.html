@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rewards Zone - Login & Game</title>
+    <title>Rewards Zone</title>
     <!-- Monetag Domain Verification Tag -->
     <meta name="monetag" content="461f12f4999caa17cb8e670a67481109">
     
@@ -11,47 +11,60 @@
     <script>(function(s){s.dataset.zone='11824344',s.src='https://n6wxm.com/vignette.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
 
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
         body { background: #0f172a; color: #fff; display: flex; justify-content: center; }
-        .container { width: 100%; max-width: 450px; background: #1e293b; min-height: 100vh; padding: 20px; padding-bottom: 70px; box-shadow: 0 4px 20px rgba(0,0,0,0.5); position: relative; }
+        .container { width: 100%; max-width: 450px; background: #121824; min-height: 100vh; padding: 20px; padding-bottom: 70px; box-shadow: 0 4px 20px rgba(0,0,0,0.5); position: relative; }
         
         .page { display: none; }
         .page.active { display: block; }
 
-        /* Auth Pages (Login / Register / Forgot) */
-        .auth-container { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 85vh; text-align: center; }
-        .auth-logo { font-size: 40px; margin-bottom: 10px; }
-        .auth-container h2 { font-size: 22px; margin-bottom: 5px; color: #f8fafc; }
-        .auth-container p { font-size: 13px; color: #94a3b8; margin-bottom: 25px; }
-        .auth-form { width: 100%; text-align: left; }
-        .auth-link { font-size: 12px; color: #a855f7; margin-top: 15px; cursor: pointer; display: inline-block; text-decoration: underline; }
+        /* Yarwin Style Auth Pages */
+        .auth-container { display: flex; flex-direction: column; align-items: center; justify-content: flex-start; min-height: 85vh; text-align: left; padding-top: 20px; }
+        .yarwin-header { width: 100%; display: flex; align-items: center; justify-content: space-between; margin-bottom: 30px; }
+        .yarwin-logo-text { font-size: 22px; font-weight: 700; color: #ffffff; display: flex; align-items: center; gap: 8px; }
+        .yarwin-logo-text span { color: #eab308; }
+        
+        .auth-title-box { width: 100%; margin-bottom: 25px; }
+        .auth-title-box h2 { font-size: 26px; font-weight: 700; color: #ffffff; margin-bottom: 8px; }
+        .auth-title-box p { font-size: 13px; color: #94a3b8; }
 
-        /* Form Controls & Password Eye */
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; font-size: 12px; color: #94a3b8; margin-bottom: 5px; }
-        .input-wrapper { position: relative; width: 100%; }
-        .form-group input, .form-group select { width: 100%; padding: 12px 40px 12px 12px; background: #0f172a; border: 1px solid #334155; border-radius: 8px; color: white; font-size: 14px; outline: none; }
-        .form-group input:focus { border-color: #6366f1; }
-        .toggle-password { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #94a3b8; cursor: pointer; font-size: 16px; }
+        .auth-form { width: 100%; text-align: left; }
+        
+        /* Input Fields Yarwin Theme */
+        .form-group { margin-bottom: 20px; width: 100%; }
+        .form-group label { display: block; font-size: 13px; color: #cbd5e1; margin-bottom: 8px; font-weight: 500; }
+        .input-wrapper { position: relative; width: 100%; display: flex; align-items: center; background: #1e293b; border: 1px solid #334155; border-radius: 12px; overflow: hidden; }
+        .input-wrapper:focus-within { border-color: #eab308; }
+        .input-prefix { padding-left: 14px; color: #94a3b8; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 5px; }
+        .form-group input { width: 100%; padding: 14px 12px; background: transparent; border: none; color: white; font-size: 15px; outline: none; }
+        .toggle-password { position: absolute; right: 12px; background: none; border: none; color: #94a3b8; cursor: pointer; font-size: 16px; }
         .toggle-password:hover { color: #fff; }
 
         .otp-row { display: flex; gap: 10px; }
-        .otp-row input { flex: 1; }
-        .otp-btn { background: #334155; color: white; border: none; padding: 0 15px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 12px; white-space: nowrap; }
-        .otp-btn:hover { background: #475569; }
-        .otp-btn:disabled { background: #1e293b; color: #64748b; cursor: not-allowed; border: 1px solid #334155; }
+        .otp-row .input-wrapper { flex: 1; }
+        .otp-btn { background: #3b82f6; color: white; border: none; padding: 0 18px; border-radius: 12px; font-weight: 600; cursor: pointer; font-size: 13px; white-space: nowrap; height: 50px; }
+        .otp-btn:hover { background: #2563eb; }
+        .otp-btn:disabled { background: #334155; color: #64748b; cursor: not-allowed; }
+
+        /* Action Button Yarwin Style */
+        .yarwin-btn { width: 100%; background: linear-gradient(135deg, #facc15, #eab308); color: #0f172a; border: none; padding: 15px; border-radius: 12px; font-weight: 700; font-size: 16px; cursor: pointer; text-align: center; margin-top: 10px; box-shadow: 0 4px 12px rgba(234, 179, 8, 0.3); transition: opacity 0.2s; }
+        .yarwin-btn:hover { opacity: 0.9; }
+
+        .auth-footer-links { display: flex; justify-content: space-between; align-items: center; margin-top: 20px; font-size: 13px; }
+        .auth-link { color: #38bdf8; cursor: pointer; text-decoration: none; font-weight: 500; }
+        .auth-link:hover { text-decoration: underline; }
 
         /* Remember Checkbox styling */
-        .remember-row { display: flex; align-items: center; gap: 8px; font-size: 12px; color: #94a3b8; margin-bottom: 15px; }
-        .remember-row input { width: 16px; height: 16px; cursor: pointer; accent-color: #6366f1; }
+        .remember-row { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #94a3b8; margin-bottom: 10px; }
+        .remember-row input { width: 18px; height: 18px; cursor: pointer; accent-color: #eab308; }
 
         /* Top Minimal Balance Bars */
         .top-balance-bar { display: flex; justify-content: flex-end; align-items: center; gap: 8px; margin-bottom: 15px; }
-        .mini-wallet { background: #0f172a; border: 1px solid #334155; padding: 6px 12px; border-radius: 20px; font-size: 14px; font-weight: bold; color: #2ecc71; display: flex; align-items: center; gap: 5px; }
-        .mini-money-wallet { background: #0f172a; border: 1px solid #334155; padding: 6px 12px; border-radius: 20px; font-size: 14px; font-weight: bold; color: #38bdf8; display: flex; align-items: center; gap: 5px; }
+        .mini-wallet { background: #1e293b; border: 1px solid #334155; padding: 6px 12px; border-radius: 20px; font-size: 14px; font-weight: bold; color: #2ecc71; display: flex; align-items: center; gap: 5px; }
+        .mini-money-wallet { background: #1e293b; border: 1px solid #334155; padding: 6px 12px; border-radius: 20px; font-size: 14px; font-weight: bold; color: #38bdf8; display: flex; align-items: center; gap: 5px; }
 
-        /* Home Page Styles */
-        .card { background: #0f172a; padding: 15px; border-radius: 12px; margin-bottom: 15px; border: 1px solid #334155; }
+        /* Home & Other Pages Styles */
+        .card { background: #1e293b; padding: 15px; border-radius: 12px; margin-bottom: 15px; border: 1px solid #334155; }
         .card h4 { font-size: 15px; margin-bottom: 5px; color: #f8fafc; }
         .card p { font-size: 12px; color: #94a3b8; margin-bottom: 12px; }
         
@@ -60,37 +73,37 @@
         .action-btn:disabled { background: #334155; color: #94a3b8; cursor: not-allowed; }
 
         /* Profile Page Layout */
-        .profile-top-section { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; background: #0f172a; padding: 15px; border-radius: 12px; border: 1px solid #334155; }
+        .profile-top-section { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; background: #1e293b; padding: 15px; border-radius: 12px; border: 1px solid #334155; }
         .profile-left-col { display: flex; flex-direction: column; align-items: center; flex-shrink: 0; }
         .avatar-box { width: 80px; height: 80px; background: #6366f1; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 38px; border: 2px solid #38bdf8; overflow: hidden; cursor: pointer; transition: transform 0.2s; }
         .avatar-box:hover { transform: scale(1.05); }
 
         .profile-right-col { flex: 1; display: flex; flex-direction: column; gap: 8px; }
         .profile-info-row label { font-size: 11px; color: #94a3b8; display: block; margin-bottom: 2px; }
-        .profile-info-row input { width: 100%; background: #1e293b; border: 1px solid #334155; border-radius: 6px; padding: 8px 10px; color: white; font-size: 13px; outline: none; }
+        .profile-info-row input { width: 100%; background: #121824; border: 1px solid #334155; border-radius: 6px; padding: 8px 10px; color: white; font-size: 13px; outline: none; }
         .profile-info-row input:focus { border-color: #6366f1; }
-        .profile-info-row input:disabled { background: #0f172a; color: #64748b; cursor: not-allowed; }
+        .profile-info-row input:disabled { background: #1e293b; color: #64748b; cursor: not-allowed; }
 
         /* Avatar Selector Drawer/Modal */
         .avatar-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 10px; }
-        .avatar-option { font-size: 28px; background: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 10px; text-align: center; cursor: pointer; transition: transform 0.2s; }
+        .avatar-option { font-size: 28px; background: #121824; border: 1px solid #334155; border-radius: 8px; padding: 10px; text-align: center; cursor: pointer; transition: transform 0.2s; }
         .avatar-option:hover { transform: scale(1.1); border-color: #38bdf8; }
 
         /* Square Menu Grid Layout for Profile */
         .profile-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 20px; }
-        .profile-square-btn { background: #0f172a; border: 1px solid #334155; border-radius: 12px; padding: 20px 15px; text-align: center; cursor: pointer; transition: all 0.2s ease; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 110px; }
-        .profile-square-btn:hover { background: #1e293b; border-color: #6366f1; transform: translateY(-2px); }
+        .profile-square-btn { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 20px 15px; text-align: center; cursor: pointer; transition: all 0.2s ease; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 110px; }
+        .profile-square-btn:hover { background: #121824; border-color: #6366f1; transform: translateY(-2px); }
         .square-icon { font-size: 26px; margin-bottom: 8px; }
         .square-title { font-size: 13px; font-weight: 600; color: #f8fafc; }
 
         /* Deposit Page Styles */
-        .deposit-card { background: #0f172a; border: 1px solid #334155; border-radius: 12px; padding: 20px; text-align: center; margin-bottom: 15px; }
+        .deposit-card { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 20px; text-align: center; margin-bottom: 15px; }
         .qr-placeholder { width: 160px; height: 160px; background: #ffffff; margin: 0 auto 15px auto; border-radius: 8px; display: flex; align-items: center; justify-content: center; border: 4px solid #38bdf8; overflow: hidden; }
         .qr-placeholder img { width: 100%; height: 100%; object-fit: cover; }
-        .upi-id-box { background: #1e293b; border: 1px dashed #38bdf8; padding: 10px; border-radius: 8px; font-size: 14px; font-weight: bold; color: #38bdf8; margin-bottom: 15px; display: inline-block; width: 100%; cursor: pointer; }
+        .upi-id-box { background: #121824; border: 1px dashed #38bdf8; padding: 10px; border-radius: 8px; font-size: 14px; font-weight: bold; color: #38bdf8; margin-bottom: 15px; display: inline-block; width: 100%; cursor: pointer; }
         
         .deposit-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 15px; }
-        .deposit-amt-btn { background: #1e293b; border: 1px solid #334155; color: white; padding: 10px 0; border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer; text-align: center; }
+        .deposit-amt-btn { background: #121824; border: 1px solid #334155; color: white; padding: 10px 0; border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer; text-align: center; }
         .deposit-amt-btn.active { background: #6366f1; border-color: #6366f1; }
 
         /* Color Game Page Styles */
@@ -146,7 +159,7 @@
         .game-card-item p { font-size: 11px; color: #bfdbfe; margin-bottom: 12px; }
 
         .method-selector { display: flex; gap: 10px; margin-bottom: 20px; }
-        .method-btn { flex: 1; padding: 12px; background: #0f172a; border: 1px solid #334155; color: white; border-radius: 8px; font-weight: bold; cursor: pointer; text-align: center; }
+        .method-btn { flex: 1; padding: 12px; background: #1e293b; border: 1px solid #334155; color: white; border-radius: 8px; font-weight: bold; cursor: pointer; text-align: center; }
         .method-btn.active { background: #6366f1; border-color: #6366f1; }
 
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: none; justify-content: center; align-items: center; z-index: 1000; }
@@ -208,117 +221,140 @@
 
 <div class="container">
     
-    <!-- LOGIN PAGE -->
+    <!-- LOGIN PAGE (YARWIN STYLE) -->
     <div id="loginPage" class="page">
         <div class="auth-container">
-            <div class="auth-logo">🪙</div>
-            <h2>Welcome Back</h2>
-            <p>Login with your mobile number</p>
+            <div class="yarwin-header">
+                <div class="yarwin-logo-text">🪙 Rewards <span>Zone</span></div>
+            </div>
+            <div class="auth-title-box">
+                <h2>Sign in</h2>
+                <p>Please log in with your phone number</p>
+            </div>
             <div class="auth-form">
                 <div class="form-group">
-                    <label>Mobile Number</label>
+                    <label>Phone number</label>
                     <div class="input-wrapper">
-                        <input type="tel" id="loginIdentifier" placeholder="Enter mobile number">
+                        <span class="input-prefix">📞 +91</span>
+                        <input type="tel" id="loginIdentifier" placeholder="Please enter the phone number">
                     </div>
                 </div>
                 <div class="form-group">
                     <label>Password</label>
-                    <div class="input-wrapper">
-                        <input type="password" id="loginPassword" placeholder="Enter password">
+                    <div class="input-wrapper" style="padding-left: 12px;">
+                        <input type="password" id="loginPassword" placeholder="Please enter the password" style="padding-left: 0;">
                         <button type="button" class="toggle-password" onclick="togglePasswordVisibility('loginPassword', this)">👁️</button>
                     </div>
                 </div>
                 <div class="remember-row">
-                    <input type="checkbox" id="rememberPasswordCheck">
-                    <label for="rememberPasswordCheck" style="margin-bottom:0; color:#94a3b8; cursor:pointer;">Remember password / session</label>
+                    <input type="checkbox" id="rememberPasswordCheck" checked>
+                    <label for="rememberPasswordCheck" style="margin-bottom:0; color:#94a3b8; cursor:pointer;">Remember password</label>
                 </div>
-                <button class="action-btn" style="margin-top: 5px;" onclick="handleLogin()">Login 🚀</button>
-                <div style="display: flex; justify-content: space-between; margin-top: 15px;">
-                    <span class="auth-link" onclick="switchAuthPage('registerPage')">Create new account</span>
+                <button class="yarwin-btn" onclick="handleLogin()">Log In</button>
+                <div class="auth-footer-links">
+                    <span class="auth-link" onclick="switchAuthPage('registerPage')">Register</span>
                     <span class="auth-link" onclick="switchAuthPage('forgotPage')">Forgot password?</span>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- REGISTER PAGE -->
+    <!-- REGISTER PAGE (YARWIN STYLE) -->
     <div id="registerPage" class="page">
         <div class="auth-container">
-            <div class="auth-logo">📝</div>
-            <h2>Create Account</h2>
-            <p>Register with mobile number & verification OTP</p>
+            <div class="yarwin-header">
+                <div class="yarwin-logo-text">🪙 Rewards <span>Zone</span></div>
+            </div>
+            <div class="auth-title-box">
+                <h2>Register</h2>
+                <p>Please register with your phone number</p>
+            </div>
             <div class="auth-form">
                 <div class="form-group">
-                    <label>Mobile Number</label>
+                    <label>Phone number</label>
                     <div class="input-wrapper">
-                        <input type="tel" id="regMobile" placeholder="Enter 10-digit mobile number">
+                        <span class="input-prefix">📞 +91</span>
+                        <input type="tel" id="regMobile" placeholder="Please enter the phone number">
                     </div>
                 </div>
                 <div class="form-group">
-                    <label>Verification OTP</label>
+                    <label>Verification code</label>
                     <div class="otp-row">
-                        <input type="number" id="regOtpInput" placeholder="Enter 4-digit OTP">
-                        <button type="button" class="otp-btn" id="sendOtpBtn" onclick="sendRegOtp()">Send</button>
+                        <div class="input-wrapper" style="padding-left: 12px;">
+                            <input type="number" id="regOtpInput" placeholder="SMS verification code" style="padding-left: 0;">
+                        </div>
+                        <button type="button" class="otp-btn" id="sendOtpBtn" onclick="sendRegOtp()">OTP</button>
                     </div>
                 </div>
                 <div class="form-group">
-                    <label>Create Password</label>
-                    <div class="input-wrapper">
-                        <input type="password" id="regPassword" placeholder="Create password">
+                    <label>Set password</label>
+                    <div class="input-wrapper" style="padding-left: 12px;">
+                        <input type="password" id="regPassword" placeholder="Please enter the password" style="padding-left: 0;">
                         <button type="button" class="toggle-password" onclick="togglePasswordVisibility('regPassword', this)">👁️</button>
                     </div>
                 </div>
                 <div class="form-group">
-                    <label>Confirm Password</label>
-                    <div class="input-wrapper">
-                        <input type="password" id="regConfirmPassword" placeholder="Confirm password">
+                    <label>Confirm password</label>
+                    <div class="input-wrapper" style="padding-left: 12px;">
+                        <input type="password" id="regConfirmPassword" placeholder="Please enter password again" style="padding-left: 0;">
                         <button type="button" class="toggle-password" onclick="togglePasswordVisibility('regConfirmPassword', this)">👁️</button>
                     </div>
                 </div>
-                <button class="action-btn" style="background: #2ecc71; margin-top: 10px;" onclick="handleRegister()">Register Now 🎉</button>
-                <div style="text-align: center;">
-                    <span class="auth-link" onclick="switchAuthPage('loginPage')">Already have an account? Login</span>
+                <div class="remember-row">
+                    <input type="checkbox" id="regAgreement" checked>
+                    <label for="regAgreement" style="margin-bottom:0; color:#94a3b8; cursor:pointer;">I have read and agree <span style="color:#eab308">Privacy Agreement</span></label>
+                </div>
+                <button class="yarwin-btn" onclick="handleRegister()">Register</button>
+                <div class="auth-footer-links" style="justify-content: center;">
+                    <span class="auth-link" onclick="switchAuthPage('loginPage')">Existing account? Login here</span>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- FORGOT PASSWORD PAGE -->
+    <!-- FORGOT PASSWORD PAGE (YARWIN STYLE) -->
     <div id="forgotPage" class="page">
         <div class="auth-container">
-            <div class="auth-logo">🔒</div>
-            <h2>Reset Password</h2>
-            <p>Verify OTP to reset your password</p>
+            <div class="yarwin-header">
+                <div class="yarwin-logo-text">🪙 Rewards <span>Zone</span></div>
+            </div>
+            <div class="auth-title-box">
+                <h2>Reset password</h2>
+                <p>Verify your phone number to reset password</p>
+            </div>
             <div class="auth-form">
                 <div class="form-group">
-                    <label>Mobile Number</label>
+                    <label>Phone number</label>
                     <div class="input-wrapper">
-                        <input type="tel" id="forgotIdentifier" placeholder="Enter mobile number">
+                        <span class="input-prefix">📞 +91</span>
+                        <input type="tel" id="forgotIdentifier" placeholder="Please enter the phone number">
                     </div>
                 </div>
                 <div class="form-group">
-                    <label>Verification OTP</label>
+                    <label>Verification code</label>
                     <div class="otp-row">
-                        <input type="number" id="forgotOtpInput" placeholder="Enter 4-digit OTP">
-                        <button type="button" class="otp-btn" id="sendForgotOtpBtn" onclick="sendForgotOtp()">Send</button>
+                        <div class="input-wrapper" style="padding-left: 12px;">
+                            <input type="number" id="forgotOtpInput" placeholder="SMS verification code" style="padding-left: 0;">
+                        </div>
+                        <button type="button" class="otp-btn" id="sendForgotOtpBtn" onclick="sendForgotOtp()">OTP</button>
                     </div>
                 </div>
                 <div class="form-group">
-                    <label>New Password</label>
-                    <div class="input-wrapper">
-                        <input type="password" id="forgotNewPassword" placeholder="Enter new password">
+                    <label>New password</label>
+                    <div class="input-wrapper" style="padding-left: 12px;">
+                        <input type="password" id="forgotNewPassword" placeholder="Please enter new password" style="padding-left: 0;">
                         <button type="button" class="toggle-password" onclick="togglePasswordVisibility('forgotNewPassword', this)">👁️</button>
                     </div>
                 </div>
                 <div class="form-group">
-                    <label>Confirm New Password</label>
-                    <div class="input-wrapper">
-                        <input type="password" id="forgotConfirmPassword" placeholder="Confirm new password">
+                    <label>Confirm new password</label>
+                    <div class="input-wrapper" style="padding-left: 12px;">
+                        <input type="password" id="forgotConfirmPassword" placeholder="Please enter password again" style="padding-left: 0;">
                         <button type="button" class="toggle-password" onclick="togglePasswordVisibility('forgotConfirmPassword', this)">👁️</button>
                     </div>
                 </div>
-                <button class="action-btn" style="background: #e67e22; margin-top: 10px;" onclick="handleResetPassword()">Update Password 🔑</button>
-                <div style="text-align: center;">
+                <button class="yarwin-btn" onclick="handleResetPassword()">Confirm</button>
+                <div class="auth-footer-links" style="justify-content: center;">
                     <span class="auth-link" onclick="switchAuthPage('loginPage')">Remember password? Login</span>
                 </div>
             </div>
@@ -489,30 +525,30 @@
         <div id="upiForm">
             <div class="form-group">
                 <label>UPI ID</label>
-                <div class="input-wrapper"><input type="text" id="upiId" placeholder="e.g. example@upi"></div>
+                <div class="input-wrapper" style="padding-left:12px;"><input type="text" id="upiId" placeholder="e.g. example@upi" style="padding-left:0;"></div>
             </div>
             <div class="form-group">
                 <label>Mobile Number</label>
-                <div class="input-wrapper"><input type="tel" id="upiMobile" placeholder="Enter mobile number"></div>
+                <div class="input-wrapper" style="padding-left:12px;"><input type="tel" id="upiMobile" placeholder="Enter mobile number" style="padding-left:0;"></div>
             </div>
         </div>
 
         <div id="bankForm" style="display: none;">
             <div class="form-group">
                 <label>Bank Name</label>
-                <div class="input-wrapper"><input type="text" id="bankNameInput" placeholder="Enter bank name"></div>
+                <div class="input-wrapper" style="padding-left:12px;"><input type="text" id="bankNameInput" placeholder="Enter bank name" style="padding-left:0;"></div>
             </div>
             <div class="form-group">
                 <label>Account Number</label>
-                <div class="input-wrapper"><input type="number" id="bankAccNo" placeholder="Enter account number"></div>
+                <div class="input-wrapper" style="padding-left:12px;"><input type="number" id="bankAccNo" placeholder="Enter account number" style="padding-left:0;"></div>
             </div>
             <div class="form-group">
                 <label>Account Holder Name</label>
-                <div class="input-wrapper"><input type="text" id="bankHolderName" placeholder="Enter full name"></div>
+                <div class="input-wrapper" style="padding-left:12px;"><input type="text" id="bankHolderName" placeholder="Enter full name" style="padding-left:0;"></div>
             </div>
             <div class="form-group">
                 <label>IFSC Code</label>
-                <div class="input-wrapper"><input type="text" id="bankIfsc" placeholder="Enter IFSC code"></div>
+                <div class="input-wrapper" style="padding-left:12px;"><input type="text" id="bankIfsc" placeholder="Enter IFSC code" style="padding-left:0;"></div>
             </div>
         </div>
 
@@ -605,7 +641,7 @@
     <div class="modal-box">
         <h3>💰 Enter Withdrawal Amount (₹)</h3>
         <p>Min: ₹100 | Max: ₹10,000</p>
-        <div class="form-group"><div class="input-wrapper"><input type="number" id="inputMoney" placeholder="Enter amount in ₹"></div></div>
+        <div class="form-group"><div class="input-wrapper" style="padding-left:12px;"><input type="number" id="inputMoney" placeholder="Enter amount in ₹" style="padding-left:0;"></div></div>
         <div style="display: flex; gap: 10px;">
             <button class="action-btn" style="background: #e74c3c; padding: 8px;" onclick="closeAmountModal()">Cancel</button>
             <button class="btn-small-apply" style="flex: 1; margin-top: 0;" onclick="applyAmount()">Apply</button>
@@ -618,8 +654,8 @@
         <h3>🔒 Confirm Password</h3>
         <p>Enter your password to authorize.</p>
         <div class="form-group">
-            <div class="input-wrapper">
-                <input type="password" id="inputPassword" placeholder="Enter password">
+            <div class="input-wrapper" style="padding-left: 12px;">
+                <input type="password" id="inputPassword" placeholder="Enter password" style="padding-left: 0;">
                 <button type="button" class="toggle-password" onclick="togglePasswordVisibility('inputPassword', this)">👁️</button>
             </div>
         </div>
@@ -836,7 +872,7 @@
             } else {
                 clearInterval(otpTimerInterval);
                 btn.disabled = false;
-                btn.innerText = 'Send';
+                btn.innerText = 'OTP';
             }
         }, 1000);
     }
@@ -871,7 +907,7 @@
             } else {
                 clearInterval(forgotOtpTimerInterval);
                 btn.disabled = false;
-                btn.innerText = 'Send';
+                btn.innerText = 'OTP';
             }
         }, 1000);
     }
@@ -1406,6 +1442,7 @@
         document.getElementById('periodDisplay').innerText = cfg.periodSeq;
 
         let htmlStr = '';
+        cfg.history.historyList = cfg.history || [];
         cfg.history.forEach(row => {
             let color = '#2ecc71';
             if ([2,4,6,8].includes(row.number)) color = '#e74c3c';
