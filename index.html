@@ -59,7 +59,7 @@
         .action-btn:hover { background: #4f46e5; }
         .action-btn:disabled { background: #334155; color: #94a3b8; cursor: not-allowed; }
 
-        /* Profile Page Layout (Left Pic + Right Details + Avatars) */
+        /* Profile Page Layout */
         .profile-top-section { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; background: #0f172a; padding: 15px; border-radius: 12px; border: 1px solid #334155; }
         .profile-left-col { display: flex; flex-direction: column; align-items: center; flex-shrink: 0; }
         .avatar-box { width: 80px; height: 80px; background: #6366f1; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 38px; border: 2px solid #38bdf8; overflow: hidden; cursor: pointer; transition: transform 0.2s; }
@@ -89,7 +89,6 @@
         .qr-placeholder img { width: 100%; height: 100%; object-fit: cover; }
         .upi-id-box { background: #1e293b; border: 1px dashed #38bdf8; padding: 10px; border-radius: 8px; font-size: 14px; font-weight: bold; color: #38bdf8; margin-bottom: 15px; display: inline-block; width: 100%; cursor: pointer; }
         
-        /* Deposit Amount Grid Options */
         .deposit-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 15px; }
         .deposit-amt-btn { background: #1e293b; border: 1px solid #334155; color: white; padding: 10px 0; border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer; text-align: center; }
         .deposit-amt-btn.active { background: #6366f1; border-color: #6366f1; }
@@ -131,7 +130,6 @@
         .btn-big { background: #e67e22; }
         .btn-small { background: #3498db; }
 
-        /* Scrollable Extended History Section */
         .history-section { margin: 0 10px 25px 10px; background: white; border-radius: 8px; border: 1px solid #e1e1e1; overflow: hidden; max-height: 280px; overflow-y: auto; }
         .history-tabs { display: flex; background: #f8f9fa; border-bottom: 1px solid #e1e1e1; position: sticky; top: 0; z-index: 5; }
         .history-tab { flex: 1; padding: 8px; text-align: center; font-size: 12px; font-weight: 600; color: #666; cursor: pointer; }
@@ -141,19 +139,16 @@
         .history-table th { background: #ff4d4f; color: white; padding: 6px; font-weight: 500; position: sticky; top: 33px; z-index: 4; }
         .history-table td { padding: 6px; border-bottom: 1px solid #f1f2f6; color: #333; }
 
-        /* Games Hub Page Styles */
         .games-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-top: 15px; }
         .game-card-item { background: linear-gradient(135deg, #3b82f6, #1d4ed8); border-radius: 12px; padding: 20px; text-align: center; cursor: pointer; transition: transform 0.2s; border: 1px solid #60a5fa; }
         .game-card-item:hover { transform: scale(1.03); }
         .game-card-item h3 { font-size: 16px; margin-bottom: 8px; color: #fff; }
         .game-card-item p { font-size: 11px; color: #bfdbfe; margin-bottom: 12px; }
 
-        /* Withdrawal Page Styles */
         .method-selector { display: flex; gap: 10px; margin-bottom: 20px; }
         .method-btn { flex: 1; padding: 12px; background: #0f172a; border: 1px solid #334155; color: white; border-radius: 8px; font-weight: bold; cursor: pointer; text-align: center; }
         .method-btn.active { background: #6366f1; border-color: #6366f1; }
 
-        /* Modal / Popup Styles */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: none; justify-content: center; align-items: center; z-index: 1000; }
         .modal-overlay.active { display: flex; }
         .modal-box { background: #1e293b; width: 90%; max-width: 380px; padding: 20px; border-radius: 12px; border: 1px solid #334155; text-align: center; }
@@ -161,7 +156,6 @@
         .modal-box p { font-size: 12px; color: #94a3b8; margin-bottom: 15px; }
         .btn-small-apply { background: #2ecc71; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 12px; margin-top: 10px; }
 
-        /* Game Result Popup Styles */
         .game-result-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.75); display: none; justify-content: center; align-items: center; z-index: 3000; }
         .game-result-overlay.active { display: flex; }
         .game-result-box { width: 85%; max-width: 340px; padding: 25px 20px; border-radius: 16px; text-align: center; color: white; box-shadow: 0 10px 30px rgba(0,0,0,0.5); animation: popScale 0.3s ease; }
@@ -174,11 +168,9 @@
         .win-result-btn { color: #27ae60; }
         .loss-result-btn { color: #c0392b; }
 
-        /* Toast Popup */
         .toast-popup { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-50px); background: #2ecc71; color: white; padding: 10px 20px; border-radius: 8px; font-weight: bold; font-size: 13px; z-index: 4000; box-shadow: 0 4px 15px rgba(0,0,0,0.3); opacity: 0; transition: all 0.3s ease; pointer-events: none; }
         .toast-popup.show { transform: translateX(-50%) translateY(0); opacity: 1; }
 
-        /* Bet Bottom Sheet Modal */
         .bet-sheet-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: flex-end; z-index: 2000; }
         .bet-sheet-overlay.active { display: flex; }
         .bet-sheet { background: #ffffff; color: #333; width: 100%; max-width: 450px; border-top-left-radius: 20px; border-top-right-radius: 20px; padding: 20px; box-shadow: 0 -4px 20px rgba(0,0,0,0.3); animation: slideUp 0.3s ease; }
@@ -189,7 +181,7 @@
         
         .coin-chips { display: flex; gap: 8px; margin-bottom: 15px; }
         .coin-chip { flex: 1; padding: 10px 0; background: #f1f2f6; border: 1px solid #dcdde1; border-radius: 6px; font-weight: bold; font-size: 13px; text-align: center; cursor: pointer; color: #333; }
-        .coin-chip.active { color: white; border-color: transparent; }
+        .coin-chip.active { color: white; border-color: transparent; background: #6366f1; }
 
         .quantity-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; }
         .qty-controls { display: flex; align-items: center; border: 1px solid #dcdde1; border-radius: 6px; overflow: hidden; background: #f1f2f6; }
@@ -207,7 +199,6 @@
         .btn-cancel-bet { background: #f1f2f6; color: #333; border: none; padding: 14px 20px; cursor: pointer; font-size: 14px; }
         .btn-confirm-bet { color: white; border: none; flex: 1; padding: 14px; cursor: pointer; font-size: 14px; text-align: center; background: #2ecc71; }
 
-        /* Bottom Navigation Bar */
         .nav-bar { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 450px; background: #1e293b; display: flex; justify-content: space-around; border-top: 1px solid #334155; padding: 12px 0; z-index: 100; }
         .nav-item { text-align: center; color: #94a3b8; text-decoration: none; font-size: 12px; font-weight: bold; cursor: pointer; background: none; border: none; }
         .nav-item.active { color: #6366f1; }
@@ -217,7 +208,7 @@
 
 <div class="container">
     
-    <!-- AUTH 1: LOGIN PAGE -->
+    <!-- LOGIN PAGE -->
     <div id="loginPage" class="page">
         <div class="auth-container">
             <div class="auth-logo">🪙</div>
@@ -250,7 +241,7 @@
         </div>
     </div>
 
-    <!-- AUTH 2: REGISTER PAGE -->
+    <!-- REGISTER PAGE -->
     <div id="registerPage" class="page">
         <div class="auth-container">
             <div class="auth-logo">📝</div>
@@ -292,7 +283,7 @@
         </div>
     </div>
 
-    <!-- AUTH 3: FORGOT PASSWORD PAGE -->
+    <!-- FORGOT PASSWORD PAGE -->
     <div id="forgotPage" class="page">
         <div class="auth-container">
             <div class="auth-logo">🔒</div>
@@ -334,9 +325,8 @@
         </div>
     </div>
 
-    <!-- 1. HOME PAGE -->
+    <!-- HOME PAGE -->
     <div id="homePage" class="page">
-        <!-- Top Minimal Balance Bars -->
         <div class="top-balance-bar">
             <div class="mini-wallet">
                 <span>🪙</span> <span id="userwallet">0</span>
@@ -366,7 +356,7 @@
         </div>
     </div>
 
-    <!-- 2. GAMES HUB PAGE -->
+    <!-- GAMES HUB PAGE -->
     <div id="gamesHubPage" class="page">
         <h2 style="font-size: 20px; margin-bottom: 5px; color: #f8fafc;">🎮 Games Arena</h2>
         <p style="font-size: 13px; color: #94a3b8; margin-bottom: 15px;">Choose your favorite game and start winning coins!</p>
@@ -380,9 +370,8 @@
         </div>
     </div>
 
-    <!-- 3. PROFILE PAGE -->
+    <!-- PROFILE PAGE -->
     <div id="profilePage" class="page">
-        <!-- Top Minimal Balance Bars on Profile Page -->
         <div class="top-balance-bar">
             <div class="mini-wallet">
                 <span>🪙</span> <span id="profileUserwallet">0</span>
@@ -392,7 +381,6 @@
             </div>
         </div>
 
-        <!-- Profile Top Section: Left Avatar (Clickable) + Right Details (UID read-only + Custom Username) -->
         <div class="profile-top-section">
             <div class="profile-left-col">
                 <div class="avatar-box" id="profileAvatarDisplay" onclick="openAvatarModal()" title="Click to change avatar">👤</div>
@@ -409,7 +397,6 @@
             </div>
         </div>
 
-        <!-- Square Menu Grid Layout for Profile -->
         <div class="profile-grid">
             <div class="profile-square-btn" onclick="switchPage('depositPage')">
                 <div class="square-icon">➕</div>
@@ -423,11 +410,11 @@
                 <div class="square-icon">💱</div>
                 <div class="square-title">Convert</div>
             </div>
-            <div class="profile-square-btn" onclick="alert('Opening Transaction History...')">
+            <div class="profile-square-btn" onclick="showToast('📊 History feature is active')">
                 <div class="square-icon">📊</div>
                 <div class="square-title">History</div>
             </div>
-            <div class="profile-square-btn" onclick="alert('Opening Terms & Conditions...')">
+            <div class="profile-square-btn" onclick="showToast('📜 Terms & Conditions applied')">
                 <div class="square-icon">📜</div>
                 <div class="square-title">Terms</div>
             </div>
@@ -469,7 +456,7 @@
             </div>
 
             <div class="qr-placeholder">
-                <img src="1000261836.png" alt="Deposit QR Code">
+                <img src="1000261836.png" alt="Deposit QR Code" onerror="this.style.display='none'; this.parentElement.innerHTML='<span style=\'color:#333; font-size:12px; font-weight:bold;\'>QR Image (1000261836.png) Missing</span>';">
             </div>
 
             <div style="font-size: 12px; color: #94a3b8; margin-bottom: 2px;">Account Holder Name</div>
@@ -480,7 +467,7 @@
         </div>
     </div>
 
-    <!-- 4. WITHDRAWAL PAGE -->
+    <!-- WITHDRAWAL PAGE -->
     <div id="withdrawPage" class="page">
         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
             <button class="action-btn" style="width: auto; padding: 6px 12px; background: #334155;" onclick="switchPage('profilePage')">← Back</button>
@@ -532,7 +519,7 @@
         <button class="action-btn" style="background: #2ecc71; margin-top: 10px;" onclick="initiateWithdrawal()">Submit Withdrawal 🚀</button>
     </div>
 
-    <!-- 5. COLOR GAME PAGE -->
+    <!-- COLOR GAME PAGE -->
     <div id="gamePage" class="page">
         <div style="margin-bottom: 15px;">
             <button class="action-btn" style="width: auto; padding: 6px 12px; background: #334155;" onclick="switchPage('gamesHubPage')">← Back to Games</button>
@@ -643,7 +630,6 @@
     </div>
 </div>
 
-<!-- AVATAR SELECTOR MODAL -->
 <div class="modal-overlay" id="avatarModal">
     <div class="modal-box">
         <h3>Select Human Avatar</h3>
@@ -901,11 +887,6 @@
             return;
         }
 
-        if (identifier.length < 10) {
-            alert('❌ Please enter a valid mobile number!');
-            return;
-        }
-
         if (otpInput !== generatedOtp) {
             alert('❌ Incorrect OTP! Please check and enter the correct OTP.');
             return;
@@ -978,7 +959,7 @@
             }
             localStorage.setItem('userId', user.identifier);
             startAppSession();
-            alert(`✅ Welcome back!`);
+            showToast('✅ Welcome back!');
         } else {
             alert('❌ Invalid mobile number or password!');
         }
@@ -1001,7 +982,7 @@
         }
 
         if (newPass !== confirmNewPass) {
-            alert('❌ New Passwords do not match! Please re-type carefully.');
+            alert('❌ New Passwords do not match!');
             return;
         }
 
@@ -1009,7 +990,7 @@
         if (found) {
             found.password = newPass;
             localStorage.setItem('rewards_usersDB', JSON.stringify(usersDB));
-            alert('✅ Password updated successfully! Please login with your new password.');
+            alert('✅ Password updated successfully! Please login.');
             switchAuthPage('loginPage');
         } else {
             alert('❌ Account not found with this mobile number!');
@@ -1100,7 +1081,7 @@
         localStorage.removeItem('userId');
         if (dailyTimerInterval) clearInterval(dailyTimerInterval);
         closeLogoutModal();
-        alert('🚪 Logged out successfully!');
+        showToast('🚪 Logged out successfully!');
         user = null;
         switchAuthPage('loginPage');
     }
@@ -1164,7 +1145,6 @@
         }
     }
 
-    /* DAILY CHECK-IN WITH 12:00 AM RESET & TIMER */
     function checkDailyClaimStatus() {
         let todayStr = new Date().toDateString();
         let btn = document.getElementById('claimDailyBtn');
@@ -1183,14 +1163,14 @@
     function claimDaily() {
         let todayStr = new Date().toDateString();
         if (user.lastDailyClaimDate === todayStr) {
-            alert('❌ Aap aaj ka daily bonus pehle hi claim kar chuke hain! Agla bonus raat 12:00 AM ke baad milega.');
+            alert('❌ Aap aaj ka daily bonus pehle hi claim kar chuke hain!');
             return;
         }
         user.points += 20;
         user.lastDailyClaimDate = todayStr;
         saveUserData();
         updateWalletDisplay();
-        alert('🎉 +20 Daily Coins claimed successfully!');
+        showToast('🎉 +20 Daily Coins claimed successfully!');
         checkDailyClaimStatus();
     }
 
@@ -1200,11 +1180,10 @@
         function updateTimer() {
             let now = new Date();
             let midnight = new Date();
-            midnight.setHours(24, 0, 0, 0); // Next 12:00 AM (00:00)
+            midnight.setHours(24, 0, 0, 0);
 
             let diff = midnight - now;
             if (diff <= 0) {
-                // Reset has reached
                 if (dailyTimerInterval) clearInterval(dailyTimerInterval);
                 btn.disabled = false;
                 btn.innerText = 'Claim Daily Reward';
@@ -1265,7 +1244,7 @@
         let minCoinsRequired = 10000;
 
         if (user.points < minCoinsRequired) {
-            alert(`❌ Minimum 10,000 coins (₹100) required to convert! Aapke paas abhi ${user.points} coins hain.`);
+            alert(`❌ Minimum 10,000 coins (₹100) required to convert! Aapke paas ${user.points} coins hain.`);
             return;
         }
 
@@ -1278,27 +1257,17 @@
             saveUserData();
             updateWalletDisplay();
             
-            alert(`✅ Successfully converted ${deductedCoins} coins into ₹${convertAmount} real money!`);
+            showToast(`✅ Converted ${deductedCoins} coins into ₹${convertAmount}!`);
         }
     }
 
     function shareApp() {
         let referralLink = window.location.origin + window.location.pathname + "?ref=" + user.uid;
-        let shareText = `Join Rewards Zone using my referral link and start earning: ${referralLink}`;
-        
         if (navigator.share) {
-            navigator.share({
-                title: 'Rewards Zone',
-                text: shareText,
-                url: referralLink,
-            }).then(() => {
-                console.log('Shared successfully');
-            }).catch((error) => {
-                console.log('Error sharing', error);
-            });
+            navigator.share({ title: 'Rewards Zone', text: 'Start earning coins!', url: referralLink });
         } else {
             navigator.clipboard.writeText(referralLink).then(() => {
-                alert('✅ Referral link copied to clipboard! Share it with your friends on WhatsApp, Telegram, or any social media app.');
+                showToast('✅ Referral link copied to clipboard!');
             });
         }
     }
@@ -1405,7 +1374,6 @@
             let choice = uBet.choice;
             if (choice === 'Green' && [1, 3, 7, 9].includes(num)) isWin = true;
             else if (choice === 'Red' && [2, 4, 6, 8].includes(num)) isWin = true;
-            else if (choice === 'Violet' && [0, 5].includes(num)) isWin5 = true; // fixed check
             else if (choice === 'Violet' && [0, 5].includes(num)) isWin = true;
             else if (choice === 'Big' && bs === 'Big') isWin = true;
             else if (choice === 'Small' && bs === 'Small') isWin = true;
