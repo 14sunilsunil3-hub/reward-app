@@ -754,6 +754,15 @@
         });
     }
 
+    // Check query params for referral on startup
+    window.addEventListener('DOMContentLoaded', () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        let refCode = urlParams.get('ref');
+        if (refCode) {
+            localStorage.setItem('rewards_pendingReferrer', refCode);
+        }
+    });
+
     if (loggedInIdentifier) {
         let found = usersDB.find(u => u.identifier === loggedInIdentifier);
         if (found) user = found;
@@ -769,7 +778,7 @@
             money: 500,
             password: '123456',
             withdrawCount: 0,
-            lastWithdrawDate: new Date().toISOString().slice(0,10)
+            lastDailyClaimDate: ''
         };
         usersDB.push(user);
         localStorage.setItem('rewards_usersDB', JSON.stringify(usersDB));
@@ -780,13 +789,7 @@
         if (user.username === undefined) user.username = 'User_' + user.identifier.slice(-4);
         if (user.avatar === undefined) user.avatar = '👤';
         if (user.money === undefined) user.money = 0;
-    }
-
-    let todayDate = new Date().toISOString().slice(0,10);
-    if (user && user.lastWithdrawDate !== todayDate) {
-        user.withdrawCount = 0;
-        user.lastWithdrawDate = todayDate;
-        saveUserData();
+        if (user.lastDailyClaimDate === undefined) user.lastDailyClaimDate = '';
     }
 
     if (loggedInIdentifier && user) {
@@ -927,12 +930,23 @@
             money: 100,
             password: password,
             withdrawCount: 0,
-            lastWithdrawDate: todayDate
+            lastDailyClaimDate: ''
         };
 
         usersDB.push(newUser);
+
+        // Check if registration was through a referral link
+        let pendingRef = localStorage.getItem('rewards_pendingReferrer');
+        if (pendingRef) {
+            let referrerUser = usersDB.find(u => u.uid === pendingRef || u.identifier === pendingRef);
+            if (referrerUser) {
+                referrerUser.points += 500; // Reward referrer after successful registration completion
+                localStorage.removeItem('rewards_pendingReferrer');
+            }
+        }
+
         localStorage.setItem('rewards_usersDB', JSON.stringify(usersDB));
-        alert('✅ Registration Successful! You received starting bonuses. Please login.');
+        alert('✅ Registration Successful! Registration complete hone par refer karne wale ko reward bhej diya gaya hai. Please login.');
         switchAuthPage('loginPage');
     }
 
@@ -953,6 +967,7 @@
             if (user.username === undefined) user.username = 'User_' + user.identifier.slice(-4);
             if (user.avatar === undefined) user.avatar = '👤';
             if (user.money === undefined) user.money = 0;
+            if (user.lastDailyClaimDate === undefined) user.lastDailyClaimDate = '';
 
             if (rememberChecked) {
                 localStorage.setItem('rewards_rememberedUser', user.identifier);
@@ -1062,10 +1077,6 @@
     let selectedMethod = 'UPI';
 
     function openWithdrawPage() {
-        if (user.withdrawCount >= 3) {
-            alert('❌ Daily withdrawal limit reached! (Max 3 times/day)');
-            return;
-        }
         switchPage('withdrawPage');
         document.getElementById('amountModal').classList.add('active');
     }
@@ -1138,7 +1149,6 @@
         let pass = document.getElementById('inputPassword').value;
         if (pass === user.password) {
             user.money -= selectedMoneyAmount;
-            user.withdrawCount += 1;
             saveUserData();
             updateWalletDisplay();
             closePasswordModal();
@@ -1154,10 +1164,16 @@
     }
 
     function claimDaily() {
+        let todayStr = new Date().toDateString(); // Resets at midnight (00:00 AM) based on local date string change
+        if (user.lastDailyClaimDate === todayStr) {
+            alert('❌ Aap aaj ka daily bonus pehle hi claim kar chuke hain! Agla bonus raat 12:00 AM ke baad milega.');
+            return;
+        }
         user.points += 20;
+        user.lastDailyClaimDate = todayStr;
         saveUserData();
         updateWalletDisplay();
-        alert('+20 Daily Coins claimed!');
+        alert('🎉 +20 Daily Coins claimed successfully!');
     }
 
     // DIRECT LINK WATCH AD FUNCTION WITH 60s TIMER
@@ -1218,7 +1234,26 @@
         }
     }
 
-    function shareApp() { alert('Invite link copied!'); }
+    function shareApp() {
+        let referralLink = window.location.origin + window.location.pathname + "?ref=" + user.uid;
+        let shareText = `Join Rewards Zone using my referral link and start earning: ${referralLink}`;
+        
+        if (navigator.share) {
+            navigator.share({
+                title: 'Rewards Zone',
+                text: shareText,
+                url: referralLink,
+            }).then(() => {
+                console.log('Shared successfully');
+            }).catch((error) => {
+                console.log('Error sharing', error);
+            });
+        } else {
+            navigator.clipboard.writeText(referralLink).then(() => {
+                alert('✅ Referral link copied to clipboard! Share it with your friends on WhatsApp, Telegram, or any social media app.');
+            });
+        }
+    }
 
     /* Game Engine */
     let gameConfigs = {
