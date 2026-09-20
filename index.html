@@ -57,6 +57,7 @@
         
         .action-btn { background: #6366f1; color: white; border: none; padding: 12px; border-radius: 8px; width: 100%; font-weight: bold; cursor: pointer; }
         .action-btn:hover { background: #4f46e5; }
+        .action-btn:disabled { background: #334155; color: #94a3b8; cursor: not-allowed; }
 
         /* Profile Page Layout (Left Pic + Right Details + Avatars) */
         .profile-top-section { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; background: #0f172a; padding: 15px; border-radius: 12px; border: 1px solid #334155; }
@@ -348,7 +349,7 @@
         <div class="card">
             <h4>🎁 Daily Check-in Bonus</h4>
             <p>Claim your free daily login reward (+20 coins).</p>
-            <button class="action-btn" onclick="claimDaily()">Claim Daily Reward</button>
+            <button class="action-btn" id="claimDailyBtn" onclick="claimDaily()">Claim Daily Reward</button>
         </div>
 
         <div class="card">
@@ -738,6 +739,7 @@
     let otpTimerInterval = null;
     let forgotOtpTimerInterval = null;
     let selectedDepositAmt = 100;
+    let dailyTimerInterval = null;
 
     function selectDepositAmount(amt, el) {
         selectedDepositAmt = amt;
@@ -754,7 +756,6 @@
         });
     }
 
-    // Check query params for referral on startup
     window.addEventListener('DOMContentLoaded', () => {
         const urlParams = new URLSearchParams(window.location.search);
         let refCode = urlParams.get('ref');
@@ -935,18 +936,17 @@
 
         usersDB.push(newUser);
 
-        // Check if registration was through a referral link
         let pendingRef = localStorage.getItem('rewards_pendingReferrer');
         if (pendingRef) {
             let referrerUser = usersDB.find(u => u.uid === pendingRef || u.identifier === pendingRef);
             if (referrerUser) {
-                referrerUser.points += 500; // Reward referrer after successful registration completion
+                referrerUser.points += 500;
                 localStorage.removeItem('rewards_pendingReferrer');
             }
         }
 
         localStorage.setItem('rewards_usersDB', JSON.stringify(usersDB));
-        alert('✅ Registration Successful! Registration complete hone par refer karne wale ko reward bhej diya gaya hai. Please login.');
+        alert('✅ Registration Successful! Please login.');
         switchAuthPage('loginPage');
     }
 
@@ -1021,11 +1021,11 @@
         localStorage.setItem('userId', user.identifier);
         updateWalletDisplay();
         
-        // Populate Profile details
         document.getElementById('profileAvatarDisplay').innerText = user.avatar;
         document.getElementById('profileUidDisplay').value = user.uid;
         document.getElementById('profileUsernameInput').value = user.username;
 
+        checkDailyClaimStatus();
         switchPage('homePage');
     }
 
@@ -1098,6 +1098,7 @@
         localStorage.removeItem('rewards_rememberedUser');
         sessionStorage.removeItem('rewards_sessionUser');
         localStorage.removeItem('userId');
+        if (dailyTimerInterval) clearInterval(dailyTimerInterval);
         closeLogoutModal();
         alert('🚪 Logged out successfully!');
         user = null;
@@ -1163,8 +1164,24 @@
         }
     }
 
+    /* DAILY CHECK-IN WITH 12:00 AM RESET & TIMER */
+    function checkDailyClaimStatus() {
+        let todayStr = new Date().toDateString();
+        let btn = document.getElementById('claimDailyBtn');
+
+        if (dailyTimerInterval) clearInterval(dailyTimerInterval);
+
+        if (user.lastDailyClaimDate === todayStr) {
+            btn.disabled = true;
+            startMidnightCountdown();
+        } else {
+            btn.disabled = false;
+            btn.innerText = 'Claim Daily Reward';
+        }
+    }
+
     function claimDaily() {
-        let todayStr = new Date().toDateString(); // Resets at midnight (00:00 AM) based on local date string change
+        let todayStr = new Date().toDateString();
         if (user.lastDailyClaimDate === todayStr) {
             alert('❌ Aap aaj ka daily bonus pehle hi claim kar chuke hain! Agla bonus raat 12:00 AM ke baad milega.');
             return;
@@ -1174,9 +1191,41 @@
         saveUserData();
         updateWalletDisplay();
         alert('🎉 +20 Daily Coins claimed successfully!');
+        checkDailyClaimStatus();
     }
 
-    // DIRECT LINK WATCH AD FUNCTION WITH 60s TIMER
+    function startMidnightCountdown() {
+        let btn = document.getElementById('claimDailyBtn');
+        
+        function updateTimer() {
+            let now = new Date();
+            let midnight = new Date();
+            midnight.setHours(24, 0, 0, 0); // Next 12:00 AM (00:00)
+
+            let diff = midnight - now;
+            if (diff <= 0) {
+                // Reset has reached
+                if (dailyTimerInterval) clearInterval(dailyTimerInterval);
+                btn.disabled = false;
+                btn.innerText = 'Claim Daily Reward';
+                return;
+            }
+
+            let hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+            let minutes = Math.floor((diff / (1000 * 60)) % 60);
+            let seconds = Math.floor((diff / 1000) % 60);
+
+            let hh = hours < 10 ? '0' + hours : hours;
+            let mm = minutes < 10 ? '0' + minutes : minutes;
+            let ss = seconds < 10 ? '0' + seconds : seconds;
+
+            btn.innerText = `Next Bonus in ${hh}:${mm}:${ss}`;
+        }
+
+        updateTimer();
+        dailyTimerInterval = setInterval(updateTimer, 1000);
+    }
+
     const DIRECT_AD_LINK = "https://omg10.com/4/11824331";
 
     function startWatchAd() {
@@ -1212,7 +1261,6 @@
         }, 1000);
     }
 
-    // CONVERT COINS TO MONEY FUNCTION (Minimum 10,000 Coins / ₹100 Limit)
     async function convertCoins() {
         let minCoinsRequired = 10000;
 
@@ -1357,6 +1405,7 @@
             let choice = uBet.choice;
             if (choice === 'Green' && [1, 3, 7, 9].includes(num)) isWin = true;
             else if (choice === 'Red' && [2, 4, 6, 8].includes(num)) isWin = true;
+            else if (choice === 'Violet' && [0, 5].includes(num)) isWin5 = true; // fixed check
             else if (choice === 'Violet' && [0, 5].includes(num)) isWin = true;
             else if (choice === 'Big' && bs === 'Big') isWin = true;
             else if (choice === 'Small' && bs === 'Small') isWin = true;
