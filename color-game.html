@@ -11,7 +11,9 @@
         
         .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid #1e293b; padding-bottom: 10px; }
         .top-bar h2 { font-size: 18px; color: #38bdf8; }
-        .wallet-badge { background: #1e293b; padding: 6px 12px; border-radius: 20px; font-weight: bold; font-size: 13px; color: #22c55e; border: 1px solid #334155; }
+        .wallet-container { display: flex; gap: 6px; }
+        .wallet-badge { background: #1e293b; padding: 6px 10px; border-radius: 20px; font-weight: bold; font-size: 12px; color: #22c55e; border: 1px solid #334155; }
+        .coin-badge { background: #1e293b; padding: 6px 10px; border-radius: 20px; font-weight: bold; font-size: 12px; color: #facc15; border: 1px solid #334155; cursor: pointer; }
 
         .timer-tabs { display: flex; gap: 5px; margin-bottom: 15px; }
         .tab-btn { flex: 1; background: #1e293b; border: 1px solid #334155; color: #94a3b8; padding: 8px; border-radius: 8px; font-size: 12px; font-weight: bold; cursor: pointer; text-align: center; }
@@ -31,6 +33,38 @@
         .quick-chips { display: flex; gap: 4px; margin-bottom: 12px; }
         .chip { flex: 1; background: #1e293b; border: 1px solid #334155; color: #cbd5e1; padding: 6px 0; border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: bold; text-align: center; }
 
+        /* Betting Area Wrapper with Watermark Overlay */
+        .betting-area-wrapper {
+            position: relative;
+            width: 100%;
+        }
+
+        .lock-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.65);
+            backdrop-filter: blur(2px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 99;
+            border-radius: 10px;
+        }
+
+        .watermark-text {
+            color: #ff4d4d;
+            font-size: 16px;
+            font-weight: bold;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 10px 15px;
+            border-radius: 6px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            text-align: center;
+        }
+
         .color-buttons { display: flex; gap: 8px; margin-bottom: 12px; }
         .c-btn { flex: 1; padding: 12px 0; border: none; border-radius: 8px; font-weight: bold; font-size: 13px; color: white; cursor: pointer; }
         .btn-green { background: #22c55e; }
@@ -46,8 +80,6 @@
         .num-ball { background: #1e293b; border: 1px solid #334155; color: white; padding: 10px 0; border-radius: 50%; width: 38px; height: 38px; margin: 0 auto; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 13px; cursor: pointer; transition: 0.2s; }
         .num-ball:hover { background: #4f46e5; border-color: #6366f1; }
 
-        /* Disabled state styling for the last 5 seconds */
-        .locked { opacity: 0.4; pointer-events: none !important; cursor: not-allowed !important; }
         #gameResult { text-align: center; font-size: 14px; font-weight: bold; margin-bottom: 12px; min-height: 20px; }
 
         .history-section { margin-top: 15px; background: #0b0f19; padding: 10px; border-radius: 10px; border: 1px solid #1e293b; }
@@ -64,7 +96,10 @@
 <div class="app-container">
     <div class="top-bar">
         <h2>📊 Pro Color Trading</h2>
-        <div class="wallet-badge" id="userWallet">₹ 0</div>
+        <div class="wallet-container">
+            <div class="wallet-badge" id="userWallet">₹ 0</div>
+            <div class="coin-badge" id="userCoins" onclick="convertCoins()" title="Click to convert coins to cash">🪙 0</div>
+        </div>
     </div>
 
     <div class="timer-tabs">
@@ -98,23 +133,29 @@
         <div class="chip" onclick="clearBet()">CLEAR</div>
     </div>
 
-    <!-- Action container to lock during last 5 seconds -->
-    <div id="tradingControls">
-        <div class="section-title">Colors (Win 100% Profit)</div>
-        <div class="color-buttons">
-            <button class="c-btn btn-green" onclick="placeBet('color', 'green')">Green</button>
-            <button class="c-btn btn-violet" onclick="placeBet('color', 'violet')">Violet</button>
-            <button class="c-btn btn-red" onclick="placeBet('color', 'red')">Red</button>
+    <!-- Betting Controls with 5s Watermark Lock Overlay -->
+    <div class="betting-area-wrapper" id="bettingAreaWrapper">
+        <div id="lockOverlay" class="lock-overlay">
+            <div class="watermark-text">🔒 Betting Closed (Last 5s)</div>
         </div>
 
-        <div class="section-title">Big / Small (Win 90% Profit)</div>
-        <div class="size-buttons">
-            <button class="s-btn btn-small" onclick="placeBet('size', 'small')">Small (0-4)</button>
-            <button class="s-btn btn-big" onclick="placeBet('size', 'big')">Big (5-9)</button>
-        </div>
+        <div id="tradingControls">
+            <div class="section-title">Colors (Win 100% Profit)</div>
+            <div class="color-buttons">
+                <button class="c-btn btn-green" onclick="placeBet('color', 'green')">Green</button>
+                <button class="c-btn btn-violet" onclick="placeBet('color', 'violet')">Violet</button>
+                <button class="c-btn btn-red" onclick="placeBet('color', 'red')">Red</button>
+            </div>
 
-        <div class="section-title">Select Number 0-9 (Win 200% Profit)</div>
-        <div class="number-grid" id="numberGrid"></div>
+            <div class="section-title">Big / Small (Win 90% Profit)</div>
+            <div class="size-buttons">
+                <button class="s-btn btn-small" onclick="placeBet('size', 'small')">Small (0-4)</button>
+                <button class="s-btn btn-big" onclick="placeBet('size', 'big')">Big (5-9)</button>
+            </div>
+
+            <div class="section-title">Select Number 0-9 (Win 200% Profit)</div>
+            <div class="number-grid" id="numberGrid"></div>
+        </div>
     </div>
 
     <p id="gameResult"></p>
@@ -139,67 +180,65 @@
     <a href="index.html" class="back-btn">⬅ Return to Home</a>
 </div>
 
+<script src="/socket.io/socket.io.js"></script>
 <script>
+    const socket = io();
     let user = JSON.parse(localStorage.getItem('user'));
     
     let userId = user ? (user._id || user.userId) : null;
     let balance = user ? (user.balance !== undefined ? user.balance : user.points) : 0;
+    let rewardCoins = user ? (user.rewardCoins || 0) : 0;
 
     if (!user || !userId) {
         alert('Pehle login karo bhai!');
         window.location.href = 'index.html';
     } else {
+        updateWalletUI();
+    }
+
+    function updateWalletUI() {
         document.getElementById('userWallet').innerText = `₹ ${balance}`;
+        document.getElementById('userCoins').innerText = `🪙 ${rewardCoins}`;
     }
 
     let currentTimerType = '30s';
     let timeLeft = 30;
     let maxTime = 30;
-    let timerInterval;
 
     function switchTimer(type, seconds) {
         currentTimerType = type;
         timeLeft = seconds;
-            maxTime = seconds;
+        maxTime = seconds;
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         document.getElementById(`tab-${type}`).classList.add('active');
         document.getElementById('timerLabel').innerText = `${type} Timer`;
-        updateControlsLock();
     }
 
-    function startTimer() {
-        timerInterval = setInterval(() => {
-            timeLeft--;
-            let min = Math.floor(timeLeft / 60);
-            let sec = timeLeft % 60;
-            document.getElementById('countdown').innerText = `${min > 0 ? '0' + min + ':' : '00:'}${sec < 10 ? '0' : ''}${sec}`;
+    // Socket.io real-time timer sync and lock mechanism
+    socket.on('timerTick', (data) => {
+        timeLeft = data.countdown;
+        let min = Math.floor(timeLeft / 60);
+        let sec = timeLeft % 60;
+        document.getElementById('countdown').innerText = `${min > 0 ? '0' + min + ':' : '00:'}${sec < 10 ? '0' : ''}${sec}`;
 
-            // Check and lock/unlock interface based on remaining time (Last 5 seconds lock)
-            updateControlsLock();
-
-            if (timeLeft <= 0) {
-                timeLeft = maxTime;
-            }
-        }, 1000);
-    }
-
-    function updateControlsLock() {
-        const controls = document.getElementById('tradingControls');
+        const lockOverlay = document.getElementById('lockOverlay');
         const resultMsg = document.getElementById('gameResult');
-        
-        if (timeLeft <= 5) {
-            controls.classList.add('locked');
+
+        if (!data.isBettingOpen || timeLeft <= 5) {
+            lockOverlay.style.display = 'flex';
             resultMsg.style.color = '#f59e0b';
-            resultMsg.innerText = `🔒 Betting closed! Round ending in ${timeLeft}s...`;
+            resultMsg.innerText = `🔒 Betting closed! Waiting for result...`;
         } else {
-            controls.classList.remove('locked');
+            lockOverlay.style.display = 'none';
             if (resultMsg.innerText.includes('Betting closed')) {
                 resultMsg.innerText = '';
             }
         }
-    }
+    });
 
-    startTimer();
+    socket.on('gameResult', (result) => {
+        document.getElementById('periodId').innerText = result.period;
+    });
 
     const numGrid = document.getElementById('numberGrid');
     for (let i = 0; i <= 9; i++) {
@@ -224,6 +263,40 @@
         document.getElementById('betAmount').value = '';
     }
 
+    // Convert Coins to Cash Function
+    async function convertCoins() {
+        if (rewardCoins < 100) {
+            alert('Kam se kam 100 coins hone chahiye convert karne ke liye! (100 Coins = ₹1)');
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/convert-coins', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userId })
+            });
+            const data = await response.json();
+            if (response.ok && data.success) {
+                balance = data.balance;
+                rewardCoins = data.rewardCoins;
+                updateWalletUI();
+                
+                if (user) {
+                    user.balance = balance;
+                    user.rewardCoins = rewardCoins;
+                    localStorage.setItem('user', JSON.stringify(user));
+                }
+                alert(data.message);
+            } else {
+                alert(data.message || 'Conversion failed');
+            }
+        } catch (err) {
+            console.error(err);
+            alert('Server error during coin conversion');
+        }
+    }
+
     async function placeBet(betType, betValue) {
         if (timeLeft <= 5) {
             alert('Last 5 seconds me bet lagana band hai!');
@@ -231,10 +304,9 @@
         }
 
         const betAmount = document.getElementById('betAmount').value;
-        const resultText = document.getElementById('gameResult');
 
         if (!betAmount || betAmount < 1) {
-            alert('Kam se kam ₹1 ki bet lagani padegi!');
+            alert('Kam se kam ₹1 की bet lagani padegi!');
             return;
         }
         if (Number(betAmount) > balance) {
@@ -260,7 +332,7 @@
                     user.points = balance;
                     localStorage.setItem('user', JSON.stringify(user));
                 }
-                document.getElementById('userWallet').innerText = `₹ ${balance}`;
+                updateWalletUI();
                 document.getElementById('periodId').innerText = data.periodId;
 
                 if (data.history && data.history.length > 0) {
