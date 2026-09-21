@@ -160,7 +160,7 @@
     function switchTimer(type, seconds) {
         currentTimerType = type;
         timeLeft = seconds;
-        maxTime = seconds;
+            maxTime = seconds;
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         document.getElementById(`tab-${type}`).classList.add('active');
         document.getElementById('timerLabel').innerText = `${type} Timer`;
