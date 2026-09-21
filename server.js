@@ -76,6 +76,11 @@ const withdrawalSchema = new mongoose.Schema({
 });
 const Withdrawal = mongoose.model('Withdrawal', withdrawalSchema);
 
+// Global Variables for Timer & Betting State
+let isBettingOpen = true;
+let countdownTime = 30;
+let currentPeriod = generatePeriodCode();
+
 // ==================== 3. AUTH & API ROUTES ====================
 
 // Register Route
@@ -141,11 +146,9 @@ app.post('/api/convert-coins', async (req, res) => {
             });
         }
 
-        // Calculate rupees and coins to deduct
         const rupeesEarned = Math.floor(user.rewardCoins / conversionRate);
         const coinsToDeduct = rupeesEarned * conversionRate;
 
-        // Update database values
         user.rewardCoins -= coinsToDeduct;
         user.balance += rupeesEarned;
         await user.save();
@@ -203,9 +206,13 @@ app.post('/api/withdraw', async (req, res) => {
     }
 });
 
-// Pro Color Game Bet & Play Route
+// Pro Color Game Bet & Play Route (Added Betting Open Check)
 app.post('/api/color-game', async (req, res) => {
     try {
+        if (!isBettingOpen) {
+            return res.status(400).json({ success: false, error: "Betting is closed for this period! Please wait for the next round." });
+        }
+
         const { userId, betType, betValue, betAmount, timerType } = req.body;
         const user = await User.findById(userId);
 
@@ -276,6 +283,10 @@ app.post('/api/color-game', async (req, res) => {
 
 app.post('/api/bet', async (req, res) => {
     try {
+        if (!isBettingOpen) {
+            return res.status(400).json({ success: false, message: "Betting is closed for this period!" });
+        }
+
         const { userId, period, betType, amount } = req.body;
         const user = await User.findById(userId);
 
@@ -351,43 +362,63 @@ async function processBets(period, outcome) {
     }
 }
 
-// ==================== 5. GAME TIMER LOOP ====================
-let currentPeriod = generatePeriodCode();
-
+// ==================== 5. GAME TIMER LOOP (1s Interval with 5s Lock) ====================
 setInterval(async () => {
     try {
-        const outcome = generateGameResult();
-        
-        const existingResult = await GameResult.findOne({ period: currentPeriod });
-        if (!existingResult) {
-            const gameResult = new GameResult({
+        countdownTime--;
+
+        // Jab 5 seconds bachein, tab betting close kar do
+        if (countdownTime === 5) {
+            isBettingOpen = false;
+            io.emit('bettingStatus', { isOpen: false, message: "Betting closed for this period!" });
+        }
+
+        // Jab timer 0 ho jaye, tab result process karein
+        if (countdownTime <= 0) {
+            const outcome = generateGameResult();
+            
+            const existingResult = await GameResult.findOne({ period: currentPeriod });
+            if (!existingResult) {
+                const gameResult = new GameResult({
+                    period: currentPeriod,
+                    number: outcome.number,
+                    color: outcome.color,
+                    size: outcome.size
+                });
+                await gameResult.save();
+            }
+
+            await processBets(currentPeriod, outcome);
+
+            io.emit('gameResult', {
                 period: currentPeriod,
                 number: outcome.number,
                 color: outcome.color,
                 size: outcome.size
             });
-            await gameResult.save();
+
+            // Naya period start karein aur timer reset karein
+            currentPeriod = generatePeriodCode();
+            countdownTime = 30;
+            isBettingOpen = true;
+
+            io.emit('bettingStatus', { isOpen: true, period: currentPeriod });
         }
 
-        await processBets(currentPeriod, outcome);
+        // Har second timer tick sabhi clients ko bhejo
+        io.emit('timerTick', { countdown: countdownTime, isBettingOpen });
 
-        io.emit('gameResult', {
-            period: currentPeriod,
-            number: outcome.number,
-            color: outcome.color,
-            size: outcome.size
-        });
-
-        currentPeriod = generatePeriodCode();
-        
     } catch (err) {
         console.log("Game loop error:", err.message);
     }
-}, 30000); 
+}, 1000); 
 
 // ==================== 6. SOCKET.IO CONNECTION ====================
 io.on('connection', (socket) => {
     console.log('A user connected:', socket.id);
+
+    // Naye connect hone wale user ko turant current timer status bhej do
+    socket.emit('timerTick', { countdown: countdownTime, isBettingOpen });
 
     socket.on('disconnect', () => {
         console.log('User disconnected:', socket.id);
