@@ -46,6 +46,8 @@
         .num-ball { background: #1e293b; border: 1px solid #334155; color: white; padding: 10px 0; border-radius: 50%; width: 38px; height: 38px; margin: 0 auto; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 13px; cursor: pointer; transition: 0.2s; }
         .num-ball:hover { background: #4f46e5; border-color: #6366f1; }
 
+        /* Disabled state styling for the last 5 seconds */
+        .locked { opacity: 0.4; pointer-events: none !important; cursor: not-allowed !important; }
         #gameResult { text-align: center; font-size: 14px; font-weight: bold; margin-bottom: 12px; min-height: 20px; }
 
         .history-section { margin-top: 15px; background: #0b0f19; padding: 10px; border-radius: 10px; border: 1px solid #1e293b; }
@@ -96,21 +98,24 @@
         <div class="chip" onclick="clearBet()">CLEAR</div>
     </div>
 
-    <div class="section-title">Colors (Win 100% Profit)</div>
-    <div class="color-buttons">
-        <button class="c-btn btn-green" onclick="placeBet('color', 'green')">Green</button>
-        <button class="c-btn btn-violet" onclick="placeBet('color', 'violet')">Violet</button>
-        <button class="c-btn btn-red" onclick="placeBet('color', 'red')">Red</button>
-    </div>
+    <!-- Action container to lock during last 5 seconds -->
+    <div id="tradingControls">
+        <div class="section-title">Colors (Win 100% Profit)</div>
+        <div class="color-buttons">
+            <button class="c-btn btn-green" onclick="placeBet('color', 'green')">Green</button>
+            <button class="c-btn btn-violet" onclick="placeBet('color', 'violet')">Violet</button>
+            <button class="c-btn btn-red" onclick="placeBet('color', 'red')">Red</button>
+        </div>
 
-    <div class="section-title">Big / Small (Win 90% Profit)</div>
-    <div class="size-buttons">
-        <button class="s-btn btn-small" onclick="placeBet('size', 'small')">Small (0-4)</button>
-        <button class="s-btn btn-big" onclick="placeBet('size', 'big')">Big (5-9)</button>
-    </div>
+        <div class="section-title">Big / Small (Win 90% Profit)</div>
+        <div class="size-buttons">
+            <button class="s-btn btn-small" onclick="placeBet('size', 'small')">Small (0-4)</button>
+            <button class="s-btn btn-big" onclick="placeBet('size', 'big')">Big (5-9)</button>
+        </div>
 
-    <div class="section-title">Select Number 0-9 (Win 200% Profit)</div>
-    <div class="number-grid" id="numberGrid"></div>
+        <div class="section-title">Select Number 0-9 (Win 200% Profit)</div>
+        <div class="number-grid" id="numberGrid"></div>
+    </div>
 
     <p id="gameResult"></p>
 
@@ -149,14 +154,17 @@
 
     let currentTimerType = '30s';
     let timeLeft = 30;
+    let maxTime = 30;
     let timerInterval;
 
     function switchTimer(type, seconds) {
         currentTimerType = type;
         timeLeft = seconds;
+        maxTime = seconds;
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         document.getElementById(`tab-${type}`).classList.add('active');
         document.getElementById('timerLabel').innerText = `${type} Timer`;
+        updateControlsLock();
     }
 
     function startTimer() {
@@ -166,13 +174,31 @@
             let sec = timeLeft % 60;
             document.getElementById('countdown').innerText = `${min > 0 ? '0' + min + ':' : '00:'}${sec < 10 ? '0' : ''}${sec}`;
 
+            // Check and lock/unlock interface based on remaining time (Last 5 seconds lock)
+            updateControlsLock();
+
             if (timeLeft <= 0) {
-                if (currentTimerType === '30s') timeLeft = 30;
-                else if (currentTimerType === '60s') timeLeft = 60;
-                else if (currentTimerType === '3m') timeLeft = 180;
+                timeLeft = maxTime;
             }
         }, 1000);
     }
+
+    function updateControlsLock() {
+        const controls = document.getElementById('tradingControls');
+        const resultMsg = document.getElementById('gameResult');
+        
+        if (timeLeft <= 5) {
+            controls.classList.add('locked');
+            resultMsg.style.color = '#f59e0b';
+            resultMsg.innerText = `🔒 Betting closed! Round ending in ${timeLeft}s...`;
+        } else {
+            controls.classList.remove('locked');
+            if (resultMsg.innerText.includes('Betting closed')) {
+                resultMsg.innerText = '';
+            }
+        }
+    }
+
     startTimer();
 
     const numGrid = document.getElementById('numberGrid');
@@ -199,8 +225,13 @@
     }
 
     async function placeBet(betType, betValue) {
+        if (timeLeft <= 5) {
+            alert('Last 5 seconds me bet lagana band hai!');
+            return;
+        }
+
         const betAmount = document.getElementById('betAmount').value;
-        const resultText = Document.getElementById('gameResult'); // wait, lowercase document
+        const resultText = document.getElementById('gameResult');
 
         if (!betAmount || betAmount < 1) {
             alert('Kam se kam ₹1 ki bet lagani padegi!');
