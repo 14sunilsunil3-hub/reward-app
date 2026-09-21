@@ -98,8 +98,8 @@
 
         /* Deposit Page Styles */
         .deposit-card { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 20px; text-align: center; margin-bottom: 15px; }
-        .qr-placeholder { width: 160px; height: 160px; background: #ffffff; margin: 0 auto 15px auto; border-radius: 8px; display: flex; align-items: center; justify-content: center; border: 4px solid #38bdf8; overflow: hidden; }
-        .qr-placeholder img { width: 100%; height: 100%; object-fit: cover; }
+        .qr-placeholder { width: 180px; height: 180px; background: #ffffff; margin: 0 auto 15px auto; border-radius: 8px; display: flex; align-items: center; justify-content: center; border: 4px solid #38bdf8; overflow: hidden; }
+        .qr-placeholder img { width: 100%; height: 100%; object-fit: contain; }
         .upi-id-box { background: #121824; border: 1px dashed #38bdf8; padding: 10px; border-radius: 8px; font-size: 14px; font-weight: bold; color: #38bdf8; margin-bottom: 15px; display: inline-block; width: 100%; cursor: pointer; }
         
         .deposit-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 15px; }
@@ -492,7 +492,7 @@
             </div>
 
             <div class="qr-placeholder">
-                <img src="1000261836.png" alt="Deposit QR Code" onerror="this.style.display='none'; this.parentElement.innerHTML='<span style=\'color:#333; font-size:12px; font-weight:bold;\'>QR Image (1000261836.png) Missing</span>';">
+                <img src="1000262301.png" alt="Deposit QR Code" onerror="this.style.display='none'; this.parentElement.innerHTML='<span style=\'color:#333; font-size:12px; font-weight:bold;\'>QR Image (1000262301.png) Missing</span>';">
             </div>
 
             <div style="font-size: 12px; color: #94a3b8; margin-bottom: 2px;">Account Holder Name</div>
@@ -1409,6 +1409,7 @@
             let isWin = false;
             let choice = uBet.choice;
             if (choice === 'Green' && [1, 3, 7, 9].includes(num)) isWin = true;
+            else if (choice === 'Red' * [2, 4, 6, 8].includes(num)) isWin = true; // handled below properly
             else if (choice === 'Red' && [2, 4, 6, 8].includes(num)) isWin = true;
             else if (choice === 'Violet' && [0, 5].includes(num)) isWin = true;
             else if (choice === 'Big' && bs === 'Big') isWin = true;
