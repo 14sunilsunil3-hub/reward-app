@@ -24,6 +24,7 @@ const io = new Server(server, {
 
 app.use(express.json());
 app.use(cors());
+app.use(express.static('public'));
 
 // ==================== 1. DATABASE CONNECTION ====================
 const MONGO_URI = "mongodb://14sunilsunil3_db_user:7rbOaftd6JUrR9vm@ac-qrcqjqf-shard-00-00.xawbmz2.mongodb.net:27017,ac-qrcqjqf-shard-00-01.xawbmz2.mongodb.net:27017,ac-qrcqjqf-shard-00-02.xawbmz2.mongodb.net:27017/?ssl=true&replicaSet=atlas-ouku4a-shard-0&authSource=admin&appName=Cluster0";
@@ -91,7 +92,7 @@ const Withdrawal = mongoose.model('Withdrawal', withdrawalSchema);
 // ==================== 3. PROFESSIONAL PERIOD & SEEDED ENGINE ====================
 const periodCounters = {
     '30s': 1000,
-    '1m':  2000,
+    '60s': 2000,
     '3m':  3000,
     '5m':  5000
 };
@@ -102,19 +103,22 @@ function generatePeriodCode(timerType) {
     const month = String(now.getMonth() + 1).padStart(2, '0');
     const day = String(now.getDate()).padStart(2, '0');
     
-    periodCounters[timerType]++;
+    // Normalize timerType key (handling both '60s' and '1m')
+    let key = timerType === '60s' ? '1m' : timerType;
+    if (!periodCounters[key]) periodCounters[key] = 1000;
+    periodCounters[key]++;
     
     let gamePrefix = '1';
-    if (timerType === '1m') gamePrefix = '2';
+    if (key === '1m') gamePrefix = '2';
     if (timerType === '3m') gamePrefix = '3';
     if (timerType === '5m') gamePrefix = '5';
 
-    return `${year}${month}${day}${gamePrefix}${periodCounters[timerType]}`;
+    return `${year}${month}${day}${gamePrefix}${periodCounters[key]}`;
 }
 
 const gameStates = {
     '30s': { countdown: 30, isBettingOpen: true, period: generatePeriodCode('30s') },
-    '1m':  { countdown: 60, isBettingOpen: true, period: generatePeriodCode('1m') },
+    '60s': { countdown: 60, isBettingOpen: true, period: generatePeriodCode('60s') },
     '3m':  { countdown: 180, isBettingOpen: true, period: generatePeriodCode('3m') },
     '5m':  { countdown: 300, isBettingOpen: true, period: generatePeriodCode('5m') }
 };
@@ -294,7 +298,53 @@ app.get('/api/my-bets/:userId', async (req, res) => {
     }
 });
 
-// General Bet Route supporting all 4 timer types
+// Primary Color Game Betting Endpoint (Matching HTML Frontend)
+app.post('/api/color-game', async (req, res) => {
+    try {
+        const { userId, betType, betValue, betAmount, timerType = '30s' } = req.body;
+        const amount = Number(betAmount);
+
+        if (!gameStates[timerType] || !gameStates[timerType].isBettingOpen) {
+            return res.status(400).json({ success: false, error: "Betting is closed for this period!" });
+        }
+
+        const user = await User.findById(userId);
+        if (!user || user.balance < amount) {
+            return res.status(400).json({ success: false, error: "Insufficient balance or user not found!" });
+        }
+
+        // Real money wallet deduction
+        user.balance -= amount;
+        await user.save();
+
+        const currentPeriod = gameStates[timerType].period;
+
+        const newBet = new Bet({ 
+            userId, 
+            timerType, 
+            period: currentPeriod, 
+            betType, 
+            betValue, 
+            amount 
+        });
+        await newBet.save();
+
+        const history = await GameResult.find({ timerType }).sort({ _id: -1 }).limit(10);
+
+        res.json({ 
+            success: true, 
+            message: `Bet placed successfully for ₹${amount}!`, 
+            balance: user.balance, 
+            points: user.balance, 
+            periodId: currentPeriod,
+            history
+        });
+    } catch (err) {
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
+
+// General Bet Route supporting all timer types
 app.post('/api/bet', async (req, res) => {
     try {
         const { userId, timerType = '30s', period, betType, betValue, amount } = req.body;
@@ -380,7 +430,7 @@ async function processBetsForPeriod(period, timerType, outcome) {
     }
 }
 
-// ==================== 6. TIMERS LOOP FOR ALL 4 SECTIONS ====================
+// ==================== 6. TIMERS LOOP FOR ALL SECTIONS ====================
 function startTimerLoop(timerType, intervalSeconds) {
     setInterval(async () => {
         try {
@@ -416,6 +466,15 @@ function startTimerLoop(timerType, intervalSeconds) {
                     color: outcome.color,
                     size: outcome.size
                 });
+                
+                // Generic event for HTML if it listens to single 'gameResult'
+                io.emit('gameResult', {
+                    period: currentPeriod,
+                    number: outcome.number,
+                    color: outcome.color,
+                    size: outcome.size,
+                    timerType
+                });
 
                 state.period = generatePeriodCode(timerType);
                 state.countdown = intervalSeconds;
@@ -430,6 +489,14 @@ function startTimerLoop(timerType, intervalSeconds) {
                 period: state.period 
             });
 
+            // Generic event for HTML if it listens to single 'timerTick'
+            io.emit('timerTick', {
+                timerType,
+                countdown: state.countdown,
+                isBettingOpen: state.isBettingOpen,
+                period: state.period
+            });
+
         } catch (err) {
             console.log(`Loop error (${timerType}):`, err.message);
         }
@@ -437,7 +504,7 @@ function startTimerLoop(timerType, intervalSeconds) {
 }
 
 startTimerLoop('30s', 30);
-startTimerLoop('1m', 60);
+startTimerLoop('60s', 60);
 startTimerLoop('3m', 180);
 startTimerLoop('5m', 300);
 
@@ -445,7 +512,7 @@ startTimerLoop('5m', 300);
 io.on('connection', (socket) => {
     console.log('A user connected:', socket.id);
 
-    ['30s', '1m', '3m', '5m'].forEach(type => {
+    ['30s', '60s', '3m', '5m'].forEach(type => {
         socket.emit(`timerTick_${type}`, { 
             countdown: gameStates[type].countdown, 
             isBettingOpen: gameStates[type].isBettingOpen, 
