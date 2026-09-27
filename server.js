@@ -240,6 +240,38 @@ app.post('/api/admin/set-result', async (req, res) => {
     }
 });
 
+// Admin API to check current period bets and total amounts (Live Pool Monitor)
+app.get('/api/admin/current-bets/:timerType/:period', async (req, res) => {
+    try {
+        const { timerType, period } = req.params;
+        const bets = await Bet.find({ timerType, period }).populate('userId', 'phone');
+        
+        const summary = {
+            green: 0, red: 0, violet: 0, big: 0, small: 0,
+            numbers: Array(10).fill(0),
+            totalPool: 0,
+            totalBetsCount: bets.length
+        };
+
+        bets.forEach(bet => {
+            const amt = Number(bet.amount) || 0;
+            summary.totalPool += amt;
+            if (bet.betType === 'color') {
+                if (summary[bet.betValue] !== undefined) summary[bet.betValue] += amt;
+            } else if (bet.betType === 'size') {
+                if (summary[bet.betValue] !== undefined) summary[bet.betValue] += amt;
+            } else if (bet.betType === 'number') {
+                const numIdx = parseInt(bet.betValue);
+                if (!isNaN(numIdx)) summary.numbers[numIdx] += amt;
+            }
+        });
+
+        res.json({ success: true, summary, bets });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+});
+
 // Game History API (Crucial for frontend table)
 app.get('/api/game-history/:timerType', async (req, res) => {
     try {
@@ -429,5 +461,5 @@ io.on('connection', (socket) => {
 // ==================== 8. START SERVER ====================
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
-    console.log(`Server running smoothly with Complete History & Seeded Engine on port ${PORT}`);
+    console.log(`Server fully updated & running smoothly with Admin Bet Monitor on port ${PORT}`);
 });
