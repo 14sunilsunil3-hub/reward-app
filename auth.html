@@ -185,7 +185,7 @@
         usersDB.push({
             mobile: "8093361993",
             password: "123456",
-            points: 15000,
+            points: 500,
             money: 500,
             withdrawCount: 0,
             lastWithdrawDate: new Date().toISOString().slice(0, 10)
@@ -286,10 +286,12 @@
             return;
         }
 
+        // Sirf naye user ke liye 500 bonus points
         let newUser = {
             mobile: mobile,
             password: password,
-            points: 15000,
+            points: 500, 
+            money: 0,
             withdrawCount: 0,
             lastWithdrawDate: new Date().toISOString().slice(0, 10)
         };
@@ -318,6 +320,7 @@
 
         let user = usersDB.find(u => u.mobile === mobile && u.password === password);
         if (user) {
+            // Login par koi bonus point nahi badhega, existing points wahi rahenge
             if (remember) {
                 localStorage.setItem('rewards_loggedMobile', mobile);
             } else {
@@ -357,6 +360,7 @@
 
         let user = usersDB.find(u => u.mobile === mobile);
         if (user) {
+            // Forgot password par bhi koi bonus point add nahi hoga
             user.password = newPass;
             localStorage.setItem('rewards_usersDB', JSON.stringify(usersDB));
             showBox('forgotSuccess', '✅ Password updated successfully! Please Login.');
