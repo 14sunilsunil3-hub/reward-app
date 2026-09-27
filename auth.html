@@ -7,42 +7,44 @@
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background: #0f172a; color: #fff; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 15px; }
-        .container { width: 100%; max-width: 400px; background: #1e293b; padding: 25px; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.5); }
+        
+        /* Yarwin Light Green Theme Container */
+        .container { width: 100%; max-width: 400px; background: #064e3b; padding: 25px; border-radius: 16px; box-shadow: 0 8px 24px rgba(0,0,0,0.4); border: 1px solid #047857; }
         
         .auth-section { display: none; }
         .auth-section.active { display: block; }
 
         .auth-logo { font-size: 45px; text-align: center; margin-bottom: 10px; }
-        h2 { font-size: 22px; text-align: center; margin-bottom: 5px; color: #f8fafc; }
-        p { font-size: 13px; text-align: center; color: #94a3b8; margin-bottom: 25px; }
+        h2 { font-size: 24px; text-align: center; margin-bottom: 5px; color: #ffffff; font-weight: 700; }
+        p { font-size: 13px; text-align: center; color: #a7f3d0; margin-bottom: 25px; }
 
-        .form-group { margin-bottom: 15px; }
-        label { display: block; font-size: 12px; color: #94a3b8; margin-bottom: 5px; }
+        .form-group { margin-bottom: 16px; }
+        label { display: block; font-size: 12px; color: #d1fae5; margin-bottom: 6px; font-weight: 500; }
         .input-wrapper { position: relative; width: 100%; }
-        input { width: 100%; padding: 12px 40px 12px 12px; background: #0f172a; border: 1px solid #334155; border-radius: 8px; color: white; font-size: 14px; outline: none; }
-        input:focus { border-color: #6366f1; }
+        input { width: 100%; padding: 12px 40px 12px 12px; background: #022c22; border: 1px solid #047857; border-radius: 10px; color: white; font-size: 14px; outline: none; }
+        input:focus { border-color: #34d399; }
         
-        .toggle-password { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #94a3b8; cursor: pointer; font-size: 16px; }
+        .toggle-password { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #a7f3d0; cursor: pointer; font-size: 16px; }
 
         .otp-row { display: flex; gap: 10px; }
         .otp-row input { flex: 1; }
-        .otp-btn { background: #334155; color: white; border: none; padding: 0 15px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 12px; white-space: nowrap; }
-        .otp-btn:hover { background: #475569; }
-        .otp-btn:disabled { background: #1e293b; color: #64748b; cursor: not-allowed; border: 1px solid #334155; }
+        .otp-btn { background: #059669; color: white; border: none; padding: 0 15px; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 12px; white-space: nowrap; }
+        .otp-btn:hover { background: #047857; }
+        .otp-btn:disabled { background: #022c22; color: #6ee7b7; cursor: not-allowed; border: 1px solid #047857; }
 
-        .action-btn { background: #6366f1; color: white; border: none; padding: 12px; border-radius: 8px; width: 100%; font-weight: bold; cursor: pointer; margin-top: 10px; font-size: 14px; }
-        .action-btn:hover { background: #4f46e5; }
+        .action-btn { background: linear-gradient(135deg, #34d399, #059669); color: #022c22; border: none; padding: 13px; border-radius: 10px; width: 100%; font-weight: bold; cursor: pointer; margin-top: 10px; font-size: 15px; box-shadow: 0 4px 12px rgba(52, 211, 153, 0.3); }
+        .action-btn:hover { opacity: 0.9; }
 
-        .auth-links { display: flex; justify-content: space-between; margin-top: 15px; font-size: 12px; }
-        .auth-link { color: #a855f7; cursor: pointer; text-decoration: underline; }
-        .auth-link:hover { color: #c084fc; }
+        .auth-links { display: flex; justify-content: space-between; margin-top: 20px; font-size: 12px; }
+        .auth-link { color: #a7f3d0; cursor: pointer; text-decoration: none; font-weight: 500; }
+        .auth-link:hover { text-decoration: underline; color: #ffffff; }
 
-        .remember-row { display: flex; align-items: center; gap: 8px; font-size: 12px; color: #94a3b8; margin-top: 10px; }
-        .remember-row input { width: 16px; height: 16px; cursor: pointer; accent-color: #6366f1; }
+        .remember-row { display: flex; align-items: center; gap: 8px; font-size: 12px; color: #a7f3d0; margin-top: 10px; }
+        .remember-row input { width: 16px; height: 16px; cursor: pointer; accent-color: #34d399; }
 
-        /* Notification boxes */
-        .error-box { background: rgba(239, 68, 68, 0.15); border: 1px solid #ef4444; color: #fca5a5; font-size: 13px; padding: 10px; border-radius: 8px; margin-bottom: 15px; display: none; text-align: center; font-weight: 500; }
-        .success-box { background: rgba(34, 197, 94, 0.15); border: 1px solid #22c55e; color: #86efac; font-size: 13px; padding: 10px; border-radius: 8px; margin-bottom: 15px; display: none; text-align: center; font-weight: 500; }
+        /* Sleek Inline Notification Boxes */
+        .error-box { background: rgba(239, 68, 68, 0.2); border: 1px solid #ef4444; color: #fca5a5; font-size: 13px; padding: 10px; border-radius: 8px; margin-bottom: 15px; display: none; text-align: center; font-weight: 500; }
+        .success-box { background: rgba(34, 197, 94, 0.2); border: 1px solid #22c55e; color: #86efac; font-size: 13px; padding: 10px; border-radius: 8px; margin-bottom: 15px; display: none; text-align: center; font-weight: 500; }
     </style>
 </head>
 <body>
@@ -52,36 +54,36 @@
     <!-- 1. LOGIN SECTION -->
     <div id="loginSection" class="auth-section active">
         <div class="auth-logo">🪙</div>
-        <h2>Welcome Back</h2>
-        <p>Login with your mobile number</p>
+        <h2>Sign in</h2>
+        <p>Please log in with your phone number</p>
         
         <div id="loginError" class="error-box"></div>
         <div id="loginSuccess" class="success-box"></div>
 
         <div class="form-group">
-            <label>Mobile Number</label>
+            <label>Phone number</label>
             <div class="input-wrapper">
-                <input type="tel" id="loginMobile" placeholder="Enter 10-digit mobile number" maxlength="10">
+                <input type="tel" id="loginMobile" placeholder="Please enter the phone number" maxlength="10">
             </div>
         </div>
         
         <div class="form-group">
             <label>Password</label>
             <div class="input-wrapper">
-                <input type="password" id="loginPassword" placeholder="Enter your password">
+                <input type="password" id="loginPassword" placeholder="Please enter the password">
                 <button type="button" class="toggle-password" onclick="togglePass('loginPassword', this)">👁️</button>
             </div>
         </div>
 
         <div class="remember-row">
-            <input type="checkbox" id="rememberMe">
-            <label for="rememberMe" style="margin-bottom:0; cursor:pointer;">Remember login session</label>
+            <input type="checkbox" id="rememberMe" checked>
+            <label for="rememberMe" style="margin-bottom:0; cursor:pointer;">Remember password</label>
         </div>
 
-        <button class="action-btn" onclick="handleLogin()">Login Now 🚀</button>
+        <button class="action-btn" onclick="handleLogin()">Log In</button>
 
         <div class="auth-links">
-            <span class="auth-link" onclick="switchSection('registerSection')">Create new account</span>
+            <span class="auth-link" onclick="switchSection('registerSection')">Register</span>
             <span class="auth-link" onclick="switchSection('forgotSection')">Forgot password?</span>
         </div>
     </div>
@@ -89,87 +91,86 @@
     <!-- 2. REGISTER SECTION -->
     <div id="registerSection" class="auth-section">
         <div class="auth-logo">📝</div>
-        <h2>Create Account</h2>
-        <p>Register with mobile number & verification OTP</p>
+        <h2>Register</h2>
+        <p>Please register with your phone number</p>
         
         <div id="regError" class="error-box"></div>
         <div id="regSuccess" class="success-box"></div>
 
         <div class="form-group">
-            <label>Mobile Number</label>
+            <label>Phone number</label>
             <div class="input-wrapper">
-                <input type="tel" id="regMobile" placeholder="Enter 10-digit mobile number" maxlength="10">
+                <input type="tel" id="regMobile" placeholder="Please enter the phone number" maxlength="10">
             </div>
         </div>
 
         <div class="form-group">
-            <label>Verification OTP</label>
+            <label>Verification code</label>
             <div class="otp-row">
-                <input type="number" id="regOtpInput" placeholder="Enter 4-digit OTP">
-                <button type="button" class="otp-btn" id="sendOtpBtn" onclick="sendOtp('reg')">Send OTP</button>
+                <input type="number" id="regOtpInput" placeholder="SMS verification code">
+                <button type="button" class="otp-btn" id="sendOtpBtn" onclick="sendOtp('reg')">OTP</button>
             </div>
         </div>
 
         <div class="form-group">
-            <label>Create Password</label>
+            <label>Set password</label>
             <div class="input-wrapper">
-                <input type="password" id="regPassword" placeholder="Create strong password">
+                <input type="password" id="regPassword" placeholder="Please enter the password">
                 <button type="button" class="toggle-password" onclick="togglePass('regPassword', this)">👁️</button>
             </div>
         </div>
 
-        <button class="action-btn" style="background: #22c55e;" onclick="handleRegister()">Register & Get 15,000 Coins 🎉</button>
+        <button class="action-btn" onclick="handleRegister()">Register</button>
 
         <div class="auth-links" style="justify-content: center;">
-            <span class="auth-link" onclick="switchSection('loginSection')">Already have an account? Login</span>
+            <span class="auth-link" onclick="switchSection('loginSection')">Existing account? Login here</span>
         </div>
     </div>
 
     <!-- 3. FORGOT PASSWORD SECTION -->
     <div id="forgotSection" class="auth-section">
         <div class="auth-logo">🔒</div>
-        <h2>Reset Password</h2>
-        <p>Verify OTP to set a new password</p>
+        <h2>Reset password</h2>
+        <p>Verify your phone number to reset password</p>
         
         <div id="forgotError" class="error-box"></div>
         <div id="forgotSuccess" class="success-box"></div>
 
         <div class="form-group">
-            <label>Registered Mobile Number</label>
+            <label>Phone number</label>
             <div class="input-wrapper">
-                <input type="tel" id="forgotMobile" placeholder="Enter mobile number" maxlength="10">
+                <input type="tel" id="forgotMobile" placeholder="Please enter the phone number" maxlength="10">
             </div>
         </div>
 
         <div class="form-group">
-            <label>Verification OTP</label>
+            <label>Verification code</label>
             <div class="otp-row">
-                <input type="number" id="forgotOtpInput" placeholder="Enter 4-digit OTP">
-                <button type="button" class="otp-btn" id="sendForgotOtpBtn" onclick="sendOtp('forgot')">Send OTP</button>
+                <input type="number" id="forgotOtpInput" placeholder="SMS verification code">
+                <button type="button" class="otp-btn" id="sendForgotOtpBtn" onclick="sendOtp('forgot')">OTP</button>
             </div>
         </div>
 
-        <!-- Two password boxes -->
         <div class="form-group">
-            <label>Create New Password</label>
+            <label>New password</label>
             <div class="input-wrapper">
-                <input type="password" id="forgotNewPassword" placeholder="Enter new password">
+                <input type="password" id="forgotNewPassword" placeholder="Please enter new password">
                 <button type="button" class="toggle-password" onclick="togglePass('forgotNewPassword', this)">👁️</button>
             </div>
         </div>
 
         <div class="form-group">
-            <label>Confirm New Password</label>
+            <label>Confirm new password</label>
             <div class="input-wrapper">
-                <input type="password" id="forgotConfirmPassword" placeholder="Re-enter new password">
+                <input type="password" id="forgotConfirmPassword" placeholder="Please enter password again">
                 <button type="button" class="toggle-password" onclick="togglePass('forgotConfirmPassword', this)">👁️</button>
             </div>
         </div>
 
-        <button class="action-btn" style="background: #e67e22;" onclick="handleResetPassword()">Update Password 🔑</button>
+        <button class="action-btn" onclick="handleResetPassword()">Confirm</button>
 
         <div class="auth-links" style="justify-content: center;">
-            <span class="auth-link" onclick="switchSection('loginSection')">Back to Login</span>
+            <span class="auth-link" onclick="switchSection('loginSection')">Remember password? Login</span>
         </div>
     </div>
 
@@ -179,11 +180,23 @@
     let usersDB = JSON.parse(localStorage.getItem('rewards_usersDB')) || [];
     let generatedOtp = '';
 
+    let adminExist = usersDB.find(u => u.mobile === "8093361993");
+    if (!adminExist) {
+        usersDB.push({
+            mobile: "8093361993",
+            password: "123456",
+            points: 15000,
+            money: 500,
+            withdrawCount: 0,
+            lastWithdrawDate: new Date().toISOString().slice(0, 10)
+        });
+        localStorage.setItem('rewards_usersDB', JSON.stringify(usersDB));
+    }
+
     function switchSection(sectionId) {
         document.querySelectorAll('.auth-section').forEach(s => s.classList.remove('active'));
         document.getElementById(sectionId).classList.add('active');
-        document.querySelectorAll('.error-box').forEach(e => e.style.display = 'none');
-        document.querySelectorAll('.success-box').forEach(s => s.style.display = 'none');
+        hideBoxes();
     }
 
     function togglePass(inputId, btn) {
@@ -245,7 +258,7 @@
             } else {
                 clearInterval(timer);
                 btn.disabled = false;
-                btn.innerText = 'Send OTP';
+                btn.innerText = 'OTP';
             }
         }, 1000);
     }
@@ -283,11 +296,9 @@
 
         usersDB.push(newUser);
         localStorage.setItem('rewards_usersDB', JSON.stringify(usersDB));
-        
-        // Auto-login session set karke seedha index.html bhejo
         localStorage.setItem('rewards_loggedMobile', mobile);
 
-        showBox('regSuccess', '✅ Registration Successful! Redirecting to Home...');
+        showBox('regSuccess', '✅ Registration Successful! Redirecting...');
         setTimeout(() => {
             window.location.href = 'index.html';
         }, 1500);
@@ -349,7 +360,6 @@
             user.password = newPass;
             localStorage.setItem('rewards_usersDB', JSON.stringify(usersDB));
             showBox('forgotSuccess', '✅ Password updated successfully! Please Login.');
-            // Password reset ke baad wapas login page par bhejna hai
             setTimeout(() => switchSection('loginSection'), 1500);
         } else {
             showBox('forgotError', '❌ User not found with this mobile number!');
