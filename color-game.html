@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pro Color & Number Trading</title>
+    <title>Pro Color & Number Trading - VIP</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
@@ -35,7 +35,6 @@
         .quick-chips { display: flex; gap: 4px; margin-bottom: 12px; }
         .chip { flex: 1; background: #1e293b; border: 1px solid #334155; color: #cbd5e1; padding: 6px 0; border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: bold; text-align: center; }
 
-        /* Betting Area Wrapper with Watermark Overlay */
         .betting-area-wrapper { position: relative; width: 100%; }
 
         .lock-overlay {
@@ -87,7 +86,6 @@
 
         .back-btn { display: block; width: 100%; text-align: center; background: #1e293b; color: #94a3b8; padding: 10px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 13px; border: 1px solid #334155; margin-top: 15px; }
 
-        /* Admin Modal Styling */
         .admin-modal {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; z-index: 1000; padding: 15px; overflow-y: auto;
@@ -108,10 +106,9 @@
         </div>
     </div>
 
-    <!-- Timer Tabs supporting 30s, 1m, 3m, 5m -->
     <div class="timer-tabs">
         <div class="tab-btn active" id="tab-30s" onclick="switchTimer('30s', 30)">30s</div>
-        <div class="tab-btn" id="tab-1m" onclick="switchTimer('1m', 60)">1 Min</div>
+        <div class="tab-btn" id="tab-1m" onclick="switchTimer('60s', 60)">1 Min</div>
         <div class="tab-btn" id="tab-3m" onclick="switchTimer('3m', 180)">3 Min</div>
         <div class="tab-btn" id="tab-5m" onclick="switchTimer('5m', 300)">5 Min</div>
     </div>
@@ -127,7 +124,7 @@
         </div>
     </div>
 
-    <div class="section-title">Bet Amount (Min ₹1 / All-In)</div>
+    <div class="section-title">Bet Amount (Min ₹1 / All-In) - Multiple Bets Allowed</div>
     <div class="bet-input-box">
         <input type="number" id="betAmount" placeholder="Amount (₹)..." min="1">
         <button class="all-in-btn" onclick="setAllIn()">ALL-IN</button>
@@ -141,7 +138,6 @@
         <div class="chip" onclick="clearBet()">CLEAR</div>
     </div>
 
-    <!-- Betting Controls with 5s Watermark Lock Overlay -->
     <div class="betting-area-wrapper" id="bettingAreaWrapper">
         <div id="lockOverlay" class="lock-overlay">
             <div class="watermark-text">🔒 Betting Closed (Last 5s)</div>
@@ -188,12 +184,10 @@
     <a href="index.html" class="back-btn">⬅ Return to Home</a>
 </div>
 
-<!-- ADMIN RISK & LIVE BET MONITOR MODAL -->
 <div id="adminModal" class="admin-modal">
     <div class="admin-content">
         <h3><i class="fa-solid fa-shield-halved"></i> Admin Risk & Bet Monitor</h3>
         
-        <!-- Live Bets Summary Box -->
         <div style="background: #0b0f19; padding: 10px; border-radius: 8px; margin-bottom: 12px; font-size: 11px; border: 1px solid #334155;">
             <div style="display: flex; justify-content: space-between; font-weight: bold; color: #facc15; margin-bottom: 6px;">
                 <span>Total Pool: <span id="adminTotalPool">₹0</span></span>
@@ -259,7 +253,23 @@
         fetchHistory();
     }
 
-    // Socket.io real-time timer sync for 30s, 1m, 3m, 5m
+    function playBeep() {
+        try {
+            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            oscillator.type = 'sine';
+            oscillator.frequency.setValueAtTime(800, audioCtx.currentTime);
+            gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+            oscillator.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            oscillator.start();
+            oscillator.stop(audioCtx.currentTime + 0.15);
+        } catch (e) {
+            console.log("Audio context not supported");
+        }
+    }
+
     ['30s', '1m', '3m', '5m'].forEach(type => {
         socket.on(`timerTick_${type}`, (data) => {
             if (currentTimerType === type) {
@@ -277,6 +287,10 @@
                     lockOverlay.style.display = 'flex';
                     resultMsg.style.color = '#f59e0b';
                     resultMsg.innerText = `🔒 Betting closed! Waiting for result...`;
+                    
+                    if (timeLeft <= 5 && timeLeft > 0) {
+                        playBeep();
+                    }
                 } else {
                     lockOverlay.style.display = 'none';
                     if (resultMsg.innerText.includes('Betting closed')) {
@@ -294,7 +308,6 @@
         });
     });
 
-    // Populate Number Grid 0-9
     const numGrid = document.getElementById('numberGrid');
     for (let i = 0; i <= 9; i++) {
         const ball = document.createElement('div');
@@ -352,7 +365,6 @@
     }
     fetchHistory();
 
-    // Convert Coins Function
     async function convertCoins() {
         if (rewardCoins < 100) {
             alert('Kam se kam 100 coins hone chahiye! (100 Coins = ₹1)');
@@ -421,7 +433,6 @@
         }
     }
 
-    // Admin Panel Functions
     function toggleAdminPanel() {
         const modal = document.getElementById('adminModal');
         if (modal.style.display === 'flex') {
