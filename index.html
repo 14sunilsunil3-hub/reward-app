@@ -30,7 +30,6 @@
 
         .auth-form { width: 100%; text-align: left; }
         
-        /* Input Fields Yarwin Theme */
         .form-group { margin-bottom: 20px; width: 100%; }
         .form-group label { display: block; font-size: 13px; color: #cbd5e1; margin-bottom: 8px; font-weight: 500; }
         .input-wrapper { position: relative; width: 100%; display: flex; align-items: center; background: #1e293b; border: 1px solid #334155; border-radius: 12px; overflow: hidden; }
@@ -46,7 +45,6 @@
         .otp-btn:hover { background: #2563eb; }
         .otp-btn:disabled { background: #334155; color: #64748b; cursor: not-allowed; }
 
-        /* Action Button Yarwin Style */
         .yarwin-btn { width: 100%; background: linear-gradient(135deg, #facc15, #eab308); color: #0f172a; border: none; padding: 15px; border-radius: 12px; font-weight: 700; font-size: 16px; cursor: pointer; text-align: center; margin-top: 10px; box-shadow: 0 4px 12px rgba(234, 179, 8, 0.3); transition: opacity 0.2s; }
         .yarwin-btn:hover { opacity: 0.9; }
 
@@ -54,16 +52,13 @@
         .auth-link { color: #38bdf8; cursor: pointer; text-decoration: none; font-weight: 500; }
         .auth-link:hover { text-decoration: underline; }
 
-        /* Remember Checkbox styling */
         .remember-row { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #94a3b8; margin-bottom: 10px; }
         .remember-row input { width: 18px; height: 18px; cursor: pointer; accent-color: #eab308; }
 
-        /* Top Minimal Balance Bars */
         .top-balance-bar { display: flex; justify-content: flex-end; align-items: center; gap: 8px; margin-bottom: 15px; }
         .mini-wallet { background: #1e293b; border: 1px solid #334155; padding: 6px 12px; border-radius: 20px; font-size: 14px; font-weight: bold; color: #2ecc71; display: flex; align-items: center; gap: 5px; }
         .mini-money-wallet { background: #1e293b; border: 1px solid #334155; padding: 6px 12px; border-radius: 20px; font-size: 14px; font-weight: bold; color: #38bdf8; display: flex; align-items: center; gap: 5px; }
 
-        /* Home & Other Pages Styles */
         .card { background: #1e293b; padding: 15px; border-radius: 12px; margin-bottom: 15px; border: 1px solid #334155; }
         .card h4 { font-size: 15px; margin-bottom: 5px; color: #f8fafc; }
         .card p { font-size: 12px; color: #94a3b8; margin-bottom: 12px; }
@@ -72,7 +67,6 @@
         .action-btn:hover { background: #4f46e5; }
         .action-btn:disabled { background: #334155; color: #94a3b8; cursor: not-allowed; }
 
-        /* Profile Page Layout */
         .profile-top-section { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; background: #1e293b; padding: 15px; border-radius: 12px; border: 1px solid #334155; }
         .profile-left-col { display: flex; flex-direction: column; align-items: center; flex-shrink: 0; }
         .avatar-box { width: 80px; height: 80px; background: #6366f1; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 38px; border: 2px solid #38bdf8; overflow: hidden; cursor: pointer; transition: transform 0.2s; }
@@ -84,21 +78,18 @@
         .profile-info-row input:focus { border-color: #6366f1; }
         .profile-info-row input:disabled { background: #1e293b; color: #64748b; cursor: not-allowed; }
 
-        /* Avatar Selector Drawer/Modal */
         .avatar-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 10px; }
         .avatar-option { font-size: 28px; background: #121824; border: 1px solid #334155; border-radius: 8px; padding: 10px; text-align: center; cursor: pointer; transition: transform 0.2s; }
         .avatar-option:hover { transform: scale(1.1); border-color: #38bdf8; }
 
-        /* Square Menu Grid Layout for Profile */
         .profile-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 20px; }
         .profile-square-btn { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 20px 15px; text-align: center; cursor: pointer; transition: all 0.2s ease; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 110px; }
         .profile-square-btn:hover { background: #121824; border-color: #6366f1; transform: translateY(-2px); }
         .square-icon { font-size: 26px; margin-bottom: 8px; }
         .square-title { font-size: 13px; font-weight: 600; color: #f8fafc; }
 
-        /* Deposit Page Styles */
         .deposit-card { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 20px; text-align: center; margin-bottom: 15px; }
-        .qr-placeholder { width: 180px; height: 180px; background: #ffffff; margin: 0 auto 15px auto; border-radius: 8px; display: flex; align-items: center; justify-content: center; border: 4px solid #38bdf8; overflow: hidden; }
+        .qr-placeholder { width: 180px; height: 180px; background: #ffffff; margin: 0 auto 15px auto; border-radius: 8px; display: flex; align-items: center; justify-content: center; border: 4px solid #38bdf8; overflow: hidden; cursor: pointer; position: relative; }
         .qr-placeholder img { width: 100%; height: 100%; object-fit: contain; }
         .upi-id-box { background: #121824; border: 1px dashed #38bdf8; padding: 10px; border-radius: 8px; font-size: 14px; font-weight: bold; color: #38bdf8; margin-bottom: 15px; display: inline-block; width: 100%; cursor: pointer; }
         
@@ -106,7 +97,6 @@
         .deposit-amt-btn { background: #121824; border: 1px solid #334155; color: white; padding: 10px 0; border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer; text-align: center; }
         .deposit-amt-btn.active { background: #6366f1; border-color: #6366f1; }
 
-        /* Color Game Page Styles */
         .daman-wrapper { background: #ffffff; color: #333; border-radius: 12px; overflow: hidden; margin: -10px; }
         .game-header { background: #ff4d4f; color: white; padding: 12px 15px; display: flex; align-items: center; justify-content: space-between; }
         .game-header h2 { font-size: 18px; font-weight: 500; }
@@ -374,13 +364,13 @@
 
         <div class="card">
             <h4>🎁 Daily Check-in Bonus</h4>
-            <p>Claim your free daily login reward (+20 coins).</p>
+            <p>Claim your free daily login reward (+10 coins).</p>
             <button class="action-btn" id="claimDailyBtn" onclick="claimDaily()">Claim Daily Reward</button>
         </div>
 
         <div class="card">
             <h4>📺 Watch Ad & Earn</h4>
-            <p>Watch the ad for 60 seconds to claim instant coins (+50 coins).</p>
+            <p>Watch the ad for 60 seconds to claim instant coins (+20 coins).</p>
             <div id="timerDisplay" style="font-size: 15px; color: #00ffcc; margin: 8px 0; font-weight: bold;"></div>
             <button class="action-btn" id="watchAdBtn" onclick="startWatchAd()">Watch Ad Now (60s)</button>
         </div>
@@ -442,7 +432,7 @@
                 <div class="square-icon">💳</div>
                 <div class="square-title">Withdraw</div>
             </div>
-            <div class="profile-square-btn" onclick="convertCoins()">
+            <div class="profile-square-btn" onclick="openConversionModal()">
                 <div class="square-icon">💱</div>
                 <div class="square-title">Convert</div>
             </div>
@@ -491,9 +481,11 @@
                 <div class="deposit-amt-btn" onclick="selectDepositAmount(50000, this)">₹50K</div>
             </div>
 
-            <div class="qr-placeholder">
-                <img src="1000262301.png" alt="Deposit QR Code" onerror="this.style.display='none'; this.parentElement.innerHTML='<span style=\'color:#333; font-size:12px; font-weight:bold;\'>QR Image (1000262301.png) Missing</span>';">
+            <div class="qr-placeholder" onclick="checkAdminAccessForQr()" title="Click to update QR code (Admin Only)">
+                <img id="depositQrImage" src="1000262301.png" alt="Deposit QR Code" onerror="this.src='https://via.placeholder.com/180?text=QR+Missing';">
             </div>
+            <input type="file" id="adminQrFileInput" accept="image/*" style="display: none;" onchange="handleAdminQrUpload(event)">
+            <p style="font-size: 11px; color: #f59e0b; margin-bottom: 10px;">🔒 Protected: Only Sunil Bhoi (+91 8093361993) can change QR code.</p>
 
             <div style="font-size: 12px; color: #94a3b8; margin-bottom: 2px;">Account Holder Name</div>
             <div style="font-size: 15px; font-weight: bold; color: #fff; margin-bottom: 12px;" id="depositNameDisplay">Mr SUNIL BHOI</div>
@@ -637,6 +629,42 @@
 <div class="toast-popup" id="betToast">✅ Action successful!</div>
 
 <!-- MODALS -->
+<div class="modal-overlay" id="adminAuthModal">
+    <div class="modal-box">
+        <h3>🔐 Admin Authentication Required</h3>
+        <p>Aapko Sunil Bhoi (Admin) ke taur per login karna hoga QR code change karne ke liye.</p>
+        <div class="form-group" style="text-align: left; margin-bottom: 10px;">
+            <label style="font-size: 11px; color: #94a3b8;">Admin Mobile Number</label>
+            <input type="tel" id="adminAuthPhone" placeholder="8093361993" style="width:100%; padding:10px; background:#121824; border:1px solid #334155; border-radius:6px; color:#fff;">
+        </div>
+        <div class="form-group" style="text-align: left; margin-bottom: 15px;">
+            <label style="font-size: 11px; color: #94a3b8;">Admin Password</label>
+            <input type="password" id="adminAuthPass" placeholder="Enter password" style="width:100%; padding:10px; background:#121824; border:1px solid #334155; border-radius:6px; color:#fff;">
+        </div>
+        <div style="display: flex; gap: 10px;">
+            <button class="action-btn" style="background: #334155; padding: 10px;" onclick="closeAdminAuthModal()">Cancel</button>
+            <button class="action-btn" style="background: #2ecc71; padding: 10px;" onclick="verifyAdminAndOpenUpload()">Verify & Open</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="conversionModal">
+    <div class="modal-box">
+        <h3>💱 Convert Coins to Real Money</h3>
+        <p>100 Coins = ₹1 (Min 10,000 Coins required)</p>
+        <div class="form-group" style="text-align: left;">
+            <label style="font-size: 12px; color: #94a3b8; margin-bottom: 5px; display: block;">Enter Coins to Convert</label>
+            <div class="input-wrapper" style="padding-left: 12px;">
+                <input type="number" id="convertCoinsInput" placeholder="e.g. 10000" style="padding-left: 0;">
+            </div>
+        </div>
+        <div style="display: flex; gap: 10px; margin-top: 15px;">
+            <button class="action-btn" style="background: #334155; padding: 10px;" onclick="closeConversionModal()">Cancel</button>
+            <button class="action-btn" style="background: #2ecc71; padding: 10px;" onclick="confirmCoinConversion()">Convert Now</button>
+        </div>
+    </div>
+</div>
+
 <div class="modal-overlay" id="amountModal">
     <div class="modal-box">
         <h3>💰 Enter Withdrawal Amount (₹)</h3>
@@ -763,6 +791,65 @@
     let selectedDepositAmt = 100;
     let dailyTimerInterval = null;
 
+    // Admin Credentials
+    const ADMIN_PHONE = "8093361993";
+    const ADMIN_PASS = "123456";
+
+    window.addEventListener('DOMContentLoaded', () => {
+        let savedQr = localStorage.getItem('rewards_customQrCode');
+        if (savedQr) {
+            let qrImg = document.getElementById('depositQrImage');
+            if(qrImg) qrImg.src = savedQr;
+        }
+
+        const urlParams = new URLSearchParams(window.location.search);
+        let refCode = urlParams.get('ref');
+        if (refCode) {
+            localStorage.setItem('rewards_pendingReferrer', refCode);
+        }
+    });
+
+    function checkAdminAccessForQr() {
+        if (user && user.identifier === ADMIN_PHONE) {
+            document.getElementById('adminQrFileInput').click();
+        } else {
+            document.getElementById('adminAuthModal').classList.add('active');
+        }
+    }
+
+    function closeAdminAuthModal() {
+        document.getElementById('adminAuthModal').classList.remove('active');
+        document.getElementById('adminAuthPhone').value = '';
+        document.getElementById('adminAuthPass').value = '';
+    }
+
+    function verifyAdminAndOpenUpload() {
+        let pPhone = document.getElementById('adminAuthPhone').value.trim();
+        let pPass = document.getElementById('adminAuthPass').value.trim();
+
+        if (pPhone === ADMIN_PHONE && pPass === ADMIN_PASS) {
+            closeAdminAuthModal();
+            document.getElementById('adminQrFileInput').click();
+            showToast("✅ Admin Verified Successfully!");
+        } else {
+            alert("❌ Access Denied: Sirf Sunil Bhoi hi QR code change kar sakte hain!");
+        }
+    }
+
+    function handleAdminQrUpload(event) {
+        let file = event.target.files[0];
+        if (file) {
+            let reader = new FileReader();
+            reader.onload = function(e) {
+                let base64Image = e.target.result;
+                localStorage.setItem('rewards_customQrCode', base64Image);
+                document.getElementById('depositQrImage').src = base64Image;
+                showToast("✅ QR Code Updated Successfully!");
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
     function selectDepositAmount(amt, el) {
         selectedDepositAmt = amt;
         document.querySelectorAll('.deposit-amt-btn').forEach(b => b.classList.remove('active'));
@@ -778,14 +865,6 @@
         });
     }
 
-    window.addEventListener('DOMContentLoaded', () => {
-        const urlParams = new URLSearchParams(window.location.search);
-        let refCode = urlParams.get('ref');
-        if (refCode) {
-            localStorage.setItem('rewards_pendingReferrer', refCode);
-        }
-    });
-
     if (loggedInIdentifier) {
         let found = usersDB.find(u => u.identifier === loggedInIdentifier);
         if (found) user = found;
@@ -793,9 +872,9 @@
 
     if (!user && usersDB.length === 0) {
         user = { 
-            identifier: '9876543210', 
+            identifier: '8093361993', 
             uid: 'UID-' + Math.floor(100000 + Math.random() * 900000),
-            username: 'User_' + Math.floor(1000 + Math.random() * 9000),
+            username: 'Sunil_Admin',
             avatar: '👤',
             points: 15000, 
             money: 500,
@@ -1051,7 +1130,8 @@
         document.getElementById('usermoney').innerText = user.money !== undefined ? user.money : 0;
         document.getElementById('profileUserwallet').innerText = user.points;
         document.getElementById('profileUsermoney').innerText = user.money !== undefined ? user.money : 0;
-        document.getElementById('gameWallet').innerText = user.points;
+        let gw = document.getElementById('gameWallet');
+        if(gw) gw.innerText = user.points;
     }
 
     function switchPage(pageId) {
@@ -1104,6 +1184,36 @@
         if (selectedMoneyAmount === 0) {
             switchPage('profilePage');
         }
+    }
+
+    function openConversionModal() {
+        document.getElementById('conversionModal').classList.add('active');
+        document.getElementById('convertCoinsInput').value = '';
+    }
+
+    function closeConversionModal() {
+        document.getElementById('conversionModal').classList.remove('active');
+    }
+
+    function confirmCoinConversion() {
+        let coinsToConvert = parseInt(document.getElementById('convertCoinsInput').value);
+        if (!coinsToConvert || isNaN(coinsToConvert) || coinsToConvert < 10000) {
+            alert('❌ Minimum 10,000 coins required to convert!');
+            return;
+        }
+        if (coinsToConvert > user.points) {
+            alert('❌ You do not have enough coins!');
+            return;
+        }
+
+        let rupees = Math.floor(coinsToConvert / 100);
+        user.points -= coinsToConvert;
+        user.money = (user.money || 0) + rupees;
+        
+        saveUserData();
+        updateWalletDisplay();
+        closeConversionModal();
+        showToast(`✅ Converted ${coinsToConvert} coins into ₹${rupees}!`);
     }
 
     function openSupportModal() { document.getElementById('supportModal').classList.add('active'); }
@@ -1202,11 +1312,11 @@
             alert('❌ Aap aaj ka daily bonus pehle hi claim kar chuke hain!');
             return;
         }
-        user.points += 20;
+        user.points += 10;
         user.lastDailyClaimDate = todayStr;
         saveUserData();
         updateWalletDisplay();
-        showToast('🎉 +20 Daily Coins claimed successfully!');
+        showToast('🎉 +10 Daily Coins claimed successfully!');
         checkDailyClaimStatus();
     }
 
@@ -1261,9 +1371,9 @@
 
             if (timeLeft <= 0) {
                 clearInterval(countdown);
-                timerDisplay.innerText = "🎉 Success! +50 Coins Added!";
+                timerDisplay.innerText = "🎉 Success! +20 Coins Added!";
                 
-                user.points += 50;
+                user.points += 20;
                 saveUserData();
                 updateWalletDisplay();
 
@@ -1274,27 +1384,6 @@
                 }, 5000);
             }
         }, 1000);
-    }
-
-    async function convertCoins() {
-        let minCoinsRequired = 10000;
-
-        if (user.points < minCoinsRequired) {
-            alert(`❌ Minimum 10,000 coins (₹100) required to convert! Aapke paas ${user.points} coins hain.`);
-            return;
-        }
-
-        if (confirm(`Aap apne ${user.points} coins ko real money me convert karna chahte hain?`)) {
-            let convertAmount = Math.floor(user.points / 100); 
-            let deductedCoins = convertAmount * 100;
-            
-            user.points -= deductedCoins;
-            user.money = (user.money || 0) + convertAmount;
-            saveUserData();
-            updateWalletDisplay();
-            
-            showToast(`✅ Converted ${deductedCoins} coins into ₹${convertAmount}!`);
-        }
     }
 
     function shareApp() {
@@ -1323,7 +1412,8 @@
         activeMode = modeKey;
         document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
         btnElement.classList.add('active');
-        document.getElementById('historyTabName').innerText = gameConfigs[activeMode].name + ' History';
+        let hn = document.getElementById('historyTabName');
+        if(hn) hn.innerText = gameConfigs[activeMode].name + ' History';
         updateGameUI();
     }
 
@@ -1380,6 +1470,7 @@
 
     function showToast(msg) {
         let toast = document.getElementById('betToast');
+        if(!toast) return;
         toast.innerText = msg;
         toast.classList.add('show');
         setTimeout(() => toast.classList.remove('show'), 2000);
@@ -1415,7 +1506,8 @@
             else if (choice === 'Small' && bs === 'Small') isWin = true;
             else if (choice === ('Number ' + num)) isWin = true;
 
-            if (document.getElementById('gamePage').classList.contains('active')) {
+            let gp = document.getElementById('gamePage');
+            if (gp && gp.classList.contains('active')) {
                 let box = document.getElementById('gameResultBoxContainer');
                 box.className = isWin ? 'game-result-box win-result-box' : 'game-result-box loss-result-box';
                 document.getElementById('gameResultTitle').innerHTML = isWin ? '🎉 You Won!' : '😭 You Lost!';
@@ -1438,8 +1530,10 @@
         let cfg = gameConfigs[activeMode];
         let mins = Math.floor(cfg.timeLeft / 60);
         let secs = cfg.timeLeft % 60;
-        document.getElementById('gameTimerDisplay').innerText = (mins < 10 ? '0' + mins : mins) + ' : ' + (secs < 10 ? '0' + secs : secs);
-        document.getElementById('periodDisplay').innerText = cfg.periodSeq;
+        let gtd = document.getElementById('gameTimerDisplay');
+        if(gtd) gtd.innerText = (mins < 10 ? '0' + mins : mins) + ' : ' + (secs < 10 ? '0' + secs : secs);
+        let pd = document.getElementById('periodDisplay');
+        if(pd) pd.innerText = cfg.periodSeq;
 
         let htmlStr = '';
         cfg.history.historyList = cfg.history || [];
@@ -1449,7 +1543,8 @@
             if ([0,5].includes(row.number)) color = '#9b59b6';
             htmlStr += `<tr><td>${row.period}</td><td><span style="display:inline-block; width:22px; height:22px; line-height:22px; text-align:center; border-radius:50%; background:${color}; color:white; font-weight:bold;">${row.number}</span></td><td><span style="color:${row.bigSmall==='Big'?'#e67e22':'#3498db'}; font-weight:bold;">${row.bigSmall}</span></td></tr>`;
         });
-        document.getElementById('historyTableBody').innerHTML = htmlStr;
+        let htb = document.getElementById('historyTableBody');
+        if(htb) htb.innerHTML = htmlStr;
     }
 
     ['30s', '1m', '3m', '5m'].forEach(m => {
