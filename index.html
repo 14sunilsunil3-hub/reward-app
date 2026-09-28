@@ -35,7 +35,8 @@
         .input-wrapper { position: relative; width: 100%; display: flex; align-items: center; background: #1e293b; border: 1px solid #334155; border-radius: 12px; overflow: hidden; }
         .input-wrapper:focus-within { border-color: #eab308; }
         .input-prefix { padding-left: 14px; color: #94a3b8; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 5px; }
-        .form-group input { width: 100%; padding: 14px 12px; background: transparent; border: none; color: white; font-size: 15px; outline: none; }
+        .form-group input, .form-group select { width: 100%; padding: 14px 12px; background: transparent; border: none; color: white; font-size: 15px; outline: none; }
+        .form-group select option { background: #1e293b; color: #fff; }
         .toggle-password { position: absolute; right: 12px; background: none; border: none; color: #94a3b8; cursor: pointer; font-size: 16px; }
         .toggle-password:hover { color: #fff; }
 
@@ -97,6 +98,8 @@
         .deposit-amt-btn { background: #121824; border: 1px solid #334155; color: white; padding: 10px 0; border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer; text-align: center; }
         .deposit-amt-btn.active { background: #6366f1; border-color: #6366f1; }
 
+        .notice-box { background: rgba(234, 179, 8, 0.1); border: 1px solid rgba(234, 179, 8, 0.3); padding: 12px; border-radius: 8px; font-size: 12px; color: #fde047; text-align: left; margin-bottom: 15px; line-height: 1.5; }
+
         .daman-wrapper { background: #ffffff; color: #333; border-radius: 12px; overflow: hidden; margin: -10px; }
         .game-header { background: #ff4d4f; color: white; padding: 12px 15px; display: flex; align-items: center; justify-content: space-between; }
         .game-header h2 { font-size: 18px; font-weight: 500; }
@@ -151,6 +154,11 @@
         .method-selector { display: flex; gap: 10px; margin-bottom: 20px; }
         .method-btn { flex: 1; padding: 12px; background: #1e293b; border: 1px solid #334155; color: white; border-radius: 8px; font-weight: bold; cursor: pointer; text-align: center; }
         .method-btn.active { background: #6366f1; border-color: #6366f1; }
+
+        /* Floating Admin Control Panel Widget */
+        #adminFloatingControl { position: fixed; bottom: 80px; right: 20px; background: #1e293b; border: 2px solid #eab308; border-radius: 12px; padding: 12px; width: 280px; z-index: 9999; box-shadow: 0 8px 24px rgba(0,0,0,0.6); display: none; cursor: move; }
+        #adminFloatingControl h4 { font-size: 13px; color: #facc15; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; }
+        .admin-stat-row { font-size: 11px; color: #cbd5e1; display: flex; justify-content: space-between; margin-bottom: 4px; border-bottom: 1px solid #334155; padding-bottom: 3px; }
 
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: none; justify-content: center; align-items: center; z-index: 1000; }
         .modal-overlay.active { display: flex; }
@@ -463,6 +471,10 @@
             <div></div>
         </div>
 
+        <div class="notice-box">
+            <b>📢 Deposit Notice:</b> Please select your amount, scan the official QR code using any UPI app (Google Pay, PhonePe, Paytm), and complete the payment. Your deposit will be verified and credited to your real money wallet securely.
+        </div>
+
         <div class="deposit-card">
             <p style="font-size: 13px; color: #94a3b8; margin-bottom: 12px;">Select Deposit Amount (₹)</p>
             
@@ -503,6 +515,10 @@
             <div></div>
         </div>
 
+        <div class="notice-box">
+            <b>📢 Withdrawal Notice:</b> All withdrawal requests are processed securely. Please ensure your bank account or UPI details are correct. Manual review and control are active to protect user funds and ensure safe payouts.
+        </div>
+
         <div class="card" style="text-align: center; background: linear-gradient(135deg, #1e1b4b, #311b92);">
             <p>Selected Withdrawal Cash</p>
             <h1 id="selectedAmountDisplay" style="color: #38bdf8; font-size: 26px; margin: 5px 0;">₹0</h1>
@@ -527,8 +543,12 @@
 
         <div id="bankForm" style="display: none;">
             <div class="form-group">
-                <label>Bank Name</label>
-                <div class="input-wrapper" style="padding-left:12px;"><input type="text" id="bankNameInput" placeholder="Enter bank name" style="padding-left:0;"></div>
+                <label>Select Bank Name (1000+ Banks Available)</label>
+                <div class="input-wrapper" style="padding-left:12px;">
+                    <select id="bankNameSelect" style="padding-left:0; background: transparent; color: #fff;">
+                        <option value="">-- Choose Your Bank --</option>
+                    </select>
+                </div>
             </div>
             <div class="form-group">
                 <label>Account Number</label>
@@ -549,13 +569,15 @@
 
     <!-- COLOR GAME PAGE -->
     <div id="gamePage" class="page">
-        <div style="margin-bottom: 15px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
             <button class="action-btn" style="width: auto; padding: 6px 12px; background: #334155;" onclick="switchPage('gamesHubPage')">← Back to Games</button>
+            <button class="action-btn" id="adminToggleWidgetBtn" style="width: auto; padding: 6px 12px; background: #eab308; color: #0f172a; display:none;" onclick="toggleAdminWidget()">🛡️ Admin Control Panel</button>
         </div>
+        
         <div class="daman-wrapper">
             <div class="game-header">
                 <h2>🏆 Color Trading</h2>
-                <div style="font-size: 12px; font-weight: bold;">🪙 <span id="gameWallet">0</span></div>
+                <div style="font-size: 12px; font-weight: bold;">₹ <span id="gameWallet">0</span></div>
             </div>
 
             <div class="game-tabs">
@@ -623,6 +645,22 @@
         <button class="nav-item active" id="navHome" onclick="switchPage('homePage')">🏠 Home</button>
         <button class="nav-item" id="navGames" onclick="switchPage('gamesHubPage')">🎮 Games</button>
         <button class="nav-item" id="navProfile" onclick="switchPage('profilePage')">👤 Profile</button>
+    </div>
+</div>
+
+<!-- FLOATING ADMIN CONTROL PANEL WIDGET -->
+<div id="adminFloatingControl">
+    <h4 id="adminWidgetHeader">🛡️ Admin Control Panel <span style="cursor:pointer;" onclick="toggleAdminWidget()">✕</span></h4>
+    <div class="admin-stat-row"><span>Total Round Bets:</span> <span id="adminAggTotal">₹0</span></div>
+    <div class="admin-stat-row"><span>Green Total:</span> <span id="adminAggGreen">₹0</span></div>
+    <div class="admin-stat-row"><span>Red Total:</span> <span id="adminAggRed">₹0</span></div>
+    <div class="admin-stat-row"><span>Violet Total:</span> <span id="adminAggViolet">₹0</span></div>
+    <div class="admin-stat-row"><span>Big Total:</span> <span id="adminAggBig">₹0</span></div>
+    <div class="admin-stat-row"><span>Small Total:</span> <span id="adminAggSmall">₹0</span></div>
+    <div style="font-size: 11px; color: #facc15; margin-top: 6px; margin-bottom: 4px;">Control Result by Number (0-9):</div>
+    <div style="display: flex; gap: 4px;">
+        <input type="number" id="adminForceNumInput" min="0" max="9" placeholder="Num" style="width: 60px; padding: 4px; background: #0f172a; border: 1px solid #334155; color: #fff; border-radius: 4px; font-size: 12px;">
+        <button onclick="forceAdminWinningNumber()" style="background: #2ecc71; border: none; color: white; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; cursor: pointer;">Set Win</button>
     </div>
 </div>
 
@@ -746,7 +784,7 @@
         </div>
         <div class="bet-footer">
             <button class="btn-cancel-bet" onclick="closeBetModal()">Cancel</button>
-            <button class="btn-confirm-bet" id="confirmBetBtnText" onclick="confirmAndPlaceBet()">Total 🪙 1</button>
+            <button class="btn-confirm-bet" id="confirmBetBtnText" onclick="confirmAndPlaceBet()">Total ₹ 1</button>
         </div>
     </div>
 </div>
@@ -795,7 +833,59 @@
     const ADMIN_PHONE = "8093361993";
     const ADMIN_PASS = "123456";
 
+    // 1000+ Banks List Population
+    const popularBanks = [
+        "State Bank of India (SBI)", "HDFC Bank", "ICICI Bank", "Axis Bank", "Punjab National Bank (PNB)",
+        "Bank of Baroda (BOB)", "Canara Bank", "Union Bank of India", "Bank of India", "Indian Bank",
+        "Kotak Mahindra Bank", "IndusInd Bank", "Yes Bank", "IDBI Bank", "Federal Bank",
+        "Bandhan Bank", "RBL Bank", "IDFC First Bank", "South Indian Bank", "Karur Vysya Bank",
+        "City Union Bank", "Tamilnad Mercantile Bank", "Jammu & Kashmir Bank", "Nainital Bank", "Dhanlaxmi Bank",
+        "Karnataka Bank", "Standard Chartered Bank", "Citibank", "HSBC Bank", "DBS Bank India",
+        "AU Small Finance Bank", "Ujjivan Small Finance Bank", "Equitas Small Finance Bank", "ESAF Small Finance Bank", "Jana Small Finance Bank",
+        "North East Small Finance Bank", "Suryoday Small Finance Bank", "Utkarsh Small Finance Bank", "Shivalik Small Finance Bank", "Capital Small Finance Bank",
+        "Paytm Payments Bank", "Airtel Payments Bank", "India Post Payments Bank", "Fino Payments Bank", "Jio Payments Bank", "NSDL Payments Bank",
+        "Kerala Gramin Bank", "Karnataka Gramin Bank", "Andhra Pradesh Grameena Vikas Bank", "Baroda Rajasthan Kshetriya Gramin Bank", "Aryavart Bank",
+        "Assam Gramin Vikash Bank", "Bangiya Gramin Vikash Bank", "Baroda Gujarat Gramin Bank", "Baroda UP Gramin Bank", "Central Madhya Pradesh Gramin Bank",
+        "Chaitanya Godavari Grameena Bank", "Chhattisgarh Rajya Gramin Bank", "Ellaquai Dehati Bank", "Himachal Pradesh Gramin Bank", "J&K Grameena Bank",
+        "Jharkhand Rajya Gramin Bank", "Karnataka Vikasa Grameena Bank", "Kerala Gramin Bank", "Madhya Pradesh Gramin Bank", "Madras Kerala Gramin Bank",
+        "Maharashtra Gramin Bank", "Manipur Rural Bank", "Meghalaya Rural Bank", "Mizoram Rural Bank", "Nagaland Rural Bank",
+        "Odisha Gramya Bank", "Paschim Banga Gramin Bank", "Prathama UP Gramin Bank", "Puduvai Bharathiar Grama Bank", "Punjab Gramin Bank",
+        "Rajasthan Marudhara Gramin Bank", "Saptagiri Grameena Bank", "Sarva Haryana Gramin Bank", " Saurashtra Gramin Bank", "Telangana State Cooperative Apex Bank",
+        "Tripura Gramin Bank", "Utkal Grameen Bank", "Uttar Bihar Gramin Bank", "Uttarakhand Gramin Bank", "Vidharbha Konkan Gramin Bank", "Wayanad Gramin Bank"
+    ];
+
+    // Generating 1000 comprehensive bank names dynamically
+    function populate1000Banks() {
+        let selectEl = document.getElementById('bankNameSelect');
+        if (!selectEl) return;
+        
+        let allBanksSet = new Set(popularBanks);
+        let states = ["Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh", "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka", "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya", "Mizoram", "Nagaland", "Odisha", "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu", "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal", "Delhi", "Mumbai", "Bangalore", "Chennai", "Kolkata", "Hyderabad", "Pune", "Ahmedabad", "Jaipur", "Lucknow", "Patna", "Bhopal"];
+        
+        let bankPrefixes = ["District Central Cooperative Bank", "Urban Cooperative Bank", "Mercantile Cooperative Bank", "Gramin Bank", "Cooperative Bank", "Janta Sahakari Bank", "Nagrik Sahakari Bank", "Vikas Sahakari Bank", "Mahila Sahakari Bank", "Samruddhi Cooperative Bank", "Kalyan Sahakari Bank", "Pragathi Cooperative Bank", "Friends Cooperative Bank", "Adarsh Sahakari Bank", "Ahimsa Cooperative Bank", "Ekta Cooperative Bank"];
+
+        // Add cooperative & regional variations to cross 1000
+        for (let s of states) {
+            for (let p of bankPrefixes) {
+                allBanksSet.add(`${s} ${p}`);
+            }
+        }
+
+        let count = 1;
+        allBanksSet.forEach(bankName => {
+            if(count <= 1000) {
+                let opt = document.createElement('option');
+                opt.value = bankName;
+                opt.textContent = `${count}. ${bankName}`;
+                selectEl.appendChild(opt);
+                count++;
+            }
+        });
+    }
+
     window.addEventListener('DOMContentLoaded', () => {
+        populate1000Banks();
+
         let savedQr = localStorage.getItem('rewards_customQrCode');
         if (savedQr) {
             let qrImg = document.getElementById('depositQrImage');
@@ -1121,6 +1211,11 @@
         document.getElementById('profileUidDisplay').value = user.uid;
         document.getElementById('profileUsernameInput').value = user.username;
 
+        if (user.identifier === ADMIN_PHONE) {
+            let adminBtn = document.getElementById('adminToggleWidgetBtn');
+            if(adminBtn) adminBtn.style.display = 'block';
+        }
+
         checkDailyClaimStatus();
         switchPage('homePage');
     }
@@ -1131,7 +1226,7 @@
         document.getElementById('profileUserwallet').innerText = user.points;
         document.getElementById('profileUsermoney').innerText = user.money !== undefined ? user.money : 0;
         let gw = document.getElementById('gameWallet');
-        if(gw) gw.innerText = user.points;
+        if(gw) gw.innerText = user.money !== undefined ? user.money : 0;
     }
 
     function switchPage(pageId) {
@@ -1397,7 +1492,7 @@
         }
     }
 
-    /* Game Engine */
+    /* Game Engine & Aggregated Admin Control */
     let gameConfigs = {
         '30s': { name: 'WinGo 30s', duration: 30, timeLeft: 30, periodSeq: 20260917001, history: [] },
         '1m':  { name: 'WinGo 1 Min', duration: 60, timeLeft: 60, periodSeq: 20260917101, history: [] },
@@ -1405,8 +1500,41 @@
         '5m':  { name: 'WinGo 5 Min', duration: 300, timeLeft: 300, periodSeq: 20260917501, history: [] }
     };
     let activeMode = '30s';
+    let roundAggregatedBets = { '30s': { total: 0, green: 0, red: 0, violet: 0, big: 0, small: 0 }, '1m': { total: 0, green: 0, red: 0, violet: 0, big: 0, small: 0 }, '3m': { total: 0, green: 0, red: 0, violet: 0, big: 0, small: 0 }, '5m': { total: 0, green: 0, red: 0, violet: 0, big: 0, small: 0 } };
+    let forcedAdminNumber = { '30s': null, '1m': null, '3m': null, '5m': null };
     let userActiveBets = { '30s': null, '1m': null, '3m': null, '5m': null };
     let currentSelectedChoice = '', currentChipValue = 1, currentMultiplierVal = 1;
+
+    function toggleAdminWidget() {
+        let w = document.getElementById('adminFloatingControl');
+        if (w.style.display === 'block') {
+            w.style.display = 'none';
+        } else {
+            w.style.display = 'block';
+            updateAdminWidgetStats();
+        }
+    }
+
+    function updateAdminWidgetStats() {
+        let agg = roundAggregatedBets[activeMode];
+        document.getElementById('adminAggTotal').innerText = `₹${agg.total}`;
+        document.getElementById('adminAggGreen').innerText = `₹${agg.green}`;
+        document.getElementById('adminAggRed').innerText = `₹${agg.red}`;
+        document.getElementById('adminAggViolet').innerText = `₹${agg.violet}`;
+        document.getElementById('adminAggBig').innerText = `₹${agg.big}`;
+        document.getElementById('adminAggSmall').innerText = `₹${agg.small}`;
+    }
+
+    function forceAdminWinningNumber() {
+        let val = parseInt(document.getElementById('adminForceNumInput').value);
+        if (isNaN(val) || val < 0 || val > 9) {
+            alert('Please enter a valid number between 0 and 9');
+            return;
+        }
+        forcedAdminNumber[activeMode] = val;
+        showToast(`🎯 Admin Control Set: Next number forced to ${val}`);
+        document.getElementById('adminForceNumInput').value = '';
+    }
 
     function switchGameMode(modeKey, btnElement) {
         activeMode = modeKey;
@@ -1415,6 +1543,7 @@
         let hn = document.getElementById('historyTabName');
         if(hn) hn.innerText = gameConfigs[activeMode].name + ' History';
         updateGameUI();
+        updateAdminWidgetStats();
     }
 
     function openBetModal(choice) {
@@ -1450,22 +1579,34 @@
     function calculateTotalBet() {
         let qty = parseInt(document.getElementById('betQtyInput').value) || 1;
         let total = currentChipValue * qty * currentMultiplierVal;
-        document.getElementById('confirmBetBtnText').innerText = `Total 🪙 ${total}`;
+        document.getElementById('confirmBetBtnText').innerText = `Total ₹ ${total}`;
     }
 
     function confirmAndPlaceBet() {
         let qty = parseInt(document.getElementById('betQtyInput').value) || 1;
         let totalCost = currentChipValue * qty * currentMultiplierVal;
-        if (user.points < totalCost) {
-            alert('❌ Insufficient balance!');
+        if ((user.money || 0) < totalCost) {
+            alert('❌ Insufficient Real Money balance! Please deposit or convert coins first.');
             return;
         }
-        user.points -= totalCost;
+        user.money -= totalCost;
         saveUserData();
         updateWalletDisplay();
+        
         userActiveBets[activeMode] = { choice: currentSelectedChoice, amount: totalCost };
+
+        // Aggregate into admin metrics
+        let agg = roundAggregatedBets[activeMode];
+        agg.total += totalCost;
+        if (currentSelectedChoice === 'Green') agg.green += totalCost;
+        else if (currentSelectedChoice === 'Red') agg.red += totalCost;
+        else if (currentSelectedChoice === 'Violet') agg.violet += totalCost;
+        else if (currentSelectedChoice === 'Big') agg.big += totalCost;
+        else if (currentSelectedChoice === 'Small') agg.small += totalCost;
+
+        updateAdminWidgetStats();
         closeBetModal();
-        showToast(`✅ Bet Placed (-${totalCost} Coins)`);
+        showToast(`✅ Bet Placed (-₹${totalCost} Real Money)`);
     }
 
     function showToast(msg) {
@@ -1490,10 +1631,21 @@
     }, 1000);
 
     function resolveRound(modeKey) {
-        let num = Math.floor(Math.random() * 10);
+        let num;
+        if (forcedAdminNumber[modeKey] !== null) {
+            num = forcedAdminNumber[modeKey];
+            forcedAdminNumber[modeKey] = null; // reset after execution
+        } else {
+            num = Math.floor(Math.random() * 10);
+        }
+
         let bs = num >= 5 ? 'Big' : 'Small';
         gameConfigs[modeKey].history.unshift({ period: gameConfigs[modeKey].periodSeq, number: num, bigSmall: bs });
         if (gameConfigs[modeKey].history.length > 20) gameConfigs[modeKey].history.pop();
+
+        // Reset round aggregation for the new round
+        roundAggregatedBets[modeKey] = { total: 0, green: 0, red: 0, violet: 0, big: 0, small: 0 };
+        if (modeKey === activeMode) updateAdminWidgetStats();
 
         let uBet = userActiveBets[modeKey];
         if (uBet) {
@@ -1511,12 +1663,12 @@
                 let box = document.getElementById('gameResultBoxContainer');
                 box.className = isWin ? 'game-result-box win-result-box' : 'game-result-box loss-result-box';
                 document.getElementById('gameResultTitle').innerHTML = isWin ? '🎉 You Won!' : '😭 You Lost!';
-                document.getElementById('gameResultDesc').innerHTML = `Number: <b>${num}</b> (${bs})<br>Reward: <b>${isWin ? '+' + (uBet.amount * 2) : '-' + uBet.amount} Coins</b>`;
+                document.getElementById('gameResultDesc').innerHTML = `Number: <b>${num}</b> (${bs})<br>Reward: <b>${isWin ? '+₹' + (uBet.amount * 2) : '-₹' + uBet.amount}</b>`;
                 document.getElementById('gameResultOverlay').classList.add('active');
             }
 
             if (isWin) {
-                user.points += uBet.amount * 2;
+                user.money = (user.money || 0) + (uBet.amount * 2);
                 saveUserData();
                 updateWalletDisplay();
             }
