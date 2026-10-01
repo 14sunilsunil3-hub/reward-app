@@ -41,9 +41,10 @@
             position: absolute;
             top: 0; left: 0;
             width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.65);
-            backdrop-filter: blur(2px);
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(3px);
             display: none;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             z-index: 99;
@@ -52,29 +53,46 @@
 
         .watermark-text {
             color: #ff4d4d;
-            font-size: 16px;
+            font-size: 18px;
             font-weight: bold;
             background: rgba(255, 255, 255, 0.95);
-            padding: 10px 15px;
-            border-radius: 6px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            padding: 10px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.7);
             text-align: center;
+            margin-bottom: 8px;
+        }
+
+        .watermark-big-number {
+            font-size: 60px;
+            font-weight: bold;
+            color: #facc15;
+            text-shadow: 0 0 15px rgba(250, 204, 21, 0.6);
+            animation: pulseNum 1s infinite alternate;
+        }
+
+        @keyframes pulseNum {
+            0% { transform: scale(1); opacity: 0.8; }
+            100% { transform: scale(1.1); opacity: 1; }
         }
 
         .color-buttons { display: flex; gap: 8px; margin-bottom: 12px; }
-        .c-btn { flex: 1; padding: 12px 0; border: none; border-radius: 8px; font-weight: bold; font-size: 13px; color: white; cursor: pointer; }
+        .c-btn { flex: 1; padding: 12px 0; border: none; border-radius: 8px; font-weight: bold; font-size: 13px; color: white; cursor: pointer; transition: 0.2s; }
         .btn-green { background: #22c55e; }
         .btn-violet { background: #a855f7; }
         .btn-red { background: #ef4444; }
 
         .size-buttons { display: flex; gap: 8px; margin-bottom: 15px; }
-        .s-btn { flex: 1; padding: 12px 0; border: none; border-radius: 8px; font-weight: bold; font-size: 14px; color: white; cursor: pointer; }
+        .s-btn { flex: 1; padding: 12px 0; border: none; border-radius: 8px; font-weight: bold; font-size: 14px; color: white; cursor: pointer; transition: 0.2s; }
         .btn-big { background: #f97316; }
         .btn-small { background: #0ea5e9; }
 
         .number-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin-bottom: 15px; }
         .num-ball { background: #1e293b; border: 1px solid #334155; color: white; padding: 10px 0; border-radius: 50%; width: 38px; height: 38px; margin: 0 auto; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 13px; cursor: pointer; transition: 0.2s; }
         .num-ball:hover { background: #4f46e5; border-color: #6366f1; }
+
+        /* Disabled state for betting controls */
+        .disabled-controls { opacity: 0.4; pointer-events: none; }
 
         #gameResult { text-align: center; font-size: 14px; font-weight: bold; margin-bottom: 12px; min-height: 20px; }
 
@@ -140,7 +158,8 @@
 
     <div class="betting-area-wrapper" id="bettingAreaWrapper">
         <div id="lockOverlay" class="lock-overlay">
-            <div class="watermark-text">🔒 Betting Closed (Last 5s)</div>
+            <div class="watermark-text" id="lockTitleText">🔒 Betting Closed (Last 5s)</div>
+            <div class="watermark-big-number" id="watermarkBigNum">5</div>
         </div>
 
         <div id="tradingControls">
@@ -253,24 +272,32 @@
         fetchHistory();
     }
 
-    function playBeep() {
+    // Sound effect generator for ticking & locking
+    function playSound(type) {
         try {
             const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             const oscillator = audioCtx.createOscillator();
             const gainNode = audioCtx.createGain();
+            
             oscillator.type = 'sine';
-            oscillator.frequency.setValueAtTime(800, audioCtx.currentTime);
-            gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
-            oscillator.connect(gainNode);
-            gainNode.connect(audioCtx.destination);
-            oscillator.start();
-            oscillator.stop(audioCtx.currentTime + 0.15);
+            if (type === 'tick') {
+                oscillator.frequency.setValueAtTime(600, audioCtx.currentTime);
+                gainNode.gain.setValueAtTime(0.08, audioCtx.currentTime);
+                oscillator.start();
+                oscillator.stop(audioCtx.currentTime + 0.1);
+            } else if (type === 'lock') {
+                oscillator.frequency.setValueAtTime(300, audioCtx.currentTime);
+                oscillator.frequency.exponentialRampToValueAtTime(150, audioCtx.currentTime + 0.3);
+                gainNode.gain.setValueAtTime(0.15, audioCtx.currentTime);
+                oscillator.start();
+                oscillator.stop(audioCtx.currentTime + 0.3);
+            }
         } catch (e) {
-            console.log("Audio context not supported");
+            console.log("Audio context blocked or unsupported");
         }
     }
 
-    ['30s', '1m', '3m', '5m'].forEach(type => {
+    ['30s', '60s', '3m', '5m'].forEach(type => {
         socket.on(`timerTick_${type}`, (data) => {
             if (currentTimerType === type) {
                 timeLeft = data.countdown;
@@ -281,18 +308,29 @@
                 document.getElementById('adminPeriod').value = data.period;
 
                 const lockOverlay = document.getElementById('lockOverlay');
+                const tradingControls = document.getElementById('tradingControls');
                 const resultMsg = document.getElementById('gameResult');
+                const watermarkBigNum = document.getElementById('watermarkBigNum');
+                const lockTitleText = document.getElementById('lockTitleText');
 
                 if (!data.isBettingOpen || timeLeft <= 5) {
                     lockOverlay.style.display = 'flex';
-                    resultMsg.style.color = '#f59e0b';
-                    resultMsg.innerText = `🔒 Betting closed! Waiting for result...`;
+                    tradingControls.classList.add('disabled-controls');
                     
                     if (timeLeft <= 5 && timeLeft > 0) {
-                        playBeep();
+                        watermarkBigNum.innerText = timeLeft;
+                        lockTitleText.innerText = "🔒 Betting Closed (Last 5s)";
+                        resultMsg.style.color = '#f59e0b';
+                        resultMsg.innerText = `🔒 Betting closed! Waiting for result...`;
+                        playSound('tick');
+                    } else if (timeLeft === 0) {
+                        watermarkBigNum.innerText = "0";
+                        lockTitleText.innerText = "🔒 TIME UP - LOCKED!";
+                        playSound('lock');
                     }
                 } else {
                     lockOverlay.style.display = 'none';
+                    tradingControls.classList.remove('disabled-controls');
                     if (resultMsg.innerText.includes('Betting closed')) {
                         resultMsg.innerText = '';
                     }
