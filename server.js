@@ -103,7 +103,6 @@ function generatePeriodCode(timerType) {
     const month = String(now.getMonth() + 1).padStart(2, '0');
     const day = String(now.getDate()).padStart(2, '0');
     
-    // Normalize timerType key (handling both '60s' and '1m')
     let key = timerType === '60s' ? '1m' : timerType;
     if (!periodCounters[key]) periodCounters[key] = 1000;
     periodCounters[key]++;
@@ -224,7 +223,6 @@ app.post('/api/withdraw', async (req, res) => {
     }
 });
 
-// Admin Manual Override Route (Risk Control)
 app.post('/api/admin/set-result', async (req, res) => {
     try {
         const { period, number } = req.body;
@@ -244,7 +242,6 @@ app.post('/api/admin/set-result', async (req, res) => {
     }
 });
 
-// Admin API to check current period bets and total amounts (Live Pool Monitor)
 app.get('/api/admin/current-bets/:timerType/:period', async (req, res) => {
     try {
         const { timerType, period } = req.params;
@@ -276,7 +273,6 @@ app.get('/api/admin/current-bets/:timerType/:period', async (req, res) => {
     }
 });
 
-// Game History API (Crucial for frontend table)
 app.get('/api/game-history/:timerType', async (req, res) => {
     try {
         const { timerType } = req.params;
@@ -287,7 +283,6 @@ app.get('/api/game-history/:timerType', async (req, res) => {
     }
 });
 
-// User Bet History API
 app.get('/api/my-bets/:userId', async (req, res) => {
     try {
         const { userId } = req.params;
@@ -298,14 +293,13 @@ app.get('/api/my-bets/:userId', async (req, res) => {
     }
 });
 
-// Primary Color Game Betting Endpoint (Matching HTML Frontend)
 app.post('/api/color-game', async (req, res) => {
     try {
         const { userId, betType, betValue, betAmount, timerType = '30s' } = req.body;
         const amount = Number(betAmount);
 
-        if (!gameStates[timerType] || !gameStates[timerType].isBettingOpen) {
-            return res.status(400).json({ success: false, error: "Betting is closed for this period!" });
+        if (!gameStates[timerType] || !gameStates[timerType].isBettingOpen || gameStates[timerType].countdown <= 5) {
+            return res.status(400).json({ success: false, error: "Betting is closed for this period (Last 5s)!" });
         }
 
         const user = await User.findById(userId);
@@ -313,7 +307,6 @@ app.post('/api/color-game', async (req, res) => {
             return res.status(400).json({ success: false, error: "Insufficient balance or user not found!" });
         }
 
-        // Real money wallet deduction
         user.balance -= amount;
         await user.save();
 
@@ -344,13 +337,12 @@ app.post('/api/color-game', async (req, res) => {
     }
 });
 
-// General Bet Route supporting all timer types
 app.post('/api/bet', async (req, res) => {
     try {
         const { userId, timerType = '30s', period, betType, betValue, amount } = req.body;
         
-        if (!gameStates[timerType] || !gameStates[timerType].isBettingOpen) {
-            return res.status(400).json({ success: false, message: "Betting is closed for this period!" });
+        if (!gameStates[timerType] || !gameStates[timerType].isBettingOpen || gameStates[timerType].countdown <= 5) {
+            return res.status(400).json({ success: false, message: "Betting is closed for this period (Last 5s)!" });
         }
 
         const user = await User.findById(userId);
@@ -467,7 +459,6 @@ function startTimerLoop(timerType, intervalSeconds) {
                     size: outcome.size
                 });
                 
-                // Generic event for HTML if it listens to single 'gameResult'
                 io.emit('gameResult', {
                     period: currentPeriod,
                     number: outcome.number,
@@ -489,7 +480,6 @@ function startTimerLoop(timerType, intervalSeconds) {
                 period: state.period 
             });
 
-            // Generic event for HTML if it listens to single 'timerTick'
             io.emit('timerTick', {
                 timerType,
                 countdown: state.countdown,
@@ -528,5 +518,5 @@ io.on('connection', (socket) => {
 // ==================== 8. START SERVER ====================
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
-    console.log(`Server fully updated & running smoothly with Admin Bet Monitor on port ${PORT}`);
+    console.log(`Server fully updated & running smoothly with Admin Bet Monitor & 5s Lock on port ${PORT}`);
 });
