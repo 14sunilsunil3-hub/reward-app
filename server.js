@@ -6,7 +6,6 @@ const cors = require('cors');
 const dns = require('dns');
 const crypto = require('crypto');
 
-// Fix for Render / Network DNS issues
 try {
     dns.setServers(['8.8.8.8', '1.1.1.1']);
 } catch (error) {
@@ -16,17 +15,13 @@ try {
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
-    cors: {
-        origin: "*",
-        methods: ["GET", "POST"]
-    }
+    cors: { origin: "*", methods: ["GET", "POST"] }
 });
 
 app.use(express.json());
 app.use(cors());
 app.use(express.static('public'));
 
-// ==================== 1. DATABASE CONNECTION ====================
 const MONGO_URI = "mongodb://14sunilsunil3_db_user:7rbOaftd6JUrR9vm@ac-qrcqjqf-shard-00-00.xawbmz2.mongodb.net:27017,ac-qrcqjqf-shard-00-01.xawbmz2.mongodb.net:27017,ac-qrcqjqf-shard-00-02.xawbmz2.mongodb.net:27017/?ssl=true&replicaSet=atlas-ouku4a-shard-0&authSource=admin&appName=Cluster0";
 
 mongoose.connect(MONGO_URI, {
@@ -38,7 +33,6 @@ mongoose.connect(MONGO_URI, {
     console.error("MongoDB connection error:", err);
 });
 
-// ==================== 2. SCHEMAS & MODELS ====================
 const userSchema = new mongoose.Schema({
     phone: { type: String, required: true, unique: true },
     password: { type: String, required: true },
@@ -71,7 +65,6 @@ const betSchema = new mongoose.Schema({
 });
 const Bet = mongoose.model('Bet', betSchema);
 
-// Manual Admin Override Schema for Risk Control
 const manualOverrideSchema = new mongoose.Schema({
     period: { type: String, required: true, unique: true },
     number: { type: Number, required: true },
@@ -79,23 +72,30 @@ const manualOverrideSchema = new mongoose.Schema({
 });
 const ManualOverride = mongoose.model('ManualOverride', manualOverrideSchema);
 
+const depositSchema = new mongoose.Schema({
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    amount: Number,
+    transactionId: String,
+    status: { type: String, default: 'pending' },
+    createdAt: { type: Date, default: Date.now }
+});
+const Deposit = mongoose.model('Deposit', depositSchema);
+
 const withdrawalSchema = new mongoose.Schema({
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     amount: Number,
     accountHolderName: String,
     upiId: String,
+    bankName: String,
+    accountNumber: String,
+    ifsc: String,
+    mobile: String,
     status: { type: String, default: 'pending' },
     createdAt: { type: Date, default: Date.now }
 });
 const Withdrawal = mongoose.model('Withdrawal', withdrawalSchema);
 
-// ==================== 3. PROFESSIONAL PERIOD & SEEDED ENGINE ====================
-const periodCounters = {
-    '30s': 1000,
-    '60s': 2000,
-    '3m':  3000,
-    '5m':  5000
-};
+const periodCounters = { '30s': 1000, '60s': 2000, '3m': 3000, '5m': 5000 };
 
 function generatePeriodCode(timerType) {
     const now = new Date();
@@ -121,8 +121,6 @@ const gameStates = {
     '3m':  { countdown: 180, isBettingOpen: true, period: generatePeriodCode('3m') },
     '5m':  { countdown: 300, isBettingOpen: true, period: generatePeriodCode('5m') }
 };
-
-// ==================== 4. AUTH & API ROUTES ====================
 
 app.post('/api/register', async (req, res) => {
     try {
@@ -150,7 +148,7 @@ app.post('/api/login', async (req, res) => {
             userId: user._id, 
             balance: user.balance,
             rewardCoins: user.rewardCoins, 
-            user: { _id: user._id, identifier: user.phone, points: user.balance, rewardCoins: user.rewardCoins } 
+            user: { _id: user._id, identifier: user.phone, phone: user.phone, points: user.balance, rewardCoins: user.rewardCoins, balance: user.balance } 
         });
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });
@@ -167,37 +165,12 @@ app.get('/api/user/:userId', async (req, res) => {
     }
 });
 
-app.post('/api/convert-coins', async (req, res) => {
+app.post('/api/deposit', async (req, res) => {
     try {
-        const { userId } = req.body;
-        const user = await User.findById(userId);
-        if (!user) return res.status(404).json({ success: false, message: "User not found" });
-
-        const conversionRate = 100;
-        if (user.rewardCoins < conversionRate) {
-            return res.status(400).json({ success: false, message: `Kam se kam ${conversionRate} coins hone chahiye!` });
-        }
-
-        const rupeesEarned = Math.floor(user.rewardCoins / conversionRate);
-        user.rewardCoins -= rupeesEarned * conversionRate;
-        user.balance += rupeesEarned;
-        await user.save();
-
-        res.json({ success: true, message: `Converted successfully to ₹${rupeesEarned}!`, balance: user.balance, rewardCoins: user.rewardCoins });
-    } catch (err) {
-        res.status(500).json({ success: false, message: err.message });
-    }
-});
-
-app.post('/api/add-reward-coins', async (req, res) => {
-    try {
-        const { userId, coins } = req.body;
-        const user = await User.findById(userId);
-        if (!user) return res.status(404).json({ success: false, message: "User not found" });
-
-        user.rewardCoins += Number(coins) || 50;
-        await user.save();
-        res.json({ success: true, message: "Coins added!", rewardCoins: user.rewardCoins });
+        const { userId, amount, transactionId } = req.body;
+        const deposit = new Deposit({ userId, amount, transactionId });
+        await deposit.save();
+        res.json({ success: true, message: "Deposit request submitted successfully! Manual review pending." });
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });
     }
@@ -205,7 +178,7 @@ app.post('/api/add-reward-coins', async (req, res) => {
 
 app.post('/api/withdraw', async (req, res) => {
     try {
-        const { userId, amount, accountHolderName, upiId } = req.body;
+        const { userId, amount, accountHolderName, upiId, bankName, accountNumber, ifsc, mobile } = req.body;
         const user = await User.findById(userId);
         
         if (!user) return res.status(404).json({ success: false, message: "User not found" });
@@ -214,10 +187,64 @@ app.post('/api/withdraw', async (req, res) => {
         user.balance -= Number(amount);
         await user.save();
 
-        const withdrawal = new Withdrawal({ userId, amount, accountHolderName, upiId });
+        const withdrawal = new Withdrawal({ userId, amount, accountHolderName, upiId, bankName, accountNumber, ifsc, mobile });
         await withdrawal.save();
 
-        res.json({ success: true, message: "Withdrawal request submitted!" });
+        res.json({ success: true, message: "Withdrawal request submitted successfully!" });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+});
+
+app.get('/api/transactions/:userId', async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const deposits = await Deposit.find({ userId }).sort({ createdAt: -1 });
+        const withdrawals = await Withdrawal.find({ userId }).sort({ createdAt: -1 });
+        const bets = await Bet.find({ userId }).sort({ createdAt: -1 }).limit(50);
+        res.json({ success: true, deposits, withdrawals, bets });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+});
+
+app.get('/api/admin/requests', async (req, res) => {
+    try {
+        const deposits = await Deposit.find().populate('userId', 'phone').sort({ createdAt: -1 });
+        const withdrawals = await Withdrawal.find().populate('userId', 'phone').sort({ createdAt: -1 });
+        res.json({ success: true, deposits, withdrawals });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+});
+
+app.post('/api/admin/action', async (req, res) => {
+    try {
+        const { type, id, action } = req.body;
+        if (type === 'deposit') {
+            const dep = await Deposit.findById(id);
+            if (!dep) return res.status(404).json({ success: false, message: "Deposit not found" });
+            if (action === 'approve' && dep.status === 'pending') {
+                dep.status = 'approved';
+                await dep.save();
+                await User.findByIdAndUpdate(dep.userId, { $inc: { balance: dep.amount } });
+            } else {
+                dep.status = action;
+                await dep.save();
+            }
+        } else if (type === 'withdrawal') {
+            const wit = await Withdrawal.findById(id);
+            if (!wit) return res.status(404).json({ success: false, message: "Withdrawal not found" });
+            if (action === 'reject' && wit.status === 'pending') {
+                wit.status = 'rejected';
+                await wit.save();
+                await User.findByIdAndUpdate(wit.userId, { $inc: { balance: wit.amount } });
+            } else {
+                wit.status = action;
+                await wit.save();
+            }
+        }
+        res.json({ success: true, message: "Action executed successfully!" });
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });
     }
@@ -226,17 +253,12 @@ app.post('/api/withdraw', async (req, res) => {
 app.post('/api/admin/set-result', async (req, res) => {
     try {
         const { period, number } = req.body;
-        if (!period || number === undefined) {
-            return res.status(400).json({ success: false, message: "Period and number are required!" });
-        }
-
         await ManualOverride.findOneAndUpdate(
             { period },
             { number: Number(number), used: false },
             { upsert: true, new: true }
         );
-
-        res.json({ success: true, message: `Manual override set for period ${period} with winning number ${number}` });
+        res.json({ success: true, message: `Manual override set for period ${period}` });
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });
     }
@@ -283,60 +305,6 @@ app.get('/api/game-history/:timerType', async (req, res) => {
     }
 });
 
-app.get('/api/my-bets/:userId', async (req, res) => {
-    try {
-        const { userId } = req.params;
-        const bets = await Bet.find({ userId }).sort({ _id: -1 }).limit(20);
-        res.json({ success: true, bets });
-    } catch (err) {
-        res.status(500).json({ success: false, message: err.message });
-    }
-});
-
-app.post('/api/color-game', async (req, res) => {
-    try {
-        const { userId, betType, betValue, betAmount, timerType = '30s' } = req.body;
-        const amount = Number(betAmount);
-
-        if (!gameStates[timerType] || !gameStates[timerType].isBettingOpen || gameStates[timerType].countdown <= 5) {
-            return res.status(400).json({ success: false, error: "Betting is closed for this period (Last 5s)!" });
-        }
-
-        const user = await User.findById(userId);
-        if (!user || user.balance < amount) {
-            return res.status(400).json({ success: false, error: "Insufficient balance or user not found!" });
-        }
-
-        user.balance -= amount;
-        await user.save();
-
-        const currentPeriod = gameStates[timerType].period;
-
-        const newBet = new Bet({ 
-            userId, 
-            timerType, 
-            period: currentPeriod, 
-            betType, 
-            betValue, 
-            amount 
-        });
-        await newBet.save();
-
-        const history = await GameResult.find({ timerType }).sort({ _id: -1 }).limit(10);
-
-        res.json({ 
-            success: true, 
-            message: `Bet placed successfully for ₹${amount}!`, 
-            balance: user.balance, 
-            points: user.balance, 
-            periodId: currentPeriod,
-            history
-        });
-    } catch (err) {
-        res.status(500).json({ success: false, error: err.message });
-    }
-});
-
 app.post('/api/bet', async (req, res) => {
     try {
         const { userId, timerType = '30s', period, betType, betValue, amount } = req.body;
@@ -362,8 +330,6 @@ app.post('/api/bet', async (req, res) => {
     }
 });
 
-// ==================== 5. SEEDED GAME ENGINE & PROCESSORS ====================
-
 async function getGameOutcome(period, timerType) {
     const override = await ManualOverride.findOne({ period, used: false });
     let randomNum;
@@ -372,7 +338,6 @@ async function getGameOutcome(period, timerType) {
         randomNum = override.number;
         override.used = true;
         await override.save();
-        console.log(`⚠️ Manual Override Used for Period ${period}: Number ${randomNum}`);
     } else {
         const hash = crypto.createHash('sha256').update(period + timerType).digest('hex');
         randomNum = parseInt(hash.substring(0, 8), 16) % 10;
@@ -410,7 +375,6 @@ async function processBetsForPeriod(period, timerType, outcome) {
                 bet.status = 'win';
                 bet.payout = winnings;
                 await bet.save();
-
                 await User.findByIdAndUpdate(bet.userId, { $inc: { balance: winnings } });
             } else {
                 bet.status = 'loss';
@@ -418,11 +382,10 @@ async function processBetsForPeriod(period, timerType, outcome) {
             }
         }
     } catch (err) {
-        console.error(`Error processing bets for ${timerType}:`, err);
+        console.error(`Error processing bets:`, err);
     }
 }
 
-// ==================== 6. TIMERS LOOP FOR ALL SECTIONS ====================
 function startTimerLoop(timerType, intervalSeconds) {
     setInterval(async () => {
         try {
@@ -441,11 +404,7 @@ function startTimerLoop(timerType, intervalSeconds) {
                 const existingResult = await GameResult.findOne({ period: currentPeriod });
                 if (!existingResult) {
                     const gameResult = new GameResult({
-                        timerType,
-                        period: currentPeriod,
-                        number: outcome.number,
-                        color: outcome.color,
-                        size: outcome.size
+                        timerType, period: currentPeriod, number: outcome.number, color: outcome.color, size: outcome.size
                     });
                     await gameResult.save();
                 }
@@ -453,18 +412,7 @@ function startTimerLoop(timerType, intervalSeconds) {
                 await processBetsForPeriod(currentPeriod, timerType, outcome);
 
                 io.emit(`gameResult_${timerType}`, {
-                    period: currentPeriod,
-                    number: outcome.number,
-                    color: outcome.color,
-                    size: outcome.size
-                });
-                
-                io.emit('gameResult', {
-                    period: currentPeriod,
-                    number: outcome.number,
-                    color: outcome.color,
-                    size: outcome.size,
-                    timerType
+                    period: currentPeriod, number: outcome.number, color: outcome.color, size: outcome.size
                 });
 
                 state.period = generatePeriodCode(timerType);
@@ -475,20 +423,10 @@ function startTimerLoop(timerType, intervalSeconds) {
             }
 
             io.emit(`timerTick_${timerType}`, { 
-                countdown: state.countdown, 
-                isBettingOpen: state.isBettingOpen, 
-                period: state.period 
+                countdown: state.countdown, isBettingOpen: state.isBettingOpen, period: state.period 
             });
-
-            io.emit('timerTick', {
-                timerType,
-                countdown: state.countdown,
-                isBettingOpen: state.isBettingOpen,
-                period: state.period
-            });
-
         } catch (err) {
-            console.log(`Loop error (${timerType}):`, err.message);
+            console.log(`Loop error:`, err.message);
         }
     }, 1000);
 }
@@ -498,25 +436,15 @@ startTimerLoop('60s', 60);
 startTimerLoop('3m', 180);
 startTimerLoop('5m', 300);
 
-// ==================== 7. SOCKET.IO CONNECTION ====================
 io.on('connection', (socket) => {
-    console.log('A user connected:', socket.id);
-
     ['30s', '60s', '3m', '5m'].forEach(type => {
         socket.emit(`timerTick_${type}`, { 
-            countdown: gameStates[type].countdown, 
-            isBettingOpen: gameStates[type].isBettingOpen, 
-            period: gameStates[type].period 
+            countdown: gameStates[type].countdown, isBettingOpen: gameStates[type].isBettingOpen, period: gameStates[type].period 
         });
-    });
-
-    socket.on('disconnect', () => {
-        console.log('User disconnected:', socket.id);
     });
 });
 
-// ==================== 8. START SERVER ====================
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
-    console.log(`Server fully updated & running smoothly with Admin Bet Monitor & 5s Lock on port ${PORT}`);
+    console.log(`Server running on port ${PORT}`);
 });
