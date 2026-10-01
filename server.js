@@ -22,6 +22,7 @@ app.use(express.json());
 app.use(cors());
 app.use(express.static('public'));
 
+// MongoDB Connection
 const MONGO_URI = "mongodb://14sunilsunil3_db_user:7rbOaftd6JUrR9vm@ac-qrcqjqf-shard-00-00.xawbmz2.mongodb.net:27017,ac-qrcqjqf-shard-00-01.xawbmz2.mongodb.net:27017,ac-qrcqjqf-shard-00-02.xawbmz2.mongodb.net:27017/?ssl=true&replicaSet=atlas-ouku4a-shard-0&authSource=admin&appName=Cluster0";
 
 mongoose.connect(MONGO_URI, {
@@ -33,15 +34,24 @@ mongoose.connect(MONGO_URI, {
     console.error("MongoDB connection error:", err);
 });
 
+// Helper function to generate unique UID
+function generateUID() {
+    return 'UID-' + Math.floor(100000 + Math.random() * 900000);
+}
+
+// User Schema
 const userSchema = new mongoose.Schema({
+    uid: { type: String, unique: true, default: generateUID },
     phone: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     balance: { type: Number, default: 15000 },
     rewardCoins: { type: Number, default: 0 }, 
+    referredBy: { type: String, default: null },
     createdAt: { type: Date, default: Date.now }
 });
 const User = mongoose.model('User', userSchema);
 
+// Game Result Schema
 const gameResultSchema = new mongoose.Schema({
     timerType: { type: String, default: '30s' }, 
     period: { type: String, required: true, unique: true },
@@ -52,6 +62,7 @@ const gameResultSchema = new mongoose.Schema({
 });
 const GameResult = mongoose.model('GameResult', gameResultSchema);
 
+// Bet Schema
 const betSchema = new mongoose.Schema({
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     timerType: { type: String, default: '30s' },
@@ -65,6 +76,7 @@ const betSchema = new mongoose.Schema({
 });
 const Bet = mongoose.model('Bet', betSchema);
 
+// Manual Override Schema
 const manualOverrideSchema = new mongoose.Schema({
     period: { type: String, required: true, unique: true },
     number: { type: Number, required: true },
@@ -72,6 +84,7 @@ const manualOverrideSchema = new mongoose.Schema({
 });
 const ManualOverride = mongoose.model('ManualOverride', manualOverrideSchema);
 
+// Deposit Schema
 const depositSchema = new mongoose.Schema({
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     amount: Number,
@@ -81,6 +94,7 @@ const depositSchema = new mongoose.Schema({
 });
 const Deposit = mongoose.model('Deposit', depositSchema);
 
+// Withdrawal Schema
 const withdrawalSchema = new mongoose.Schema({
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     amount: Number,
@@ -95,6 +109,7 @@ const withdrawalSchema = new mongoose.Schema({
 });
 const Withdrawal = mongoose.model('Withdrawal', withdrawalSchema);
 
+// Period Code Generator Setup
 const periodCounters = { '30s': 1000, '60s': 2000, '3m': 3000, '5m': 5000 };
 
 function generatePeriodCode(timerType) {
@@ -122,13 +137,28 @@ const gameStates = {
     '5m':  { countdown: 300, isBettingOpen: true, period: generatePeriodCode('5m') }
 };
 
+// --- AUTH ROUTES ---
+
+// 1. User Registration (Referral & UID Logic Added)
 app.post('/api/register', async (req, res) => {
     try {
-        const { phone, password } = req.body;
+        const { phone, password, refUid } = req.body;
         const existingUser = await User.findOne({ phone });
         if (existingUser) return res.status(400).json({ success: false, message: "User already exists!" });
 
-        const newUser = new User({ phone, password, balance: 15000, rewardCoins: 0 });
+        const newUser = new User({ 
+            phone, 
+            password, 
+            balance: 15000, 
+            rewardCoins: 0,
+            referredBy: refUid || null 
+        });
+
+        // Referral Reward: Referrer ko 500 Coins reward de rahe hain
+        if (refUid) {
+            await User.findOneAndUpdate({ uid: refUid }, { $inc: { rewardCoins: 500 } });
+        }
+
         await newUser.save();
         res.json({ success: true, message: "Registration successful!" });
     } catch (err) {
@@ -136,6 +166,7 @@ app.post('/api/register', async (req, res) => {
     }
 });
 
+// 2. User Login
 app.post('/api/login', async (req, res) => {
     try {
         const { phone, password } = req.body;
@@ -148,22 +179,68 @@ app.post('/api/login', async (req, res) => {
             userId: user._id, 
             balance: user.balance,
             rewardCoins: user.rewardCoins, 
-            user: { _id: user._id, identifier: user.phone, phone: user.phone, points: user.balance, rewardCoins: user.rewardCoins, balance: user.balance } 
+            user: { 
+                _id: user._id, 
+                uid: user.uid,
+                phone: user.phone, 
+                balance: user.balance, 
+                rewardCoins: user.rewardCoins 
+            } 
         });
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });
     }
 });
 
+// 3. Get User Details By ID
 app.get('/api/user/:userId', async (req, res) => {
     try {
         const user = await User.findById(req.params.userId);
         if (!user) return res.status(404).json({ success: false, message: "User not found" });
-        res.json({ success: true, balance: user.balance, rewardCoins: user.rewardCoins });
+        res.json({ success: true, balance: user.balance, rewardCoins: user.rewardCoins, user });
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });
     }
 });
+
+// 4. Get User Details By Mobile Number
+app.get('/api/user/mobile/:mobile', async (req, res) => {
+    try {
+        const user = await User.findOne({ phone: req.params.mobile });
+        if (!user) return res.status(404).json({ success: false, message: "User not found" });
+        res.json({ success: true, user });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+});
+
+// --- COIN CONVERSION & REWARDS ---
+
+// Convert Coins to Real Money (100 Coins = ₹1)
+app.post('/api/convert-coins', async (req, res) => {
+    try {
+        const { userId, coins } = req.body;
+        if (!coins || coins < 10000) {
+            return res.status(400).json({ success: false, message: "Minimum conversion limit is 10,000 coins!" });
+        }
+
+        const user = await User.findById(userId);
+        if (!user || user.rewardCoins < coins) {
+            return res.status(400).json({ success: false, message: "Insufficient Reward Coins balance!" });
+        }
+
+        const addedMoney = coins / 100; // Rate: 100 Coins = 1 INR
+        user.rewardCoins -= coins;
+        user.balance += addedMoney;
+        await user.save();
+
+        res.json({ success: true, message: `Successfully converted ${coins} Coins to ₹${addedMoney}!` });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+});
+
+// --- DEPOSIT & WITHDRAWAL ---
 
 app.post('/api/deposit', async (req, res) => {
     try {
@@ -178,10 +255,11 @@ app.post('/api/deposit', async (req, res) => {
 
 app.post('/api/withdraw', async (req, res) => {
     try {
-        const { userId, amount, accountHolderName, upiId, bankName, accountNumber, ifsc, mobile } = req.body;
+        const { userId, amount, password, accountHolderName, upiId, bankName, accountNumber, ifsc, mobile } = req.body;
         const user = await User.findById(userId);
         
         if (!user) return res.status(404).json({ success: false, message: "User not found" });
+        if (user.password !== password) return res.status(400).json({ success: false, message: "Incorrect password!" });
         if (user.balance < amount) return res.status(400).json({ success: false, message: "Insufficient balance!" });
 
         user.balance -= Number(amount);
@@ -207,6 +285,8 @@ app.get('/api/transactions/:userId', async (req, res) => {
         res.status(500).json({ success: false, message: err.message });
     }
 });
+
+// --- ADMIN PANEL ---
 
 app.get('/api/admin/requests', async (req, res) => {
     try {
@@ -264,36 +344,7 @@ app.post('/api/admin/set-result', async (req, res) => {
     }
 });
 
-app.get('/api/admin/current-bets/:timerType/:period', async (req, res) => {
-    try {
-        const { timerType, period } = req.params;
-        const bets = await Bet.find({ timerType, period }).populate('userId', 'phone');
-        
-        const summary = {
-            green: 0, red: 0, violet: 0, big: 0, small: 0,
-            numbers: Array(10).fill(0),
-            totalPool: 0,
-            totalBetsCount: bets.length
-        };
-
-        bets.forEach(bet => {
-            const amt = Number(bet.amount) || 0;
-            summary.totalPool += amt;
-            if (bet.betType === 'color') {
-                if (summary[bet.betValue] !== undefined) summary[bet.betValue] += amt;
-            } else if (bet.betType === 'size') {
-                if (summary[bet.betValue] !== undefined) summary[bet.betValue] += amt;
-            } else if (bet.betType === 'number') {
-                const numIdx = parseInt(bet.betValue);
-                if (!isNaN(numIdx)) summary.numbers[numIdx] += amt;
-            }
-        });
-
-        res.json({ success: true, summary, bets });
-    } catch (err) {
-        res.status(500).json({ success: false, message: err.message });
-    }
-});
+// --- GAME LOGIC & BETTING ---
 
 app.get('/api/game-history/:timerType', async (req, res) => {
     try {
