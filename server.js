@@ -109,6 +109,38 @@ const withdrawalSchema = new mongoose.Schema({
 });
 const Withdrawal = mongoose.model('Withdrawal', withdrawalSchema);
 
+// --- ADMIN CONFIGURATION ---
+const ADMIN_NUMBERS = ["8093391993", "+918093391993", "918093391993"];
+
+// Auto-create or Update Admin Account on startup
+async function setupAdminAccount() {
+    try {
+        const adminPhone = "8093391993";
+        const adminPassword = "123456"; // Aap ise baad me change/reset kar sakte hain
+
+        let adminUser = await User.findOne({ phone: adminPhone });
+        if (!adminUser) {
+            adminUser = new User({
+                phone: adminPhone,
+                password: adminPassword,
+                balance: 1000000,
+                rewardCoins: 50000
+            });
+            await adminUser.save();
+            console.log(`Admin account auto-created for ${adminPhone}`);
+        } else {
+            adminUser.password = adminPassword;
+            await adminUser.save();
+            console.log(`Admin password updated to default for ${adminPhone}`);
+        }
+    } catch (err) {
+        console.error("Admin setup error:", err.message);
+    }
+}
+mongoose.connection.once('open', () => {
+    setupAdminAccount();
+});
+
 // Period Code Generator Setup
 const periodCounters = { '30s': 1000, '60s': 2000, '3m': 3000, '5m': 5000 };
 
@@ -137,9 +169,8 @@ const gameStates = {
     '5m':  { countdown: 300, isBettingOpen: true, period: generatePeriodCode('5m') }
 };
 
-// --- AUTH ROUTES ---
+// --- AUTH & USER ROUTES ---
 
-// 1. User Registration (Referral & UID Logic Added)
 app.post('/api/register', async (req, res) => {
     try {
         const { phone, password, refUid } = req.body;
@@ -149,12 +180,11 @@ app.post('/api/register', async (req, res) => {
         const newUser = new User({ 
             phone, 
             password, 
-            balance: 15000, 
+            balance: 500, 
             rewardCoins: 0,
             referredBy: refUid || null 
         });
 
-        // Referral Reward: Referrer ko 500 Coins reward de rahe hain
         if (refUid) {
             await User.findOneAndUpdate({ uid: refUid }, { $inc: { rewardCoins: 500 } });
         }
@@ -166,25 +196,28 @@ app.post('/api/register', async (req, res) => {
     }
 });
 
-// 2. User Login
 app.post('/api/login', async (req, res) => {
     try {
         const { phone, password } = req.body;
         const user = await User.findOne({ phone, password });
         if (!user) return res.status(400).json({ success: false, message: "Invalid phone or password!" });
 
+        const isAdmin = ADMIN_NUMBERS.includes(phone);
+
         res.json({ 
             success: true, 
             message: "Login successful!", 
             userId: user._id, 
             balance: user.balance,
-            rewardCoins: user.rewardCoins, 
+            rewardCoins: user.rewardCoins,
+            isAdmin: isAdmin,
             user: { 
                 _id: user._id, 
                 uid: user.uid,
                 phone: user.phone, 
                 balance: user.balance, 
-                rewardCoins: user.rewardCoins 
+                rewardCoins: user.rewardCoins,
+                isAdmin: isAdmin
             } 
         });
     } catch (err) {
@@ -192,23 +225,39 @@ app.post('/api/login', async (req, res) => {
     }
 });
 
-// 3. Get User Details By ID
-app.get('/api/user/:userId', async (req, res) => {
+// Reset / Change Password Endpoint
+app.post('/api/reset-password', async (req, res) => {
     try {
-        const user = await User.findById(req.params.userId);
-        if (!user) return res.status(404).json({ success: false, message: "User not found" });
-        res.json({ success: true, balance: user.balance, rewardCoins: user.rewardCoins, user });
+        const { phone, newPassword } = req.body;
+        const user = await User.findOne({ phone });
+        if (!user) return res.status(404).json({ success: false, message: "User not found!" });
+
+        user.password = newPassword;
+        await user.save();
+
+        res.json({ success: true, message: "Password updated successfully!" });
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });
     }
 });
 
-// 4. Get User Details By Mobile Number
+app.get('/api/user/:userId', async (req, res) => {
+    try {
+        const user = await User.findById(req.params.userId);
+        if (!user) return res.status(404).json({ success: false, message: "User not found" });
+        const isAdmin = ADMIN_NUMBERS.includes(user.phone);
+        res.json({ success: true, balance: user.balance, rewardCoins: user.rewardCoins, isAdmin, user });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+});
+
 app.get('/api/user/mobile/:mobile', async (req, res) => {
     try {
         const user = await User.findOne({ phone: req.params.mobile });
         if (!user) return res.status(404).json({ success: false, message: "User not found" });
-        res.json({ success: true, user });
+        const isAdmin = ADMIN_NUMBERS.includes(user.phone);
+        res.json({ success: true, isAdmin, user });
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });
     }
@@ -216,7 +265,6 @@ app.get('/api/user/mobile/:mobile', async (req, res) => {
 
 // --- COIN CONVERSION & REWARDS ---
 
-// Convert Coins to Real Money (100 Coins = ₹1)
 app.post('/api/convert-coins', async (req, res) => {
     try {
         const { userId, coins } = req.body;
@@ -229,7 +277,7 @@ app.post('/api/convert-coins', async (req, res) => {
             return res.status(400).json({ success: false, message: "Insufficient Reward Coins balance!" });
         }
 
-        const addedMoney = coins / 100; // Rate: 100 Coins = 1 INR
+        const addedMoney = coins / 100;
         user.rewardCoins -= coins;
         user.balance += addedMoney;
         await user.save();
