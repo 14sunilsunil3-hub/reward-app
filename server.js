@@ -44,7 +44,7 @@ const userSchema = new mongoose.Schema({
     uid: { type: String, unique: true, default: generateUID },
     phone: { type: String, required: true, unique: true },
     password: { type: String, required: true },
-    balance: { type: Number, default: 15000 },
+    balance: { type: Number, default: 500 },
     rewardCoins: { type: Number, default: 0 }, 
     referredBy: { type: String, default: null },
     createdAt: { type: Date, default: Date.now }
@@ -110,13 +110,13 @@ const withdrawalSchema = new mongoose.Schema({
 const Withdrawal = mongoose.model('Withdrawal', withdrawalSchema);
 
 // --- ADMIN CONFIGURATION ---
-const ADMIN_NUMBERS = ["8093391993", "+918093391993", "918093391993"];
+const ADMIN_NUMBERS = ["8093361993", "+918093361993", "918093361993"];
 
 // Auto-create or Update Admin Account on startup
 async function setupAdminAccount() {
     try {
-        const adminPhone = "8093391993";
-        const adminPassword = "123456"; // Aap ise baad me change/reset kar sakte hain
+        const adminPhone = "8093361993";
+        const adminPassword = "123123";
 
         let adminUser = await User.findOne({ phone: adminPhone });
         if (!adminUser) {
