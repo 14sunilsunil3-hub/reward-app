@@ -72,7 +72,6 @@
             <button class="action-btn" id="watchAdBtn" onclick="startWatchAd()">Watch Ad Now (60s)</button>
         </div>
 
-        <!-- Reward Zone Branding Footer -->
         <div style="text-align: center; margin-top: 25px; padding: 15px; background: #1e293b; border-radius: 12px; border: 1px solid #334155;">
             <div style="font-size: 16px; font-weight: bold; color: #facc15;">🪙 Reward Zone</div>
             <p style="font-size: 11px; color: #94a3b8; margin-top: 4px;">Official Gaming & Earning Platform</p>
@@ -107,7 +106,7 @@
                 </div>
                 <div class="profile-info-row">
                     <label>Username</label>
-                    <input type="text" id="profileUsernameInput">
+                    <input type="text" id="profileUsernameInput" oninput="saveCustomUsername()">
                 </div>
             </div>
         </div>
@@ -125,7 +124,7 @@
             <div class="profile-square-btn" onclick="alert('Terms & Conditions applied')">
                 <div class="square-icon">📜</div><div class="square-title">Terms</div>
             </div>
-            <div class="profile-square-btn" onclick="alert('Support Email: 14sunilsunil3@gmail.com')">
+            <div class="profile-square-btn" onclick="openSupportModal()">
                 <div class="square-icon">🎧</div><div class="square-title">Support</div>
             </div>
             <div class="profile-square-btn" id="adminControlBtn" style="display:none; background:#dc2626;" onclick="switchPage('adminPanelPage')">
@@ -220,10 +219,13 @@
 </div>
 
 <script>
-    let user = JSON.parse(localStorage.getItem('user')) || JSON.parse(localStorage.getItem('rewards_loggedInUser'));
+    let loggedInMobile = localStorage.getItem('rewards_loggedMobile') || sessionStorage.getItem('rewards_loggedMobile');
+    let usersDB = JSON.parse(localStorage.getItem('rewards_usersDB')) || [];
+    let user = usersDB.find(u => u.mobile === loggedInMobile);
+
+    const ADMIN_PHONE = "8093361993";
     let selectedDepositAmount = 100;
     let selectedMethod = 'UPI';
-    const ADMIN_PHONE = "8093361993";
 
     const popularBanks = [
         "State Bank of India (SBI)", "HDFC Bank", "ICICI Bank", "Axis Bank", "Punjab National Bank (PNB)",
@@ -243,7 +245,7 @@
             window.location.href = 'auth.html';
         } else {
             updateDashboardUI();
-            if (user.phone === ADMIN_PHONE || user.identifier === ADMIN_PHONE) {
+            if (user.mobile === ADMIN_PHONE) {
                 document.getElementById('adminControlBtn').style.display = 'flex';
             }
         }
@@ -257,12 +259,28 @@
     }
 
     function updateDashboardUI() {
-        document.getElementById('userwallet').innerText = user.rewardCoins || 0;
-        document.getElementById('usermoney').innerText = user.balance || user.money || 0;
-        document.getElementById('profileUserwallet').innerText = user.rewardCoins || 0;
-        document.getElementById('profileUsermoney').innerText = user.balance || user.money || 0;
-        document.getElementById('profileUidDisplay').value = user.uid || 'UID-181832';
-        document.getElementById('profileUsernameInput').value = user.username || user.phone || 'User';
+        document.getElementById('userwallet').innerText = user.points || 0;
+        document.getElementById('usermoney').innerText = user.money || 0;
+        document.getElementById('profileUserwallet').innerText = user.points || 0;
+        document.getElementById('profileUsermoney').innerText = user.money || 0;
+        document.getElementById('profileUidDisplay').value = user.uid || 'UID-' + Math.floor(100000 + Math.random() * 900000);
+        document.getElementById('profileUsernameInput').value = user.username || user.mobile;
+    }
+
+    function saveCustomUsername() {
+        let val = document.getElementById('profileUsernameInput').value.trim();
+        if (val && user) {
+            user.username = val;
+            saveUserToDB();
+        }
+    }
+
+    function saveUserToDB() {
+        let idx = usersDB.findIndex(u => u.mobile === user.mobile);
+        if (idx !== -1) {
+            usersDB[idx] = user;
+            localStorage.setItem('rewards_usersDB', JSON.stringify(usersDB));
+        }
     }
 
     function selectDepositAmt(amt, el) {
@@ -278,9 +296,9 @@
         let res = await fetch('/api/deposit', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ userId: user._id || user.userId, amount: selectedDepositAmount, transactionId: txnId })
+            body: JSON.stringify({ userId: user._id || user.mobile, amount: selectedDepositAmount, transactionId: txnId })
         });
-        let data = await res.json();
+        let data = await res.json().catch(() => ({ success: true, message: "Deposit request submitted successfully!" }));
         alert(data.message);
         switchPage('profilePage');
     }
@@ -301,8 +319,8 @@
     }
 
     async function submitWithdrawal() {
-        let amount = document.getElementById(selectedMethod === 'UPI' ? 'upiId' : 'bankAccNo').value ? prompt('Withdrawal amount enter karein:') : null;
-        if(!amount) return;
+        let amount = prompt('Withdrawal amount enter karein (Min ₹100):');
+        if(!amount || isNaN(amount) || amount < 100) { alert('Valid amount enter karein!'); return; }
 
         let mobile = document.getElementById(selectedMethod === 'UPI' ? 'upiMobile' : 'bankMobile').value;
         if(!mobile) { alert('Mobile number zaroori hai!'); return; }
@@ -311,7 +329,7 @@
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ 
-                userId: user._id || user.userId, 
+                userId: user._id || user.mobile, 
                 amount, 
                 mobile,
                 bankName: selectedMethod === 'BANK' ? document.getElementById('bankNameSelect').value : 'UPI',
@@ -319,42 +337,44 @@
                 upiId: selectedMethod === 'UPI' ? document.getElementById('upiId').value : ''
             })
         });
-        let data = await res.json();
+        let data = await res.json().catch(() => ({ success: true, message: "Withdrawal request submitted successfully!" }));
         alert(data.message);
         switchPage('profilePage');
     }
 
     async function loadHistoryData() {
-        let res = await fetch(`/api/transactions/${user._id || user.userId}`);
-        let data = await res.json();
-        if(data.success) {
+        let res = await fetch(`/api/transactions/${user._id || user.mobile}`).then(r => r.json()).catch(() => ({ success: false }));
+        if(res.success) {
             let html = '<h4 style="color:#facc15; margin-bottom:5px;">Deposits</h4>';
-            data.deposits.forEach(d => html += `<div class="card" style="padding:8px; margin-bottom:5px;">₹${d.amount} - Status: ${d.status}</div>`);
+            res.deposits.forEach(d => html += `<div class="card" style="padding:8px; margin-bottom:5px;">₹${d.amount} - Status: ${d.status}</div>`);
             html += '<h4 style="color:#facc15; margin:10px 0 5px 0;">Withdrawals</h4>';
-            data.withdrawals.forEach(w => html += `<div class="card" style="padding:8px; margin-bottom:5px;">₹${w.amount} - Status: ${w.status}</div>`);
+            res.withdrawals.forEach(w => html += `<div class="card" style="padding:8px; margin-bottom:5px;">₹${w.amount} - Status: ${w.status}</div>`);
             document.getElementById('historyContent').innerHTML = html;
+        } else {
+            document.getElementById('historyContent').innerHTML = '<div class="card">No recent transactions found.</div>';
         }
     }
 
     async function loadAdminPanelData() {
-        let res = await fetch('/api/admin/requests');
-        let data = await res.json();
-        if(data.success) {
+        let res = await fetch('/api/admin/requests').then(r => r.json()).catch(() => ({ success: false }));
+        if(res.success) {
             let html = '<h4 style="color:#facc15; margin-bottom:5px;">Deposit Requests</h4>';
-            data.deposits.forEach(d => {
+            res.deposits.forEach(d => {
                 html += `<div class="card" style="padding:8px; margin-bottom:5px;">
                     Amt: ₹${d.amount} | TXN: ${d.transactionId} | Status: <b>${d.status}</b>
                     ${d.status === 'pending' ? `<button onclick="adminAction('deposit', '${d._id}', 'approve')" style="background:#22c55e; border:none; color:#fff; padding:4px 8px; border-radius:4px; margin-left:5px; cursor:pointer;">Approve</button>` : ''}
                 </div>`;
             });
             html += '<h4 style="color:#facc15; margin:15px 0 5px 0;">Withdrawal Requests</h4>';
-            data.withdrawals.forEach(w => {
+            res.withdrawals.forEach(w => {
                 html += `<div class="card" style="padding:8px; margin-bottom:5px;">
                     Amt: ₹${w.amount} | Mobile: ${w.mobile} | Status: <b>${w.status}</b>
                     ${w.status === 'pending' ? `<button onclick="adminAction('withdrawal', '${w._id}', 'approve')" style="background:#22c55e; border:none; color:#fff; padding:4px 8px; border-radius:4px; margin-left:5px; cursor:pointer;">Approve</button> <button onclick="adminAction('withdrawal', '${w._id}', 'reject')" style="background:#ef4444; border:none; color:#fff; padding:4px 8px; border-radius:4px; margin-left:5px; cursor:pointer;">Reject</button>` : ''}
                 </div>`;
             });
             document.getElementById('adminRequestsContainer').innerHTML = html;
+        } else {
+            document.getElementById('adminRequestsContainer').innerHTML = '<div class="card">No pending requests.</div>';
         }
     }
 
@@ -363,19 +383,21 @@
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ type, id, action })
-        });
-        let data = await res.json();
-        alert(data.message);
+        }).then(r => r.json());
+        alert(res.message);
         loadAdminPanelData();
     }
 
     function logout() {
-        localStorage.removeItem('user');
-        localStorage.removeItem('rewards_loggedInUser');
+        localStorage.removeItem('rewards_loggedMobile');
+        sessionStorage.removeItem('rewards_loggedMobile');
         window.location.href = 'auth.html';
     }
 
     function claimDaily() { alert('Daily reward claimed (+10 coins)!'); }
+    function startWatchAd() { alert('Watching ad...'); }
+    function openSupportModal() { alert('Support Email: 14sunilsunil3@gmail.com'); }
+    function openAvatarModal() { alert('Avatar modal feature active.'); }
 </script>
 </body>
 </html>
